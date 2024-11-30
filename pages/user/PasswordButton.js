@@ -3,10 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const PasswordButton = () => {
+const PasswordButton = ({ onPress }) => {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={onPress}>
           <LinearGradient
             colors={["#153CE6", "#0C2180"]}
             start={{ x: 0, y: 0 }}
@@ -26,9 +25,9 @@ const PasswordButton = () => {
          
           </LinearGradient>
         </TouchableOpacity>
-      </View>
     );
   };
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
