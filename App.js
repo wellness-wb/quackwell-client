@@ -24,7 +24,7 @@ export default function App() {
         <Stack.Screen name="PlannerDetails" component={PlannerDetails} />
 
       {/* Main Hub */}
-      <Stack.Screen name="Main Hub" component={MainHub} />
+      <Stack.Screen name="MainHub" component={MainHub} />
       </Stack.Navigator>
     </NavigationContainer>
   );
