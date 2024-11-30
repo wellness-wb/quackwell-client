@@ -4,7 +4,7 @@ import EmailButton from "./EmailButton";
 import LoggingInButton from "./LoggingInButton";
 import PasswordButton from "./PasswordButton";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   return (
     <ImageBackground
       source={require("../../assets/background.png")}
@@ -40,9 +40,8 @@ const Login = () => {
 
     {/* Log Me In Button */}
     <View style={styles.buttonForLoggingIn}>
-      <LoggingInButton />
+      <LoggingInButton onPress={() => navigation.navigate("MainHub")}/>
     </View>
-
     </ImageBackground>
   );
 };

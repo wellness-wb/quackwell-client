@@ -4,7 +4,7 @@ import { Button, StyleSheet, Text, View } from "react-native";
 const MainHub = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text>Todo Details Page</Text>
+      <Text>MainHub page</Text>
       <Button
         title="Back to Login"
         onPress={() => navigation.navigate("Login")}
