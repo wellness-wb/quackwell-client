@@ -41,7 +41,7 @@ const Signup = ({ navigation }) => {
 
         {/* log in option */}
         <View style={styles.bottomMessage}>
-          <Text style={styles.bottomText}>Already have an account? <Text style={styles.underline}>Log in</Text>.
+          <Text style={styles.bottomText}>Already have an account? <Text style={styles.underline} onPress={() => navigation.navigate('Login')}>Log in</Text>.
           </Text>
         </View>
     </ImageBackground>

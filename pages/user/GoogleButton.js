@@ -17,7 +17,7 @@ const GoogleButton = () => {
             <AntDesign name="google" size={30} color="white" />
           </View>
 
-        <View srtyle={styles.textContainer}>
+        <View style={styles.textContainer}>
             <Text style={styles.buttonText}>Continue with Google</Text>
         </View>
         </LinearGradient>
