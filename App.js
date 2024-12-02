@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
+import MainHub from "./pages/MainHub";
 import PlannerDetails from "./pages/planner/PlannerDetails";
 import PlannerList from "./pages/planner/PlannerList";
 import Login from "./pages/user/Login";
@@ -12,7 +13,7 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Signup">
         {/* User-related Screens */}
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
@@ -21,6 +22,9 @@ export default function App() {
         {/* Todo-related Screens */}
         <Stack.Screen name="PlannerList" component={PlannerList} />
         <Stack.Screen name="PlannerDetails" component={PlannerDetails} />
+
+      {/* Main Hub */}
+      <Stack.Screen name="MainHub" component={MainHub} />
       </Stack.Navigator>
     </NavigationContainer>
   );
