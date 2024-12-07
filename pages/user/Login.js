@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
       </View>
         {/* Password Button */}
       <View style={styles.buttonForPassword}>
-      <PasswordButton onPress={() => navigation.navigate("Signup")}/>
+      <PasswordButton />
     </View>
 
     {/* Log Me In Button */}
