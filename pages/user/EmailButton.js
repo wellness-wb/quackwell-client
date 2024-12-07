@@ -1,22 +1,42 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const EmailButton = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [email, setEmail] = useState("");
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
-        <LinearGradient
-          colors={["#153CE6", "#0C2180"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
+      {isEditing ? (
+        <TextInput 
+          style={styles.input}
+          value={email}
+          onChangeText={( text) => setEmail(text)}
+          onBlur={() => setIsEditing(false)} //exits the edit mode when input loses focus
+          autoFocus
+          placeholder="Enter email"
+          placeholderTextColor="#999"
+          />
+      ) : (
+        <TouchableOpacity 
+        style={styles.button}
+        onPress={() => setIsEditing(true)}
         >
-          <View style={styles.textContainer}>
-            <Text style={styles.buttonText}>Email...</Text>
+          <LinearGradient
+            colors={["#153CE6", "#0C2180"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradient}
+          >
+            <View style={styles.textContainer}>
+              <Text style={styles.buttonText}>
+                {email || "Email..."}
+                </Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -50,6 +70,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  input: {
+    width: 320,
+    height: 70,
+    borderRadius: 29,
+    backgroundColor: '#153CE6',
+    paddingHorizontal: 20,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: '#153CE6',
   },
 });
 
