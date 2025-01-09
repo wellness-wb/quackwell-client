@@ -77,9 +77,9 @@ const styles = StyleSheet.create({
     borderRadius: 29,
     backgroundColor: '#153CE6',
     paddingHorizontal: 20,
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
-    color: '#153CE6',
+    color: 'white',
   },
 });
 
