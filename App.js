@@ -4,6 +4,7 @@ import React from "react";
 import MainHub from "./pages/MainHub";
 import PlannerDetails from "./pages/planner/PlannerDetails";
 import PlannerList from "./pages/planner/PlannerList";
+import PlannerMain from "./pages/planner/PlannerMain";
 import Login from "./pages/user/Login";
 import Profile from "./pages/user/Profile";
 import Signup from "./pages/user/Signup";
@@ -22,6 +23,7 @@ export default function App() {
         {/* Todo-related Screens */}
         <Stack.Screen name="PlannerList" component={PlannerList} />
         <Stack.Screen name="PlannerDetails" component={PlannerDetails} />
+        <Stack.Screen name="PlannerMain" component={PlannerMain} />
 
       {/* Main Hub */}
       <Stack.Screen name="MainHub" component={MainHub} />

@@ -1,32 +1,46 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const PasswordButton = ({ onPress }) => {
+const PasswordButton = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [password, setPassword] = useState("");
+
     return (
-        <TouchableOpacity style={styles.button} onPress={onPress}>
-          <LinearGradient
-            colors={["#153CE6", "#0C2180"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradient}
+      <View style={styles.container}>
+      {isEditing ? (
+        <TextInput 
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          onBlur={() => setIsEditing(false)} //exits the edit mode when input loses focus
+          autoFocus
+          placeholder="Enter Password"
+          placeholderTextColor="#999"
+          secureTextEntry
+          />
+      ) : (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setIsEditing(true)}
           >
-
-            {/* Text on the right */}
+            <LinearGradient
+              colors={["#153CE6", "#0C2180"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradient}
+          >
             <View style={styles.textContainer}>
-              <Text style={styles.buttonText}>Password...</Text>
-            </View>
-
-            {/* Icon on the left */}
-            <View style={styles.eyeContainer}>
-              <AntDesign name="eyeo" size={28} color="white" />
-            </View>
-         
-          </LinearGradient>
-        </TouchableOpacity>
-    );
-  };
+              <Text style={styles.buttonText}>
+                {password ? "••••••" : "Password..."}
+              </Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -62,6 +76,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  input: {
+    width: 320,
+    height: 70,
+    borderRadius: 29,
+    backgroundColor: '#153CE6',
+    paddingHorizontal: 20,
+    fontSize: 24,
+    fontWeight: "bold",
+    color: '#153CE6',
   },
 });
 

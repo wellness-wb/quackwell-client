@@ -12,7 +12,7 @@ const MainHub = ({ navigation }) => {
     >
         <UpperMenu />
         <DuckAnimation />
-        <MenuBar />
+        <MenuBar navigation={navigation} />
     </ImageBackground>
   );
 };

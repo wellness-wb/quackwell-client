@@ -2,11 +2,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
-const MenuBar = () => {
+
+const MenuBar = ({navigation}) => {
   return (
     <View style={styles.menuBar}>
       {/* Calendar */}
-      <TouchableOpacity style={styles.calendarContainer}>
+      <TouchableOpacity 
+      style={styles.calendarContainer}
+      onPress={() => navigation.navigate("PlannerMain")}
+      >
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
           start={{ x: 0, y: 0 }}
@@ -21,7 +25,10 @@ const MenuBar = () => {
       </TouchableOpacity>
 
       {/* Hydration */}
-      <TouchableOpacity style={styles.hydrationContainer}>
+      <TouchableOpacity 
+      style={styles.hydrationContainer}
+      onPress={() => navigation.navigate("HydrationMain")}
+      >
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
           start={{ x: 0, y: 0 }}
@@ -36,7 +43,10 @@ const MenuBar = () => {
       </TouchableOpacity>
 
       {/* Calm */}
-      <TouchableOpacity style={styles.calmContainer}>
+      <TouchableOpacity 
+      style={styles.calmContainer}
+      onPress={() => navigation.navigate("CalmMain")}
+      >
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
           start={{ x: 0, y: 0 }}
@@ -51,7 +61,9 @@ const MenuBar = () => {
       </TouchableOpacity>
 
       {/* Feed */}
-      <TouchableOpacity style={styles.feedContainer}>
+      <TouchableOpacity 
+      style={styles.feedContainer}
+      onPress={() => navigation.navigate("SocialMain")}>
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
           start={{ x: 0, y: 0 }}
@@ -90,33 +102,33 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 30,
+    borderRadius: 27,
   },
 
   calendarContainer: {
     width: 70,
-    height: 70,
+    height: 65,
     borderRadius: 35,
     marginLeft: 0,
     marginRight: 5,
   },
   hydrationContainer: {
     width: 70,
-    height: 70,
+    height: 65,
     borderRadius: 35,
     marginLeft: 5,
     marginRight: 5,
   },
   calmContainer: {
     width: 70,
-    height: 70,
+    height: 65,
     borderRadius: 35,
     marginLeft: 5,
     marginRight: 5,
   },
   feedContainer: {
     width: 70,
-    height: 70,
+    height: 65,
     borderRadius: 35,
     marginLeft: 5,
   },
