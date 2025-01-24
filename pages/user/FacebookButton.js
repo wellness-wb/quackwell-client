@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
+        alignItems: 'flex-start',
     },
     button: {
         width: 320,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     gradient: {
         flex: 1,
         flexDirection: 'row', // aligns children horizontally
-        justifyContent: 'center',
+        justifyContent: 'flex-center',
         alignItems: 'center',
         opacity: 0.77,
         paddingHorizontal: 20,
@@ -53,13 +54,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     iconContainer: {
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         marginRight: 10,
     },
     textContainer: {
         flex: 1, // will take up the remaining space
         justifyContent: 'center',
+        marginLeft: 10,
     },
 });
 
