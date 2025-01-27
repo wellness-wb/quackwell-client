@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import MenuBar from "./MenuBar";
+import MenuBar from "./components/MenuBar";
 import UpperMenu from "./components/UpperMenu";
 
 const MainHub = ({ navigation }) => {
