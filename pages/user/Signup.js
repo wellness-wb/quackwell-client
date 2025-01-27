@@ -2,7 +2,14 @@
 // npx expo install expo-linear-gradient
 import { Audio } from "expo-av";
 import React, { useEffect, useRef } from "react";
-import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import FacebookButton from "./FacebookButton";
 import FloatingBubble from "./FloatingBubble";
 import GoogleButton from "./GoogleButton";
@@ -66,24 +73,48 @@ const Signup = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require('../../assets/background.png')}
+      source={require("../../assets/background.png")}
       style={styles.background}
-      resizeMode='cover'
+      resizeMode="cover"
     >
-
-        {/* header */}
+      {/* header */}
       <View style={styles.header}>
-      <Text style={styles.topText}>Start your productivity and wellness journey with Quackwell</Text>
+        <Text style={styles.topText}>
+          Start your productivity and wellness journey with Quackwell
+        </Text>
       </View>
 
-
       {/* Bubbles */}
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={0} size={1000} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={50} size={1500} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={100} size={2000} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={150} size={1750} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={200} size={2050} />
-
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={0}
+        size={1000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={50}
+        size={1500}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={100}
+        size={2000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={150}
+        size={1750}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={200}
+        size={2050}
+      />
 
       {/* GIF with bounce */}
       <Pressable onPress={handlePress}>
@@ -110,7 +141,14 @@ const Signup = ({ navigation }) => {
       {/* log in option */}
       <View style={styles.bottomMessage}>
         <Text style={styles.bottomText}>
-          Already have an account? <Text style={styles.underline} onPress={() => navigation.navigate('Login')}>Log in</Text>.
+          Already have an account?{" "}
+          <Text
+            style={styles.underline}
+            onPress={() => navigation.navigate("Login")}
+          >
+            Log in
+          </Text>
+          .
         </Text>
       </View>
     </ImageBackground>
@@ -120,70 +158,70 @@ const Signup = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1, // the background takes up the full height and width of the container
-    justifyContent: 'flex-start', // start the content from the top
-    alignItems: 'center', // all child components will be horizontally centered
+    justifyContent: "flex-start", // start the content from the top
+    alignItems: "center", // all child components will be horizontally centered
   },
   header: {
     top: -300,
-    alignItems: 'center',
+    alignItems: "center",
   },
   topText: {
-    position: 'absolute', // will allow the position adjustment by me not by the container rules
+    position: "absolute", // will allow the position adjustment by me not by the container rules
     top: 400,
-    color: '#153CE6',
+    color: "#153CE6",
     fontSize: 20,
-    fontFamily: 'Inter',
-    fontWeight: 'normal',
-    textAlign: 'center', // align always horizontally
-    width: '80%',
+    fontFamily: "Inter",
+    fontWeight: "normal",
+    textAlign: "center", // align always horizontally
+    width: "80%",
   },
   gif: {
-    width: '140%',
+    width: "140%",
     height: undefined,
     aspectRatio: 1, // scaling GIF proportionally
   },
   container: {
-    position: 'absolute',
+    position: "absolute",
     top: 350,
-    alignItems: 'center',
+    alignItems: "center",
   },
   signUp: {
-    width: '100%',
-    color: '#153CE6',
+    width: "100%",
+    color: "#153CE6",
     fontSize: 50,
-    fontFamily: 'Inter',
-    fontWeight: 'bold',
-    textAlign: 'center', // align always horizontally
+    fontFamily: "Inter",
+    fontWeight: "bold",
+    textAlign: "center", // align always horizontally
     marginBottom: 30,
   },
   buttonForGoogle: {
-    position: 'absolute',
-    top: '57%',
-    width: '100%',
-    alignItems: 'center',
+    position: "absolute",
+    top: "57%",
+    width: "100%",
+    alignItems: "center",
   },
   buttonForFacebook: {
-    position: 'absolute',
-    top: '69%',
-    width: '100%',
-    alignItems: 'center',
+    position: "absolute",
+    top: "69%",
+    width: "100%",
+    alignItems: "center",
   },
   bottomMessage: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 70,
-    alignContent: 'center',
-    width: '100%',
+    alignContent: "center",
+    width: "100%",
   },
   bottomText: {
-    color: '#153CE6',
-    textAlign: 'center',
+    color: "#153CE6",
+    textAlign: "center",
     fontSize: 18,
-    fontFamily: 'Inter',
-    fontWeight: 'normal',
+    fontFamily: "Inter",
+    fontWeight: "normal",
   },
   underline: {
-    textDecorationLine: 'underline',
-    color: '#153CE6',
+    textDecorationLine: "underline",
+    color: "#153CE6",
   },
 });
 
