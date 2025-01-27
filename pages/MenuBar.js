@@ -3,7 +3,7 @@ import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 
-const MenuBar = ({navigation}) => {
+const MenuBar = ({navigation, activeScreen}) => {
   return (
     <View style={styles.menuBar}>
       {/* Calendar */}
@@ -12,7 +12,11 @@ const MenuBar = ({navigation}) => {
       onPress={() => navigation.navigate("PlannerMain")}
       >
         <LinearGradient
-          colors={["#739CEF", "#F3CAAF"]}
+          colors={
+            activeScreen === "PlannerMain"
+              ? ["#F3CAAF", "#F0A26F"] // Active gradient
+              : ["#739CEF", "#A4CDF1"] // Default gradient
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
@@ -29,8 +33,13 @@ const MenuBar = ({navigation}) => {
       style={styles.hydrationContainer}
       onPress={() => navigation.navigate("HydrationMain")}
       >
-        <LinearGradient
-          colors={["#739CEF", "#F3CAAF"]}
+          {/* Active screen will change the color of the icon background */}
+          <LinearGradient
+          colors={
+            ["HydrationMain", "HydrationTracker"].includes(activeScreen)
+              ? ["#F3CAAF", "#F0A26F"] // Active gradient
+              : ["#739CEF", "#A4CDF1"] // Default gradient
+          }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
