@@ -1,4 +1,3 @@
-// npm install react-native-confetti-cannon
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
@@ -10,10 +9,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import ConfettiCannon from "react-native-confetti-cannon";
-import GradientButton from "../GradientButton";
-import MenuBar from "../MenuBar";
+import GradientButton from "../components/GradientButton";
+import MenuBar from "../components/MenuBar";
 
 const HydrationTracker = ({ route, navigation }) => {
   const { hydrationGoal, unit } = route.params; // Retrieve params from HydrationMain

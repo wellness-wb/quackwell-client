@@ -8,10 +8,10 @@ import {
   Text,
   View,
 } from "react-native";
-import EmailButton from "./EmailButton";
-import FloatingBubble from "./FloatingBubble";
-import LoggingInButton from "./LoggingInButton";
-import PasswordButton from "./PasswordButton";
+import EmailButton from "./components/EmailButton";
+import FloatingBubble from "./components/FloatingBubble";
+import LoggingInButton from "./components/LoggingInButton";
+import PasswordButton from "./components/PasswordButton";
 
 const Login = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;

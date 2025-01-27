@@ -10,9 +10,9 @@ import {
   Text,
   View,
 } from "react-native";
-import FacebookButton from "./FacebookButton";
-import FloatingBubble from "./FloatingBubble";
-import GoogleButton from "./GoogleButton";
+import FacebookButton from "./components/FacebookButton";
+import FloatingBubble from "./components/FloatingBubble";
+import GoogleButton from "./components/GoogleButton";
 
 const Signup = ({ navigation }) => {
   /*

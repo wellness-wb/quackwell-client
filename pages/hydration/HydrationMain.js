@@ -9,8 +9,8 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import GradientButton from "../GradientButton";
-import MenuBar from "../MenuBar";
+import GradientButton from "../components/GradientButton";
+import MenuBar from "../components/MenuBar";
 
 const HydrationMain = ({ navigation }) => {
   // hydrationGoal is the current value, setHydrationGoal is the function to update it, useState initializes it to ""

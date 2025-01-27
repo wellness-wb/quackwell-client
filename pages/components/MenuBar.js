@@ -21,7 +21,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/calendar.png")}
+            source={require("../../assets/calendar.png")}
             style={styles.calendarIcon}
           />
         </LinearGradient>
@@ -44,7 +44,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/hydration.png")}
+            source={require("../../assets/hydration.png")}
             style={styles.hydrationIcon}
           />
         </LinearGradient>
@@ -62,7 +62,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/calm.png")}
+            source={require("../../assets/calm.png")}
             style={styles.calmIcon}
           />
         </LinearGradient>
@@ -80,7 +80,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/feed.png")}
+            source={require("../../assets/feed.png")}
             style={styles.feedIcon}
           />
         </LinearGradient>
