@@ -1,15 +1,16 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
-  ImageBackground,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
+    ImageBackground,
+    Keyboard,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableWithoutFeedback,
+    View,
 } from "react-native";
 
+import { AnimatedCircularProgress } from "react-native-circular-progress";
 import GradientButton from "../components/GradientButton";
 import MenuBar from "../components/MenuBar";
 
