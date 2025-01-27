@@ -1,21 +1,48 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef } from 'react';
+import { Animated, Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 const LoggingInButton = ({ onPress }) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Animate to make the button grow
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 2.5, // Slightly larger
+      useNativeDriver: true,
+    }).start();
+  };
+
+  // Animate to reset the button size
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1, // Back to original size
+      useNativeDriver: true,
+    }).start();
+  };
+
     return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <LinearGradient
-        colors={["#153CE6", "#0C2180"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.gradient}
-      >
-        <View style={styles.textContainer}>
-          <Text style={styles.buttonText}>Log Me In</Text>
+      <TouchableWithoutFeedback
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+    >
+      <Animated.View style={[styles.button, { transform: [{ scale: scaleAnim }] }]}>
+        <LinearGradient
+          colors={["#153CE6", "#0C2180"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+        <View style={styles.buttonContainer}>
+          <Image
+            source={require("../../assets/arrow.png")}
+            style={styles.image}
+          />
         </View>
       </LinearGradient>
-    </TouchableOpacity>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -43,11 +70,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+
+  image: {
+    width: 50,
+    height: 50,
+  }
 });
 
 export default LoggingInButton;

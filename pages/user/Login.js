@@ -6,6 +6,7 @@ import FloatingBubble from "./FloatingBubble";
 import LoggingInButton from "./LoggingInButton";
 import PasswordButton from "./PasswordButton";
 
+
 const Login = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef(null);
