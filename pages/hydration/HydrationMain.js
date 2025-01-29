@@ -97,6 +97,16 @@ const HydrationMain = ({ navigation }) => {
           style={styles.container}
         >
           <Text style={styles.title}>Desired Water Intake per Day:</Text>
+
+            /* New Scientific Recommendation for Daily Water Intake Added here */
+
+          <Text style={styles.recommendationTitle}>Scientific Recommendation</Text>
+          <Text style={styles.recommendationText}>
+            According to the National Academies of Sciences, Engineering, 
+            and Medicine, men should drink about 3.7 liters (16 cups) of fluids 
+            per day, and women should drink about 2.7 liters (11 cups).
+          </Text>
+
           <View style={styles.inputContainer}>
             <LinearGradient
               colors={["#153CE6", "#0C2180"]}
@@ -197,7 +207,7 @@ const styles = StyleSheet.create({
 
   container: {
     justifyContent: "flex-start",
-    marginTop: 150,
+    marginTop: 100,
     width: "100%",
     height: 500,
     borderRadius: 30,
@@ -226,6 +236,25 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
 
+  // === New styles for the recommendation text ===
+  recommendationTitle: {
+    fontFamily: "Inter",
+    color: "#153CE6",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 5,
+    textAlign: "center",
+  },
+  recommendationText: {
+    fontFamily: "Inter",
+    color: "#153CE6",
+    fontSize: 14,
+    textAlign: "center",
+    marginHorizontal: 20,
+    marginBottom: 30,
+  },
+  // ================================================
+  
   gradientInput: {
     flex: 1,
     borderRadius: 30,
