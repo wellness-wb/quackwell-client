@@ -13,6 +13,7 @@ import FloatingBubble from "./components/FloatingBubble";
 import LoggingInButton from "./components/LoggingInButton";
 import PasswordButton from "./components/PasswordButton";
 
+
 const Login = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef(null);

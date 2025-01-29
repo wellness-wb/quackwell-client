@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginVertical: 10, // Adjust spacing between buttons if needed
   },
   button: {
-    width: 320,
+    width: 270,
     height: 70,
     borderRadius: 29,
     overflow: "hidden", // Ensures the gradient respects the button shape

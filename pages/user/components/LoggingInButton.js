@@ -1,9 +1,9 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const LoggingInButton = ({ onPress }) => {
-  return (
+    return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <LinearGradient
         colors={["#153CE6", "#0C2180"]}
@@ -21,32 +21,32 @@ const LoggingInButton = ({ onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: 10, // Adjust spacing between buttons if needed
   },
   button: {
     width: 120,
     height: 70,
     borderRadius: 29,
-    overflow: "hidden", // Ensures the gradient respects the button shape
+    overflow: 'hidden', // Ensures the gradient respects the button shape
   },
   gradient: {
     flex: 1,
-    justifyContent: "center", // Centers the content vertically
-    flexDirection: "row",
-    alignItems: "center", // Centers the content horizontally
+    justifyContent: 'center', // Centers the content vertically
+    flexDirection: 'row',
+    alignItems: 'center', // Centers the content horizontally
     opacity: 0.77,
   },
   textContainer: {
-    justifyContent: "center",
+    justifyContent: 'center',
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonText: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 
