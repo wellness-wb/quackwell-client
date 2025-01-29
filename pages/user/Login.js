@@ -181,7 +181,14 @@ const Login = ({ navigation }) => {
         <PasswordButton />
       </View>
       <View style={styles.buttonForLoggingIn}>
-        <LoggingInButton onPress={() => navigation.navigate("MainHub")} />
+        <LoggingInButton
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "MainHub" }],
+            })
+          }
+        />
       </View>
     </ImageBackground>
   );
