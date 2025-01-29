@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
 
   container: {
     justifyContent: "flex-start",
-    marginTop: 250,
+    marginTop: 150,
     width: "100%",
     height: 500,
     borderRadius: 30,
