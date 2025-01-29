@@ -1,10 +1,17 @@
 import { Audio } from "expo-av";
 import React, { useEffect, useRef } from "react";
-import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from "react-native";
-import EmailButton from "./EmailButton";
-import FloatingBubble from "./FloatingBubble";
-import LoggingInButton from "./LoggingInButton";
-import PasswordButton from "./PasswordButton";
+import {
+  Animated,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import EmailButton from "./components/EmailButton";
+import FloatingBubble from "./components/FloatingBubble";
+import LoggingInButton from "./components/LoggingInButton";
+import PasswordButton from "./components/PasswordButton";
 
 
 const Login = ({ navigation }) => {
@@ -61,21 +68,91 @@ const Login = ({ navigation }) => {
       resizeMode="cover"
     >
       {/* Bubbles */}
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={0} size={1000} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={50} size={1500} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={100} size={2000}/>
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={150} size={1750} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={150} size={2050} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={50} size={1500} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={200} size={1000} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={250} size={1000} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={300} size={1500} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={320} size={2000}/>
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={340} size={1750} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={250} size={2050} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={170} size={1500} />
-      <FloatingBubble source={require('../../assets/bubble.png')} startX={Math.random() * 300} delay={0} size={1000} />
-     
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={0}
+        size={1000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={50}
+        size={1500}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={100}
+        size={2000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={150}
+        size={1750}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={150}
+        size={2050}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={50}
+        size={1500}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={200}
+        size={1000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={250}
+        size={1000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={300}
+        size={1500}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={320}
+        size={2000}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={340}
+        size={1750}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={250}
+        size={2050}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={170}
+        size={1500}
+      />
+      <FloatingBubble
+        source={require("../../assets/bubble.png")}
+        startX={Math.random() * 300}
+        delay={0}
+        size={1000}
+      />
+
       {/* Welcome Back Message */}
       <View style={styles.welcomeContainer}>
         <Text style={styles.welcomeText}>Welcome Back!</Text>
@@ -105,7 +182,14 @@ const Login = ({ navigation }) => {
         <PasswordButton />
       </View>
       <View style={styles.buttonForLoggingIn}>
-        <LoggingInButton onPress={() => navigation.navigate("MainHub")} />
+        <LoggingInButton
+          onPress={() =>
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "MainHub" }],
+            })
+          }
+        />
       </View>
     </ImageBackground>
   );

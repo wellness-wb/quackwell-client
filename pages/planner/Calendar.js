@@ -9,7 +9,10 @@ const Calendar = () => {
   useEffect(() => {
     // Calculate the dates for the current week
     const startOfWeek = new Date(
-      currentDate.setDate(currentDate.getDate() - (currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1))
+      currentDate.setDate(
+        currentDate.getDate() -
+          (currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1)
+      )
     );
     const dates = [];
     for (let i = 0; i < 7; i++) {
@@ -27,7 +30,9 @@ const Calendar = () => {
     <View style={styles.container}>
       {/* Month and Icons */}
       <View style={styles.header}>
-        <Text style={styles.month}>{weekDates[0]?.toLocaleString("default", { month: "short" })}</Text>
+        <Text style={styles.month}>
+          {weekDates[0]?.toLocaleString("default", { month: "short" })}
+        </Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity>
             <Text style={styles.icon}>+</Text>

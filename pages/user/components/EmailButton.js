@@ -1,6 +1,12 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const EmailButton = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,19 +15,19 @@ const EmailButton = () => {
   return (
     <View style={styles.container}>
       {isEditing ? (
-        <TextInput 
+        <TextInput
           style={styles.input}
           value={email}
-          onChangeText={( text) => setEmail(text)}
+          onChangeText={(text) => setEmail(text)}
           onBlur={() => setIsEditing(false)} //exits the edit mode when input loses focus
           autoFocus
           placeholder="Enter email"
           placeholderTextColor="#999"
-          />
+        />
       ) : (
-        <TouchableOpacity 
-        style={styles.button}
-        onPress={() => setIsEditing(true)}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setIsEditing(true)}
         >
           <LinearGradient
             colors={["#153CE6", "#0C2180"]}
@@ -30,12 +36,10 @@ const EmailButton = () => {
             style={styles.gradient}
           >
             <View style={styles.textContainer}>
-              <Text style={styles.buttonText}>
-                {email || "Email..."}
-                </Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
+              <Text style={styles.buttonText}>{email || "Email..."}</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -43,43 +47,43 @@ const EmailButton = () => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 10, // Adjust spacing between buttons if needed
   },
   button: {
     width: 270,
     height: 70,
     borderRadius: 29,
-    overflow: 'hidden', // Ensures the gradient respects the button shape
+    overflow: "hidden", // Ensures the gradient respects the button shape
   },
   gradient: {
     flex: 1,
-    justifyContent: 'center', // Centers the content vertically
-    flexDirection: 'row',
-    alignItems: 'center', // Centers the content horizontally
+    justifyContent: "center", // Centers the content vertically
+    flexDirection: "row",
+    alignItems: "center", // Centers the content horizontally
     opacity: 0.77,
   },
   textContainer: {
-    justifyContent: 'center',
+    justifyContent: "center",
     flex: 1,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     marginLeft: 30,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     width: 320,
     height: 70,
     borderRadius: 29,
-    backgroundColor: '#153CE6',
+    backgroundColor: "#153CE6",
     paddingHorizontal: 20,
     fontSize: 18,
     fontWeight: "bold",
-    color: 'white',
+    color: "white",
   },
 });
 

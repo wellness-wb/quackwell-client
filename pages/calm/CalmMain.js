@@ -9,17 +9,17 @@ const CalmMain = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-        <View style={styles.gradientContainer}>
-            <LinearGradient
-                colors={["#A4CDF1", "#F3CAAF"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.gradient}
-            >
-                {/* placeholder content */}
-                <View style={styles.placeholder} />
-           </LinearGradient>
-        </View>
+      <View style={styles.gradientContainer}>
+        <LinearGradient
+          colors={["#A4CDF1", "#F3CAAF"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradient}
+        >
+          {/* placeholder content */}
+          <View style={styles.placeholder} />
+        </LinearGradient>
+      </View>
 
       {/* Other planner content goes here */}
     </ImageBackground>
@@ -29,8 +29,8 @@ const CalmMain = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: "flex-start", 
-    alignItems: "center", 
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   gradientContainer: {
     position: "absolute",
@@ -40,11 +40,11 @@ const styles = StyleSheet.create({
     opacity: 0.77,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    overflow: "hidden", // gradient always needs overflow hidden to show the border 
+    overflow: "hidden", // gradient always needs overflow hidden to show the border
   },
   gradient: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
 });
 

@@ -2,14 +2,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
-
-const MenuBar = ({navigation, activeScreen}) => {
+const MenuBar = ({ navigation, activeScreen }) => {
   return (
     <View style={styles.menuBar}>
       {/* Calendar */}
-      <TouchableOpacity 
-      style={styles.calendarContainer}
-      onPress={() => navigation.navigate("PlannerMain")}
+      <TouchableOpacity
+        style={styles.calendarContainer}
+        onPress={() => navigation.navigate("PlannerMain")}
       >
         <LinearGradient
           colors={
@@ -22,19 +21,19 @@ const MenuBar = ({navigation, activeScreen}) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/calendar.png")}
+            source={require("../../assets/calendar.png")}
             style={styles.calendarIcon}
           />
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Hydration */}
-      <TouchableOpacity 
-      style={styles.hydrationContainer}
-      onPress={() => navigation.navigate("HydrationMain")}
+      <TouchableOpacity
+        style={styles.hydrationContainer}
+        onPress={() => navigation.navigate("HydrationMain")}
       >
-          {/* Active screen will change the color of the icon background */}
-          <LinearGradient
+        {/* Active screen will change the color of the icon background */}
+        <LinearGradient
           colors={
             ["HydrationMain", "HydrationTracker"].includes(activeScreen)
               ? ["#F3CAAF", "#F0A26F"] // Active gradient
@@ -45,16 +44,16 @@ const MenuBar = ({navigation, activeScreen}) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/hydration.png")}
+            source={require("../../assets/hydration.png")}
             style={styles.hydrationIcon}
           />
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Calm */}
-      <TouchableOpacity 
-      style={styles.calmContainer}
-      onPress={() => navigation.navigate("CalmMain")}
+      <TouchableOpacity
+        style={styles.calmContainer}
+        onPress={() => navigation.navigate("CalmMain")}
       >
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
@@ -63,16 +62,17 @@ const MenuBar = ({navigation, activeScreen}) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/calm.png")}
+            source={require("../../assets/calm.png")}
             style={styles.calmIcon}
           />
         </LinearGradient>
       </TouchableOpacity>
 
       {/* Feed */}
-      <TouchableOpacity 
-      style={styles.feedContainer}
-      onPress={() => navigation.navigate("SocialMain")}>
+      <TouchableOpacity
+        style={styles.feedContainer}
+        onPress={() => navigation.navigate("SocialMain")}
+      >
         <LinearGradient
           colors={["#739CEF", "#F3CAAF"]}
           start={{ x: 0, y: 0 }}
@@ -80,7 +80,7 @@ const MenuBar = ({navigation, activeScreen}) => {
           style={styles.gradient}
         >
           <Image
-            source={require("../assets/feed.png")}
+            source={require("../../assets/feed.png")}
             style={styles.feedIcon}
           />
         </LinearGradient>
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     marginLeft: 5,
   },
- 
+
   calendarIcon: {
     width: 300,
     height: 300,

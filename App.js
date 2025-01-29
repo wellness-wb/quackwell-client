@@ -28,10 +28,10 @@ export default function App() {
         <Stack.Screen name="PlannerDetails" component={PlannerDetails} />
         <Stack.Screen name="PlannerMain" component={PlannerMain} />
 
-         {/* Calm-related Screens */}
+        {/* Calm-related Screens */}
         <Stack.Screen name="CalmMain" component={CalmMain} />
 
-         {/* Hydration-related Screens */}
+        {/* Hydration-related Screens */}
         <Stack.Screen name="HydrationMain" component={HydrationMain} />
         <Stack.Screen name="HydrationTracker" component={HydrationTracker} />
 

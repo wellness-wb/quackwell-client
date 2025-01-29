@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { Animated, PanResponder, StyleSheet, View } from "react-native";
 
 const UpperMenu = () => {
-    // useState hook const [state, setState ] = useState(initalValue). in this case no setState bc it will be handled by animated view
-    // Animated.Value is an object represents a mutable value that can be smoothly animated
+  // useState hook const [state, setState ] = useState(initalValue). in this case no setState bc it will be handled by animated view
+  // Animated.Value is an object represents a mutable value that can be smoothly animated
   const [menuHeight] = useState(new Animated.Value(50)); // initial height of the menu
 
   // PanResponder is a utility that helps with touch gestures
@@ -20,7 +20,8 @@ const UpperMenu = () => {
       ],
       { useNativeDriver: false } // don't need the native threads, for better animation
     ),
-    onPanResponderRelease: (_, gestureState) => { // is activated when the user lifts their finger off the screen
+    onPanResponderRelease: (_, gestureState) => {
+      // is activated when the user lifts their finger off the screen
       const threshold = 20; // minimum gesture length to expand/collapse
       if (gestureState.dy > threshold) {
         // collapse the menu
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   placeholder: {
     flex: 1,
@@ -86,8 +87,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   sliderHandle: {
-    position: 'absolute',
-    top: '75%',
+    position: "absolute",
+    top: "75%",
     height: 10,
     width: 70,
     backgroundColor: "#E8CDC0",
