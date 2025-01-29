@@ -191,6 +191,23 @@ const Login = ({ navigation }) => {
           }
         />
       </View>
+
+      <View>
+        <Text
+          style={styles.underline}
+          onPress={() => navigation.navigate("Signup")}
+        >
+          Sign Up
+        </Text>
+      </View>
+      <View>
+        <Text
+          style={styles.underline}
+          onPress={() => navigation.navigate("ForgotPassword")}
+        >
+          Forgot Password?
+        </Text>
+      </View>
     </ImageBackground>
   );
 };

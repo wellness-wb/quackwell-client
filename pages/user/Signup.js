@@ -10,7 +10,6 @@ import {
   Text,
   View,
 } from "react-native";
-import FacebookButton from "./components/FacebookButton";
 import FloatingBubble from "./components/FloatingBubble";
 import GoogleButton from "./components/GoogleButton";
 
@@ -130,12 +129,17 @@ const Signup = ({ navigation }) => {
       </View>
 
       {/* buttons */}
-      <View style={styles.buttonForGoogle}>
-        <GoogleButton />
+      <View style={styles.buttonForFacebook}>
+        <Text
+          onPress={() => navigation.navigate("CreateAccountWithEmail")}
+          style={{ color: "blue" }}
+        >
+          Sign up with Email
+        </Text>
       </View>
 
-      <View style={styles.buttonForFacebook}>
-        <FacebookButton />
+      <View style={styles.buttonForGoogle}>
+        <GoogleButton />
       </View>
 
       {/* log in option */}
@@ -196,13 +200,13 @@ const styles = StyleSheet.create({
   },
   buttonForGoogle: {
     position: "absolute",
-    top: "57%",
+    top: "69%",
     width: "100%",
     alignItems: "center",
   },
   buttonForFacebook: {
     position: "absolute",
-    top: "69%",
+    top: "57%",
     width: "100%",
     alignItems: "center",
   },
