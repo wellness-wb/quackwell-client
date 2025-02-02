@@ -2,7 +2,6 @@ import { Audio } from "expo-av";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Button,
   ImageBackground,
   Keyboard,
   Pressable,
@@ -14,6 +13,7 @@ import {
 import { signIn } from "../../utils/auth";
 import EditableInput from "./components/EditableInput";
 import BubbleBackground from "./components/bubble/BubbleBackground";
+import ContinueButton from "./components/button/ContinueButton";
 
 const Login = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;
@@ -123,9 +123,7 @@ const Login = ({ navigation }) => {
             onChangeText={setPassword}
             secureTextEntry={true}
           />
-          <View style={styles.loginButtonContainer}>
-            <Button title="Login" onPress={handleLogin} />
-          </View>
+          <ContinueButton title="Login" onPress={handleLogin} />
         </View>
       </TouchableWithoutFeedback>
 
@@ -194,12 +192,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
       paddingHorizontal: 20,
     },
-    loginButtonContainer: {
-      marginTop: 20,
-      width: "80%",
-    },
   },
-
   footer: {
     container: {
       position: "absolute",

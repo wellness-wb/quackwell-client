@@ -2,7 +2,6 @@
 import React, { useRef, useState } from "react";
 import {
   Animated,
-  Button,
   ImageBackground,
   Keyboard,
   Pressable,
@@ -14,6 +13,7 @@ import {
 import { signUp } from "../../utils/auth";
 import EditableInput from "./components/EditableInput";
 import BubbleBackground from "./components/bubble/BubbleBackground";
+import ContinueButton from "./components/button/ContinueButton";
 
 const CreateAccount = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;
@@ -90,9 +90,8 @@ const CreateAccount = ({ navigation }) => {
             onChangeText={setPassword}
             secureTextEntry={true}
           />
-          <View style={styles.signUpButtonContainer}>
-            <Button title="Sign Up" onPress={handleSignUp} />
-          </View>
+
+          <ContinueButton title="Sign Up" onPress={handleSignUp} />
         </View>
       </TouchableWithoutFeedback>
 
@@ -149,10 +148,6 @@ const styles = StyleSheet.create({
       alignItems: "center",
       paddingHorizontal: 20,
     },
-  },
-  signUpButtonContainer: {
-    marginTop: 20,
-    width: "80%",
   },
   footer: {
     container: {
