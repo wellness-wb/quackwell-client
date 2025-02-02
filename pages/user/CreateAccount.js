@@ -1,5 +1,5 @@
 // CreateAccount.js
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   ImageBackground,
@@ -11,12 +11,14 @@ import {
   View,
 } from "react-native";
 import { signUp } from "../../utils/auth";
-import EditableInput from "./components/EditableInput";
+import { useBouncePress } from "../../utils/useBouncePress";
 import BubbleBackground from "./components/bubble/BubbleBackground";
 import ContinueButton from "./components/button/ContinueButton";
+import EditableInput from "./components/EditableInput";
+import UserHeader from "./components/UserHeader";
 
 const CreateAccount = ({ navigation }) => {
-  const bounceAnim = useRef(new Animated.Value(1)).current;
+  const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,23 +34,22 @@ const CreateAccount = ({ navigation }) => {
     }
   };
 
-  // Similar bounce animation when the logo is pressed
-  const handlePress = () => {
-    Animated.sequence([
-      Animated.spring(bounceAnim, {
-        toValue: 1.2,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-    ]).start();
-  };
+  useEffect(() => {
+    const loadSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../assets/quack.mp3")
+      );
+      soundRef.current = sound;
+    };
+
+    loadSound();
+
+    return () => {
+      if (soundRef.current) {
+        soundRef.current.unloadAsync();
+      }
+    };
+  }, [soundRef]);
 
   return (
     <ImageBackground
@@ -60,9 +61,7 @@ const CreateAccount = ({ navigation }) => {
       <BubbleBackground />
 
       {/* Header Message */}
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Create Account</Text>
-      </View>
+      <UserHeader title="Create Account" />
 
       {/* Animated Logo */}
       <View style={styles.gifContainer}>

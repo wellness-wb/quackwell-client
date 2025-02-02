@@ -1,7 +1,7 @@
 // dependencies npm install -g npm@10.9.1
 // npx expo install expo-linear-gradient
 import { Audio } from "expo-av";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import {
   Animated,
   ImageBackground,
@@ -10,17 +10,13 @@ import {
   Text,
   View,
 } from "react-native";
+import { useBouncePress } from "../../utils/useBouncePress";
 import BubbleBackground from "./components/bubble/BubbleBackground";
 import AuthButton from "./components/button/AuthButton";
+import UserHeader from "./components/UserHeader";
 
 const Signup = ({ navigation }) => {
-  /*
-  creating a new constant that will deal with the value that will get animated
-  we starting with value 1, which is the original size of the object
-  useRef is a hook that will keep the value consistent even after re-rendering
-  */
-  const bounceAnim = useRef(new Animated.Value(1)).current;
-  const soundRef = useRef(null);
+  const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
   // load the sound when the component mounts
   useEffect(() => {
@@ -39,36 +35,7 @@ const Signup = ({ navigation }) => {
         soundRef.current.unloadAsync();
       }
     };
-  }, []);
-
-  /*
-  the function handles the pressing gestures
-  Animated.sequence are basically animation frames
-  Animated.spring will create a bounce-like animation (built-in)
-  you can leave the toValue, speed, bounciness unspecified, it will apply default
-  */
-  const handlePress = async () => {
-    // play sound
-    if (soundRef.current) {
-      await soundRef.current.replayAsync();
-    }
-
-    // run the animation
-    Animated.sequence([
-      Animated.spring(bounceAnim, {
-        toValue: 1.2,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-    ]).start();
-  };
+  }, [soundRef]);
 
   return (
     <ImageBackground
@@ -76,12 +43,8 @@ const Signup = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-      {/* header */}
-      <View style={styles.header}>
-        <Text style={styles.topText}>
-          Start your productivity and wellness journey with Quackwell
-        </Text>
-      </View>
+      {/* Header Message */}
+      <UserHeader fontSize={35} title="Welcome to Quackwell" />
 
       {/* Bubbles */}
       <BubbleBackground />
@@ -94,22 +57,17 @@ const Signup = ({ navigation }) => {
           resizeMode="contain"
         />
       </Pressable>
-
       <View style={styles.container}>
         <Text style={styles.signUp}>Sign Up</Text>
       </View>
-
       {/* buttons */}
-      {/* 버튼 영역 */}
       <View style={styles.buttonContainer}>
-        {/* Email 버튼 */}
         <AuthButton
           onPress={() => navigation.navigate("CreateAccount")}
           buttonText="Sign up with Email"
           iconName="mail"
         />
 
-        {/* Google 버튼 */}
         <AuthButton
           onPress={() => {
             alert("Google Sign Up");
@@ -118,7 +76,6 @@ const Signup = ({ navigation }) => {
           iconName="google"
         />
       </View>
-
       {/* log in option */}
       <View style={styles.bottomMessage}>
         <Text style={styles.bottomText}>

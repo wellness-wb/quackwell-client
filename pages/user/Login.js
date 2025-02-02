@@ -1,5 +1,5 @@
 import { Audio } from "expo-av";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   ImageBackground,
@@ -11,13 +11,14 @@ import {
   View,
 } from "react-native";
 import { signIn } from "../../utils/auth";
-import EditableInput from "./components/EditableInput";
+import { useBouncePress } from "../../utils/useBouncePress";
 import BubbleBackground from "./components/bubble/BubbleBackground";
 import ContinueButton from "./components/button/ContinueButton";
+import EditableInput from "./components/EditableInput";
+import UserHeader from "./components/UserHeader";
 
 const Login = ({ navigation }) => {
-  const bounceAnim = useRef(new Animated.Value(1)).current;
-  const soundRef = useRef(null);
+  const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +36,6 @@ const Login = ({ navigation }) => {
     }
   };
 
-  // Load the sound when the component mounts
   useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
@@ -52,31 +52,7 @@ const Login = ({ navigation }) => {
         soundRef.current.unloadAsync();
       }
     };
-  }, []);
-
-  // Handle click animation and sound
-  const handlePress = async () => {
-    // Play sound
-    if (soundRef.current) {
-      await soundRef.current.replayAsync(); // Play or restart the sound
-    }
-
-    // Run bounce animation
-    Animated.sequence([
-      Animated.spring(bounceAnim, {
-        toValue: 1.2,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-    ]).start();
-  };
+  }, [soundRef]);
 
   return (
     <ImageBackground
@@ -87,10 +63,8 @@ const Login = ({ navigation }) => {
       {/* Bubbles */}
       <BubbleBackground />
 
-      {/* Welcome Back Message */}
-      <View style={styles.welcomeContainer}>
-        <Text style={styles.welcomeText}>Welcome Back!</Text>
-      </View>
+      {/* Header Message */}
+      <UserHeader fontSize={35} title="Welcome to Quackwell" />
 
       {/* Animated GIF */}
       <View style={styles.gifContainer}>

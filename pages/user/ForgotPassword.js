@@ -1,6 +1,6 @@
 // ForgotPassword.js
 import { Audio } from "expo-av";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   ImageBackground,
@@ -12,16 +12,16 @@ import {
   View,
 } from "react-native";
 import { sendPasswordResetLink } from "../../utils/auth";
+import { useBouncePress } from "../../utils/useBouncePress";
 import BubbleBackground from "./components/bubble/BubbleBackground";
 import ContinueButton from "./components/button/ContinueButton";
 import EditableInput from "./components/EditableInput";
+import UserHeader from "./components/UserHeader";
 
 const ForgotPassword = ({ navigation }) => {
-  const bounceAnim = useRef(new Animated.Value(1)).current;
-  const soundRef = useRef(null);
+  const { bounceAnim, soundRef, handlePress } = useBouncePress();
   const [email, setEmail] = useState("");
 
-  // Load the sound on mount
   useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
@@ -37,31 +37,8 @@ const ForgotPassword = ({ navigation }) => {
         soundRef.current.unloadAsync();
       }
     };
-  }, []);
+  }, [soundRef]);
 
-  // 애니메이트 로고 터치 시 효과
-  const handlePress = async () => {
-    if (soundRef.current) {
-      await soundRef.current.replayAsync();
-    }
-
-    Animated.sequence([
-      Animated.spring(bounceAnim, {
-        toValue: 1.2,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 20,
-        bounciness: 10,
-      }),
-    ]).start();
-  };
-
-  // 비밀번호 재설정 요청 처리
   const handleResetPassword = async () => {
     if (!email) {
       alert("Please enter your email.");
@@ -94,15 +71,12 @@ const ForgotPassword = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-      {/* 배경 버블 */}
       <BubbleBackground />
 
-      {/* 헤더 텍스트 */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Forgot Password</Text>
-      </View>
+      {/* Header Message */}
+      <UserHeader title="Forgot Password" />
 
-      {/* 애니메이트 로고 */}
+      {/* Animation logo */}
       <View style={styles.gifContainer}>
         <Pressable onPress={handlePress}>
           <Animated.Image
@@ -113,7 +87,7 @@ const ForgotPassword = ({ navigation }) => {
         </Pressable>
       </View>
 
-      {/* 입력 및 버튼 영역 */}
+      {/* Text field */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.form.container}>
           <EditableInput
@@ -130,7 +104,7 @@ const ForgotPassword = ({ navigation }) => {
         </View>
       </TouchableWithoutFeedback>
 
-      {/* 하단 "Back to Login" 링크 */}
+      {/* Back to Login link */}
       <View style={styles.footer.container}>
         <Text
           style={styles.footerText}
