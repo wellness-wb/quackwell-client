@@ -1,24 +1,29 @@
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+// AuthButton.js
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const FacebookButton = () => {
+const AuthButton = ({
+  onPress,
+  buttonText,
+  iconName,
+  gradientColors = ["#153CE6", "#0C2180"],
+}) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={onPress}>
         <LinearGradient
-          colors={["#153CE6", "#0C2180"]}
+          colors={gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
           <View style={styles.iconContainer}>
-            <FontAwesome name="facebook-official" size={30} color="white" />
+            <AntDesign name={iconName} size={30} color="white" />
           </View>
-
-          <View srtyle={styles.textContainer}>
-            <Text style={styles.buttonText}>Continue with Facebook</Text>
+          <View style={styles.textContainer}>
+            <Text style={styles.buttonText}>{buttonText}</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -31,37 +36,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    alignItems: "flex-start",
   },
   button: {
     width: 320,
     height: 70,
     borderRadius: 29,
-    overflow: "hidden", // gradient respects the borders
+    overflow: "hidden",
   },
   gradient: {
     flex: 1,
-    flexDirection: "row", // aligns children horizontally
-    justifyContent: "flex-center",
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
     opacity: 0.77,
     paddingHorizontal: 20,
+  },
+  iconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: "center",
   },
   buttonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
   },
-  iconContainer: {
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  textContainer: {
-    flex: 1, // will take up the remaining space
-    justifyContent: "center",
-    marginLeft: 10,
-  },
 });
 
-export default FacebookButton;
+export default AuthButton;

@@ -10,8 +10,8 @@ import {
   Text,
   View,
 } from "react-native";
-import FloatingBubble from "./components/FloatingBubble";
-import GoogleButton from "./components/GoogleButton";
+import BubbleBackground from "./components/bubble/BubbleBackground";
+import AuthButton from "./components/button/AuthButton";
 
 const Signup = ({ navigation }) => {
   /*
@@ -84,36 +84,7 @@ const Signup = ({ navigation }) => {
       </View>
 
       {/* Bubbles */}
-      <FloatingBubble
-        source={require("../../assets/bubble.png")}
-        startX={Math.random() * 300}
-        delay={0}
-        size={1000}
-      />
-      <FloatingBubble
-        source={require("../../assets/bubble.png")}
-        startX={Math.random() * 300}
-        delay={50}
-        size={1500}
-      />
-      <FloatingBubble
-        source={require("../../assets/bubble.png")}
-        startX={Math.random() * 300}
-        delay={100}
-        size={2000}
-      />
-      <FloatingBubble
-        source={require("../../assets/bubble.png")}
-        startX={Math.random() * 300}
-        delay={150}
-        size={1750}
-      />
-      <FloatingBubble
-        source={require("../../assets/bubble.png")}
-        startX={Math.random() * 300}
-        delay={200}
-        size={2050}
-      />
+      <BubbleBackground />
 
       {/* GIF with bounce */}
       <Pressable onPress={handlePress}>
@@ -129,17 +100,23 @@ const Signup = ({ navigation }) => {
       </View>
 
       {/* buttons */}
-      <View style={styles.buttonForFacebook}>
-        <Text
+      {/* 버튼 영역 */}
+      <View style={styles.buttonContainer}>
+        {/* Email 버튼 */}
+        <AuthButton
           onPress={() => navigation.navigate("CreateAccount")}
-          style={{ color: "blue" }}
-        >
-          Sign up with Email
-        </Text>
-      </View>
+          buttonText="Sign up with Email"
+          iconName="mail"
+        />
 
-      <View style={styles.buttonForGoogle}>
-        <GoogleButton />
+        {/* Google 버튼 */}
+        <AuthButton
+          onPress={() => {
+            alert("Google Sign Up");
+          }}
+          buttonText="Continue with Google"
+          iconName="google"
+        />
       </View>
 
       {/* log in option */}
@@ -198,30 +175,18 @@ const styles = StyleSheet.create({
     textAlign: "center", // align always horizontally
     marginBottom: 30,
   },
-  buttonForGoogle: {
-    position: "absolute",
-    top: "69%",
-    width: "100%",
-    alignItems: "center",
-  },
-  buttonForFacebook: {
+  buttonContainer: {
     position: "absolute",
     top: "57%",
     width: "100%",
     alignItems: "center",
+    gap: 10,
   },
   bottomMessage: {
     position: "absolute",
-    bottom: 70,
-    alignContent: "center",
+    top: "80%",
     width: "100%",
-  },
-  bottomText: {
-    color: "#153CE6",
-    textAlign: "center",
-    fontSize: 18,
-    fontFamily: "Inter",
-    fontWeight: "normal",
+    alignItems: "center",
   },
   underline: {
     textDecorationLine: "underline",
