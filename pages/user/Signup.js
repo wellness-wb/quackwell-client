@@ -131,7 +131,7 @@ const Signup = ({ navigation }) => {
       {/* buttons */}
       <View style={styles.buttonForFacebook}>
         <Text
-          onPress={() => navigation.navigate("CreateAccountWithEmail")}
+          onPress={() => navigation.navigate("CreateAccount")}
           style={{ color: "blue" }}
         >
           Sign up with Email

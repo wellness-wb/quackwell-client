@@ -3,13 +3,28 @@ import {
   Image,
   ImageBackground,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { signOut } from "../utils/auth";
 import MenuBar from "./components/MenuBar";
 import UpperMenu from "./components/UpperMenu";
 
 const MainHub = ({ navigation }) => {
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Logout error: " + error);
+    }
+  };
+
   return (
     <ImageBackground
       source={require("../assets/background.png")}
@@ -17,6 +32,9 @@ const MainHub = ({ navigation }) => {
       resizeMode="cover"
     >
       <UpperMenu />
+      <TouchableOpacity onPress={handleLogout} style={{ marginRight: 16 }}>
+        <Text style={{ color: "blue" }}>Logout</Text>
+      </TouchableOpacity>
       <DuckAnimation />
       <MenuBar navigation={navigation} />
     </ImageBackground>

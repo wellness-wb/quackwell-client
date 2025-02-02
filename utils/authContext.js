@@ -33,10 +33,7 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const value = {
-    session,
-    isLoading,
-  };
+  const value = { session, isLoading };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,12 +1,40 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { sendPasswordResetLink } from "../../utils/auth";
 
 const ForgotPassword = ({ navigation }) => {
   const [email, setEmail] = useState("");
 
+  const handleResetPassword = async () => {
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+
+    const emailRegex =
+      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetLink(email);
+      alert("Password reset email sent! Please check your inbox.");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (err) {
+      console.error(err);
+      alert(`Error: ${err}`);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, justifyContent: "center", padding: 16 }}>
       <Text style={{ fontSize: 24, marginBottom: 16 }}>Forgot Password</Text>
 
       <TextInput
@@ -17,16 +45,21 @@ const ForgotPassword = ({ navigation }) => {
         value={email}
         onChangeText={setEmail}
       />
+
+      <Button title="Send Reset Email" onPress={handleResetPassword} />
+
+      <Text
+        onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Login" }],
+          })
+        }
+      >
+        Back to Login
+      </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default ForgotPassword;

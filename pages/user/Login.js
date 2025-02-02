@@ -1,22 +1,39 @@
 import { Audio } from "expo-av";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  Button,
   ImageBackground,
+  Keyboard,
   Pressable,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
-import EmailButton from "./components/EmailButton";
+import { signIn } from "../../utils/auth";
+import EditableInput from "./components/EditableInput";
 import FloatingBubble from "./components/FloatingBubble";
-import LoggingInButton from "./components/LoggingInButton";
-import PasswordButton from "./components/PasswordButton";
-
 
 const Login = ({ navigation }) => {
   const bounceAnim = useRef(new Animated.Value(1)).current;
   const soundRef = useRef(null);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      await signIn(email, password);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "MainHub" }],
+      });
+    } catch (error) {
+      console.error(error);
+      alert(`Login failed: ${error}`);
+    }
+  };
 
   // Load the sound when the component mounts
   useEffect(() => {
@@ -175,38 +192,35 @@ const Login = ({ navigation }) => {
       </View>
 
       {/* Buttons */}
-      <View style={styles.buttonForEmail}>
-        <EmailButton />
-      </View>
-      <View style={styles.buttonForPassword}>
-        <PasswordButton />
-      </View>
-      <View style={styles.buttonForLoggingIn}>
-        <LoggingInButton
-          onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "MainHub" }],
-            })
-          }
-        />
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.form.container}>
+          <EditableInput
+            placeholder="Email..."
+            value={email}
+            onChangeText={setEmail}
+            secureTextEntry={false}
+          />
+          <EditableInput
+            placeholder="Password..."
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+          />
+          <View style={styles.loginButtonContainer}>
+            <Button title="Login" onPress={handleLogin} />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
 
-      <View>
-        <Text
-          style={styles.underline}
-          onPress={() => navigation.navigate("Signup")}
-        >
-          Sign Up
-        </Text>
-      </View>
-      <View>
-        <Text
-          style={styles.underline}
-          onPress={() => navigation.navigate("ForgotPassword")}
-        >
-          Forgot Password?
-        </Text>
+      <View style={styles.footer.container}>
+        <View>
+          <Text onPress={() => navigation.navigate("Signup")}>Sign Up</Text>
+        </View>
+        <View>
+          <Text onPress={() => navigation.navigate("ForgotPassword")}>
+            Forgot Password?
+          </Text>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -254,23 +268,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  buttonForEmail: {
-    position: "absolute",
-    top: "50%",
-    width: "100%",
-    alignItems: "center",
+
+  form: {
+    container: {
+      position: "absolute",
+      top: "45%",
+      width: "100%",
+      alignItems: "center",
+      paddingHorizontal: 20,
+    },
+    loginButtonContainer: {
+      marginTop: 20,
+      width: "80%",
+    },
   },
-  buttonForPassword: {
-    position: "absolute",
-    top: "62%",
-    width: "100%",
-    alignItems: "center",
-  },
-  buttonForLoggingIn: {
-    position: "absolute",
-    top: "74%",
-    width: "100%",
-    alignItems: "center",
+
+  footer: {
+    container: {
+      position: "absolute",
+      bottom: "10%",
+      alignItems: "center",
+    },
+    link: {
+      color: "#153CE6",
+      textDecorationLine: "underline",
+      marginVertical: 5,
+      fontSize: 16,
+    },
   },
 });
 
