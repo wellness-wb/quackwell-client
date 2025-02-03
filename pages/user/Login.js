@@ -67,19 +67,15 @@ const Login = ({ navigation }) => {
       <UserHeader fontSize={35} title="Welcome to Quackwell" />
 
       {/* Animated GIF */}
-      <View style={styles.gifContainer}>
-        <Pressable onPress={handlePress}>
-          <Animated.Image
-            source={require("../../assets/logo_animated.gif")}
-            style={[styles.gif, { transform: [{ scale: bounceAnim }] }]}
-            resizeMode="contain"
-          />
-        </Pressable>
-      </View>
-
-      {/* Log In Text */}
-      <View style={styles.logInContainer}>
-        <Text style={styles.logIn}>Log In</Text>
+      <Pressable onPress={handlePress}>
+        <Animated.Image
+          source={require("../../assets/logo_animated.gif")}
+          style={[styles.gif.gifIcon, { transform: [{ scale: bounceAnim }] }]}
+          resizeMode="contain"
+        />
+      </Pressable>
+      <View style={styles.gif.messageWrapper}>
+        <Text style={styles.gif.message}>Log in</Text>
       </View>
 
       {/* Buttons */}
@@ -103,10 +99,18 @@ const Login = ({ navigation }) => {
 
       <View style={styles.footer.container}>
         <View>
-          <Text onPress={() => navigation.navigate("Signup")}>Sign Up</Text>
+          <Text
+            style={styles.footer.link}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            Wnat to Sign Up?
+          </Text>
         </View>
         <View>
-          <Text onPress={() => navigation.navigate("ForgotPassword")}>
+          <Text
+            style={styles.footer.link}
+            onPress={() => navigation.navigate("ForgotPassword")}
+          >
             Forgot Password?
           </Text>
         </View>
@@ -134,28 +138,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  gifContainer: {
-    position: "absolute",
-    top: 10,
-    alignItems: "center",
-    width: "100%",
-  },
   gif: {
-    width: 450,
-    height: 450,
-  },
-  logInContainer: {
-    position: "absolute",
-    top: 300,
-    width: "100%",
-    alignItems: "center",
-  },
-  logIn: {
-    color: "#153CE6",
-    fontSize: 50,
-    fontFamily: "Inter",
-    fontWeight: "bold",
-    textAlign: "center",
+    gifIcon: {
+      width: "140%",
+      height: undefined,
+      aspectRatio: 1, // scaling GIF proportionally
+    },
+    messageWrapper: {
+      position: "absolute",
+      top: 350,
+      alignItems: "center",
+    },
+    message: {
+      width: "100%",
+      color: "#153CE6",
+      fontSize: 50,
+      fontFamily: "Inter",
+      fontWeight: "bold",
+      textAlign: "center", // align always horizontally
+      marginBottom: 30,
+    },
   },
 
   form: {
@@ -169,15 +171,18 @@ const styles = StyleSheet.create({
   },
   footer: {
     container: {
+      flex: 1,
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
       position: "absolute",
       bottom: "10%",
-      alignItems: "center",
+      paddingHorizontal: 50,
     },
     link: {
       color: "#153CE6",
-      textDecorationLine: "underline",
-      marginVertical: 5,
-      fontSize: 16,
+      fontWeight: "bold",
+      fontSize: 18,
     },
   },
 });

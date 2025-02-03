@@ -1,4 +1,3 @@
-// ForgotPassword.js
 import { Audio } from "expo-av";
 import React, { useEffect, useState } from "react";
 import {
@@ -77,15 +76,13 @@ const ForgotPassword = ({ navigation }) => {
       <UserHeader title="Forgot Password" />
 
       {/* Animation logo */}
-      <View style={styles.gifContainer}>
-        <Pressable onPress={handlePress}>
-          <Animated.Image
-            source={require("../../assets/logo_animated.gif")}
-            style={[styles.gif, { transform: [{ scale: bounceAnim }] }]}
-            resizeMode="contain"
-          />
-        </Pressable>
-      </View>
+      <Pressable onPress={handlePress}>
+        <Animated.Image
+          source={require("../../assets/logo_animated.gif")}
+          style={[styles.gif.gifIcon, { transform: [{ scale: bounceAnim }] }]}
+          resizeMode="contain"
+        />
+      </Pressable>
 
       {/* Text field */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -103,19 +100,21 @@ const ForgotPassword = ({ navigation }) => {
           />
         </View>
       </TouchableWithoutFeedback>
-
       {/* Back to Login link */}
       <View style={styles.footer.container}>
-        <Text
-          style={styles.footerText}
-          onPress={() =>
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            })
-          }
-        >
-          Back to Login
+        <Text style={styles.footer.bottomText}>
+          Go back to{" "}
+          <Text
+            style={styles.footer.bottomLink}
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              })
+            }
+          >
+            Log in
+          </Text>
         </Text>
       </View>
     </ImageBackground>
@@ -141,16 +140,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  gifContainer: {
-    position: "absolute",
-    top: 10,
-    width: "100%",
-    alignItems: "center",
-  },
+
   gif: {
-    width: 450,
-    height: 450,
+    gifIcon: {
+      width: "140%",
+      height: undefined,
+      aspectRatio: 1, // scaling GIF proportionally
+    },
   },
+
   form: {
     container: {
       position: "absolute",
@@ -162,14 +160,19 @@ const styles = StyleSheet.create({
   },
   footer: {
     container: {
+      width: "100%",
       position: "absolute",
       bottom: "10%",
       alignItems: "center",
     },
-    footerText: {
+    bottomText: {
+      textAlign: "center",
+      fontSize: 18,
+    },
+    bottomLink: {
       color: "#153CE6",
-      textDecorationLine: "underline",
-      fontSize: 16,
+      fontWeight: "bold",
+      fontSize: 18,
     },
   },
 });

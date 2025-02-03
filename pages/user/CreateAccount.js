@@ -1,4 +1,3 @@
-// CreateAccount.js
 import React, { useEffect, useState } from "react";
 import {
   Animated,
@@ -63,16 +62,14 @@ const CreateAccount = ({ navigation }) => {
       {/* Header Message */}
       <UserHeader title="Create Account" />
 
-      {/* Animated Logo */}
-      <View style={styles.gifContainer}>
-        <Pressable onPress={handlePress}>
-          <Animated.Image
-            source={require("../../assets/logo_animated.gif")}
-            style={[styles.gif, { transform: [{ scale: bounceAnim }] }]}
-            resizeMode="contain"
-          />
-        </Pressable>
-      </View>
+      {/* Animation logo */}
+      <Pressable onPress={handlePress}>
+        <Animated.Image
+          source={require("../../assets/logo_animated.gif")}
+          style={[styles.gif.gifIcon, { transform: [{ scale: bounceAnim }] }]}
+          resizeMode="contain"
+        />
+      </Pressable>
 
       {/* Form Section */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -96,13 +93,13 @@ const CreateAccount = ({ navigation }) => {
 
       {/* Footer with Link to Login */}
       <View style={styles.footer.container}>
-        <Text>
+        <Text style={styles.footer.bottomText}>
           Already have an account?{" "}
           <Text
-            style={styles.footer.link}
+            style={styles.footer.bottomLink}
             onPress={() => navigation.navigate("Login")}
           >
-            Log In
+            Log in
           </Text>
         </Text>
       </View>
@@ -129,16 +126,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  gifContainer: {
-    position: "absolute",
-    top: 10,
-    alignItems: "center",
-    width: "100%",
-  },
+
   gif: {
-    width: 450,
-    height: 450,
+    gifIcon: {
+      width: "140%",
+      height: undefined,
+      aspectRatio: 1, // scaling GIF proportionally
+    },
   },
+
   form: {
     container: {
       position: "absolute",
@@ -150,15 +146,19 @@ const styles = StyleSheet.create({
   },
   footer: {
     container: {
+      width: "100%",
       position: "absolute",
       bottom: "10%",
       alignItems: "center",
     },
-    link: {
+    bottomText: {
+      textAlign: "center",
+      fontSize: 18,
+    },
+    bottomLink: {
       color: "#153CE6",
-      textDecorationLine: "underline",
-      marginVertical: 5,
-      fontSize: 16,
+      fontWeight: "bold",
+      fontSize: 18,
     },
   },
 });

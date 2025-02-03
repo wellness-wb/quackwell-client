@@ -53,13 +53,14 @@ const Signup = ({ navigation }) => {
       <Pressable onPress={handlePress}>
         <Animated.Image
           source={require("../../assets/logo_animated.gif")}
-          style={[styles.gif, { transform: [{ scale: bounceAnim }] }]}
+          style={[styles.gif.gifIcon, { transform: [{ scale: bounceAnim }] }]}
           resizeMode="contain"
         />
       </Pressable>
-      <View style={styles.container}>
-        <Text style={styles.signUp}>Sign Up</Text>
+      <View style={styles.gif.messageWrapper}>
+        <Text style={styles.gif.message}>Sign Up</Text>
       </View>
+
       {/* buttons */}
       <View style={styles.buttonContainer}>
         <AuthButton
@@ -76,17 +77,17 @@ const Signup = ({ navigation }) => {
           iconName="google"
         />
       </View>
+
       {/* log in option */}
-      <View style={styles.bottomMessage}>
-        <Text style={styles.bottomText}>
+      <View style={styles.footer.container}>
+        <Text style={styles.footer.bottomText}>
           Already have an account?{" "}
           <Text
-            style={styles.underline}
+            style={styles.footer.bottomLink}
             onPress={() => navigation.navigate("Login")}
           >
             Log in
           </Text>
-          .
         </Text>
       </View>
     </ImageBackground>
@@ -114,23 +115,25 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   gif: {
-    width: "140%",
-    height: undefined,
-    aspectRatio: 1, // scaling GIF proportionally
-  },
-  container: {
-    position: "absolute",
-    top: 350,
-    alignItems: "center",
-  },
-  signUp: {
-    width: "100%",
-    color: "#153CE6",
-    fontSize: 50,
-    fontFamily: "Inter",
-    fontWeight: "bold",
-    textAlign: "center", // align always horizontally
-    marginBottom: 30,
+    gifIcon: {
+      width: "140%",
+      height: undefined,
+      aspectRatio: 1, // scaling GIF proportionally
+    },
+    messageWrapper: {
+      position: "absolute",
+      top: 350,
+      alignItems: "center",
+    },
+    message: {
+      width: "100%",
+      color: "#153CE6",
+      fontSize: 50,
+      fontFamily: "Inter",
+      fontWeight: "bold",
+      textAlign: "center", // align always horizontally
+      marginBottom: 30,
+    },
   },
   buttonContainer: {
     position: "absolute",
@@ -139,15 +142,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  bottomMessage: {
-    position: "absolute",
-    top: "80%",
-    width: "100%",
-    alignItems: "center",
-  },
-  underline: {
-    textDecorationLine: "underline",
-    color: "#153CE6",
+  footer: {
+    container: {
+      width: "100%",
+      position: "absolute",
+      bottom: "10%",
+      alignItems: "center",
+    },
+    bottomText: {
+      textAlign: "center",
+      fontSize: 18,
+    },
+    bottomLink: {
+      color: "#153CE6",
+      fontWeight: "bold",
+      fontSize: 18,
+    },
   },
 });
 
