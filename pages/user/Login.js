@@ -12,9 +12,8 @@ import {
 } from "react-native";
 import { signIn } from "../../utils/auth";
 import { useBouncePress } from "../../utils/useBouncePress";
+import GradientButton from "../components/GradientButton";
 import BubbleBackground from "./components/bubble/BubbleBackground";
-import ContinueButton from "./components/button/ContinueButton";
-import EditableInput from "./components/EditableInput";
 import UserHeader from "./components/UserHeader";
 
 const Login = ({ navigation }) => {
@@ -64,7 +63,7 @@ const Login = ({ navigation }) => {
       <BubbleBackground />
 
       {/* Header Message */}
-      <UserHeader fontSize={35} title="Welcome to Quackwell" />
+      <UserHeader fontSize={32} title="Welcome to Quackwell" />
 
       {/* Animated GIF */}
       <Pressable onPress={handlePress}>
@@ -81,19 +80,45 @@ const Login = ({ navigation }) => {
       {/* Buttons */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.form.container}>
-          <EditableInput
-            placeholder="Email..."
+        {/* Email Input */}
+          <GradientButton
+            isInput={true} // Makes it an editable field
             value={email}
             onChangeText={setEmail}
-            secureTextEntry={false}
+            width={250}
+            height={60}
+            colors={["#F3CAAF", "#739CEF"]}
+            textColor="#153CE6"
+            leftIcon={require("../../assets/cloud.png")}
+            rightIcon={require("../../assets/cloud.png")}
+            placeholder="Email..."
+            style={styles.spacing}
           />
-          <EditableInput
-            placeholder="Password..."
+
+          {/* Password Input */}
+          <GradientButton
+            isInput={true} // Makes it an editable field
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={true}
+            width={250}
+            height={60}
+            colors={["#F3CAAF", "#739CEF"]}
+            textColor="#153CE6"
+            leftIcon={require("../../assets/cloud.png")}
+            rightIcon={require("../../assets/cloud.png")}
+            placeholder="Password..."
+            style={styles.spacing}
+        />
+
+          {/* Submit Button */}
+          <GradientButton
+            text="Log in"
+            width={120}
+            height={60}
+            colors={["#F3CAAF", "#739CEF"]}
+            textColor="#153CE6"
+            onPress={() => console.log("Button Pressed")}
           />
-          <ContinueButton title="Login" onPress={handleLogin} />
         </View>
       </TouchableWithoutFeedback>
 
@@ -168,6 +193,9 @@ const styles = StyleSheet.create({
       alignItems: "center",
       paddingHorizontal: 20,
     },
+  },
+  spacing: {
+    marginBottom: 17,
   },
   footer: {
     container: {

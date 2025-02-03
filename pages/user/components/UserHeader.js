@@ -19,7 +19,7 @@ const UserHeader = ({ title, fontSize }) => {
 const styles = StyleSheet.create({
   header: {
     position: "absolute",
-    top: 100,
+    top: 130,
     alignItems: "center",
     width: "100%",
   },
