@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   form: {
     container: {
       position: "absolute",
-      top: "45%",
+      top: "50%",
       width: "100%",
       alignItems: "center",
       paddingHorizontal: 20,
