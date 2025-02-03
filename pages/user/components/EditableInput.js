@@ -26,7 +26,7 @@ const editableInput = ({
           onBlur={() => setIsEditing(false)}
           autoCapitalize="none"
           placeholder={placeholder}
-          placeholderTextColor="#999"
+          placeholderTextColor="#153CE6"
           secureTextEntry={secureTextEntry}
         />
       ) : (
@@ -35,7 +35,7 @@ const editableInput = ({
           onPress={() => setIsEditing(true)}
         >
           <LinearGradient
-            colors={["#153CE6", "#0C2180"]}
+            colors={["#F3CAAF", "#739CEF"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradient}
@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   button: {
-    width: 270,
+    width: 260,
     height: 70,
-    borderRadius: 29,
+    borderRadius: 30,
     overflow: "hidden",
   },
   gradient: {
@@ -78,19 +78,19 @@ const styles = StyleSheet.create({
     marginLeft: 30,
   },
   buttonText: {
-    color: "white",
+    color: "#153CE6",
     fontSize: 18,
     fontWeight: "bold",
   },
   input: {
-    width: 320,
+    width: 260,
     height: 70,
-    borderRadius: 29,
-    backgroundColor: "#153CE6",
+    borderRadius: 30,
+    backgroundColor: "rgba(115, 156, 239, 0.3)",
     paddingHorizontal: 20,
     fontSize: 18,
     fontWeight: "bold",
-    color: "white",
+    color: "#153CE6",
   },
 });
 
