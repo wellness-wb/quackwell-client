@@ -23,7 +23,10 @@ const Stack = createStackNavigator();
 
 function AuthStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName="Login"
+    >
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="CreateAccount" component={CreateAccount} />
@@ -35,7 +38,10 @@ function AuthStack() {
 
 function AppStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: true }}
+      initialRouteName="MainHub"
+    >
       {/* Main */}
       <Stack.Screen name="MainHub" component={MainHub} />
       {/* Planner */}
