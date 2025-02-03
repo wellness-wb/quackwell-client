@@ -35,7 +35,7 @@ function AuthStack() {
 
 function AppStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: true }}>
       {/* Main */}
       <Stack.Screen name="MainHub" component={MainHub} />
       {/* Planner */}
