@@ -26,13 +26,14 @@ function AuthStack() {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName="Login"
+      initialRouteName="WelcomePage"
     >
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="CreateAccount" component={CreateAccount} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="WelcomePage" component={WelcomePage} />
     </Stack.Navigator>
   );
 }
