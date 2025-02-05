@@ -1,6 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
-import { Animated, PanResponder, StyleSheet, View, TouchableOpacity, Text, TextInput, Alert, } from "react-native";
+import {
+  Animated,
+  PanResponder,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  Alert,
+} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 const BottomMenu = () => {
@@ -125,7 +134,7 @@ const BottomMenu = () => {
           // Form for new task input
           <View style={styles.formContainer}>
             <TextInput
-              placeholder="Name *"
+              placeholder="Title *"
               style={styles.input}
               value={name}
               onChangeText={setName}
@@ -138,7 +147,21 @@ const BottomMenu = () => {
                 setShowDatePicker(true);
               }}
             >
-              <Text style={{
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date || new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      setDate(selectedDate);
+                    }
+                  }}
+                />
+              )}
+              <Text
+                style={{
                   fontFamily: "Inter",
                   fontSize: 16,
                   color: date ? "#000" : "#888",
@@ -155,6 +178,19 @@ const BottomMenu = () => {
                 setShowStartTimePicker(true);
               }}
             >
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={startTime || new Date()}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowStartTimePicker(false);
+                    if (selectedTime) {
+                      setStartTime(selectedTime);
+                    }
+                  }}
+                />
+              )}
               <Text
                 style={{
                   fontFamily: "Inter",
@@ -173,6 +209,19 @@ const BottomMenu = () => {
                 setShowEndTimePicker(true);
               }}
             >
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={endTime || new Date()}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowEndTimePicker(false);
+                    if (selectedTime) {
+                      setEndTime(selectedTime);
+                    }
+                  }}
+                />
+              )}
               <Text
                 style={{
                   fontFamily: "Inter",
@@ -195,7 +244,10 @@ const BottomMenu = () => {
               value={category}
               onChangeText={setCategory}
             />
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
           </View>
@@ -260,7 +312,9 @@ const BottomMenu = () => {
             {/* Tasks Container */}
             <View style={styles.tasksContainer}>
               {tasks.length === 0 ? (
-                <Text style={styles.noTasksText}>nothing planned for today</Text>
+                <Text style={styles.noTasksText}>
+                  nothing planned for today
+                </Text>
               ) : (
                 tasks.map((task, index) => (
                   <View key={index} style={styles.taskItem}>
@@ -273,7 +327,7 @@ const BottomMenu = () => {
         )}
 
         {/* Date Picker Modal */}
-        {showDatePicker && (
+        {/* {showDatePicker && (
           <DateTimePicker
             value={date || new Date()}
             mode="date"
@@ -285,10 +339,10 @@ const BottomMenu = () => {
               }
             }}
           />
-        )}
+        )} */}
 
         {/* Start Time Picker Modal */}
-        {showStartTimePicker && (
+        {/* {showStartTimePicker && (
           <DateTimePicker
             value={startTime || new Date()}
             mode="time"
@@ -300,10 +354,10 @@ const BottomMenu = () => {
               }
             }}
           />
-        )}
+        )} */}
 
         {/* End Time Picker Modal */}
-        {showEndTimePicker && (
+        {/* {showEndTimePicker && (
           <DateTimePicker
             value={endTime || new Date()}
             mode="time"
@@ -315,7 +369,7 @@ const BottomMenu = () => {
               }
             }}
           />
-        )}
+        )} */}
       </LinearGradient>
 
       {/* Slider Handle */}

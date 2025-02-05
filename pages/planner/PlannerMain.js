@@ -11,14 +11,13 @@ const PlannerMain = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-      
       {/* Add the calendar at the top */}
       <CalMenu />
-      
+
       {/* Other planner content goes here */}
       <PlansTab />
 
-      <MenuBar navigation={navigation} />
+      <MenuBar navigation={navigation} activeScreen="PlannerMain" />
     </ImageBackground>
   );
 };
