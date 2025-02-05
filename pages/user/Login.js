@@ -110,7 +110,6 @@ const Login = ({ navigation }) => {
           />
         </View>
       </TouchableWithoutFeedback>
-
       <View style={styles.footer.container}>
         <View>
           <Text

@@ -18,6 +18,7 @@ import MainHub from "./pages/MainHub";
 import PlannerDetails from "./pages/planner/PlannerDetails";
 import PlannerList from "./pages/planner/PlannerList";
 import PlannerMain from "./pages/planner/PlannerMain";
+import WelcomePage from "./pages/WelcomePage";
 
 const Stack = createStackNavigator();
 
