@@ -17,7 +17,6 @@ import BubbleBackground from "./components/bubble/BubbleBackground";
 import EditableInput from "./components/EditableInput";
 import UserHeader from "./components/UserHeader";
 
-
 const Login = ({ navigation }) => {
   const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
@@ -82,37 +81,35 @@ const Login = ({ navigation }) => {
       {/* Buttons */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.form.container}>
-        {/* Email Input */}
-        <EditableInput
-          placeholder="Email..."
-          value={email}
-          onChangeText={setEmail}
-          secureTextEntry={false}
-          style={styles.spacing}
-        />
-        {/* Password Input */}
-        <EditableInput
-          placeholder="Password..."
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-        style={styles.spacing}
-        />
+          {/* Email Input */}
+          <EditableInput
+            placeholder="Email..."
+            value={email}
+            onChangeText={setEmail}
+            secureTextEntry={false}
+            style={styles.spacing}
+          />
+          {/* Password Input */}
+          <EditableInput
+            placeholder="Password..."
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+            style={styles.spacing}
+          />
 
-
-        {/* Submit Button */}
-        <GradientButton
-          text="Log in"
-          width={100}
-          height={60}
-          colors={["#F3CAAF", "#739CEF"]}
-          textColor="#153CE6"
-          onPress={() => handleLogin()}
-          style={styles.spacing}
-        />
-      </View>
-    </TouchableWithoutFeedback>
-
+          {/* Submit Button */}
+          <GradientButton
+            text="Log in"
+            width={100}
+            height={60}
+            colors={["#F3CAAF", "#739CEF"]}
+            textColor="#153CE6"
+            onPress={() => handleLogin()}
+            style={styles.spacing}
+          />
+        </View>
+      </TouchableWithoutFeedback>
       <View style={styles.footer.container}>
         <View>
           <Text
