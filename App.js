@@ -41,7 +41,7 @@ function AuthStack() {
 function AppStack() {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: true }}
+      screenOptions={{ headerShown: false }}
       initialRouteName="MainHub"
     >
       {/* Main */}
