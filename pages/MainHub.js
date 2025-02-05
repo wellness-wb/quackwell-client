@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Dimensions,
   Image,
   ImageBackground,
   StyleSheet,
@@ -11,8 +10,6 @@ import {
 import { signOut } from "../utils/auth";
 import MenuBar from "./components/MenuBar";
 import UpperMenu from "./components/UpperMenu";
-
-const { width, height } = Dimensions.get("window");
 
 const MainHub = ({ navigation }) => {
   const handleLogout = async () => {
@@ -78,11 +75,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: height * 0.25,
   },
   image: {
-    width: width * 1.5,
-    height: height * 1.5,
+    width: 300,
+    height: 300,
     resizeMode: "contain",
     zIndex: 0,
   },
