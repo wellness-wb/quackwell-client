@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Dimensions,
   Image,
   ImageBackground,
   StyleSheet,
@@ -10,6 +11,8 @@ import {
 import { signOut } from "../utils/auth";
 import MenuBar from "./components/MenuBar";
 import UpperMenu from "./components/UpperMenu";
+
+const { width, height } = Dimensions.get("window");
 
 const MainHub = ({ navigation }) => {
   const handleLogout = async () => {
@@ -32,7 +35,7 @@ const MainHub = ({ navigation }) => {
       resizeMode="cover"
     >
       <UpperMenu />
-      <TouchableOpacity onPress={handleLogout} style={{ marginRight: 16 }}>
+      <TouchableOpacity onPress={handleLogout} style={{ marginTop: 50, marginRight: 16 }}>
         <Text style={{ color: "blue" }}>Logout</Text>
       </TouchableOpacity>
       <DuckAnimation />
@@ -48,7 +51,7 @@ const DuckAnimation = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.imageBox}>
       <TouchableOpacity onPress={handlePress}>
         <Image
           source={
@@ -65,18 +68,20 @@ const DuckAnimation = () => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  container: {
+  imageBox: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "flex-bottom",
+    alignItems: "center",
+    marginTop: height * 0.25,
   },
   image: {
-    widtth: 300,
-    height: 300,
+    width: width * 1.5,
+    height: height * 1.5,
     resizeMode: "contain",
+    zIndex: 0,
   },
 });
 

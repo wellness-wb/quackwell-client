@@ -107,7 +107,7 @@ const Login = ({ navigation }) => {
           height={60}
           colors={["#F3CAAF", "#739CEF"]}
           textColor="#153CE6"
-          onPress={() => console.log("Button Pressed")}
+          onPress={() => handleLogin()}
           style={styles.spacing}
         />
       </View>

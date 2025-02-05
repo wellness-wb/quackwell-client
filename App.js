@@ -18,6 +18,7 @@ import MainHub from "./pages/MainHub";
 import PlannerDetails from "./pages/planner/PlannerDetails";
 import PlannerList from "./pages/planner/PlannerList";
 import PlannerMain from "./pages/planner/PlannerMain";
+import WelcomePage from "./pages/WelcomePage";
 
 const Stack = createStackNavigator();
 
@@ -35,7 +36,9 @@ function AuthStack() {
 
 function AppStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="MainHub" screenOptions={{ headerShown: false }}>
+      {/* Welcome Page */}
+      <Stack.Screen name="WelcomePage" component={WelcomePage} />
       {/* Main */}
       <Stack.Screen name="MainHub" component={MainHub} />
       {/* Planner */}

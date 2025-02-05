@@ -1,169 +1,127 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
+const { width, height } = Dimensions.get("window");
+const iconSize = width * 0.078;
 
 const MenuBar = ({ navigation, activeScreen }) => {
   return (
-    <View style={styles.menuBar}>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={["#EF6C8B", "#F0A26F"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      style={styles.menuBar}
+    >
+
       {/* Calendar */}
       <TouchableOpacity
-        style={styles.calendarContainer}
+        style={styles.icon}
         onPress={() => navigation.navigate("PlannerMain")}
       >
-        <LinearGradient
-          colors={
-            activeScreen === "PlannerMain"
-              ? ["#F3CAAF", "#F0A26F"] // Active gradient
-              : ["#739CEF", "#A4CDF1"] // Default gradient
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <Image
-            source={require("../../assets/calendar.png")}
-            style={styles.calendarIcon}
+        <View style={styles.iconContainer}>
+          <FontAwesome5
+          name="calendar-day"
+          solid size={iconSize}
+          color={["PlannerMain", "PlannerDetails"].includes(activeScreen) ? "#A4CDF1" : "#153CE6"}
           />
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
 
       {/* Hydration */}
       <TouchableOpacity
-        style={styles.hydrationContainer}
+        style={styles.icon}
         onPress={() => navigation.navigate("HydrationMain")}
       >
-        {/* Active screen will change the color of the icon background */}
-        <LinearGradient
-          colors={
-            ["HydrationMain", "HydrationTracker"].includes(activeScreen)
-              ? ["#F3CAAF", "#F0A26F"] // Active gradient
-              : ["#739CEF", "#A4CDF1"] // Default gradient
-          }
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <Image
-            source={require("../../assets/hydration.png")}
-            style={styles.hydrationIcon}
+        <View style={styles.iconContainer}>
+          <FontAwesome5
+          name="tint"
+          solid size={iconSize}
+          color={["HydrationMain", "HydrationTracker"].includes(activeScreen) ? "#A4CDF1" : "#153CE6"} 
           />
-        </LinearGradient>
+        </View>
+      </TouchableOpacity>
+
+
+      {/* Home */}
+      <TouchableOpacity
+        style={styles.icon}
+        onPress={() => navigation.navigate("MainHub")}
+      >
+        <View style={styles.iconContainer}>
+          <FontAwesome5
+          name="home"
+          solid size={iconSize}
+          color={activeScreen === "MainHub" ? "#A4CDF1" : "#153CE6"}
+          />
+        </View>
       </TouchableOpacity>
 
       {/* Calm */}
       <TouchableOpacity
-        style={styles.calmContainer}
+        style={styles.icon}
         onPress={() => navigation.navigate("CalmMain")}
       >
-        <LinearGradient
-          colors={["#739CEF", "#F3CAAF"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <Image
-            source={require("../../assets/calm.png")}
-            style={styles.calmIcon}
+        <View style={styles.iconContainer}>
+          <FontAwesome5
+          name="clock"
+          solid size={iconSize}
+          color={["CalmMain", "CalmTracker"].includes(activeScreen) ? "#A4CDF1" : "#153CE6"} 
           />
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
 
       {/* Feed */}
       <TouchableOpacity
-        style={styles.feedContainer}
+        style={styles.icon}
         onPress={() => navigation.navigate("SocialMain")}
       >
-        <LinearGradient
-          colors={["#739CEF", "#F3CAAF"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
-          <Image
-            source={require("../../assets/feed.png")}
-            style={styles.feedIcon}
+        <View style={styles.iconContainer}>
+          <FontAwesome5
+          name="user-friends"
+          solid size={iconSize}
+          color={["SocialMain", "Profile"].includes(activeScreen) ? "#A4CDF1" : "#153CE6"} 
           />
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
+    </LinearGradient>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: 45,
+  },
   menuBar: {
-    position: "absolute",
-    bottom: 35,
     width: "90%",
-    height: 80,
-    backgroundColor: "#153CE6",
+    height: height * 0.08,
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 33,
+    alignSelf: "center",
+    borderRadius: Math.min(Dimensions.get("window").width, Dimensions.get("window").height) * 0.1,
+    opacity: 0.77,
     justifyContent: "space-between",
-    paddingHorizontal: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    paddingHorizontal: "4%",
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: height * 0.05 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+    zIndex: 1,
+  },
+
+  icon: {
+    width: "20%",
+    alignItems: "center",
+    shadowOffset: { width: width * 0.03, height: height * 0.007 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5, // Android shadow
-  },
-  gradient: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 27,
-  },
-
-  calendarContainer: {
-    width: 70,
-    height: 65,
-    borderRadius: 35,
-    marginLeft: 0,
-    marginRight: 5,
-  },
-  hydrationContainer: {
-    width: 70,
-    height: 65,
-    borderRadius: 35,
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  calmContainer: {
-    width: 70,
-    height: 65,
-    borderRadius: 35,
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  feedContainer: {
-    width: 70,
-    height: 65,
-    borderRadius: 35,
-    marginLeft: 5,
-  },
-
-  calendarIcon: {
-    width: 300,
-    height: 300,
-    marginLeft: 5,
-    marginTop: 5,
-    resizeMode: "contain",
-  },
-  hydrationIcon: {
-    width: 360,
-    height: 360,
-    marginLeft: 15,
-    resizeMode: "contain",
-  },
-  calmIcon: {
-    width: 500,
-    height: 500,
-    resizeMode: "contain",
-  },
-  feedIcon: {
-    width: 500,
-    height: 500,
-    resizeMode: "contain",
+    zIndex: 2,
   },
 });
 
