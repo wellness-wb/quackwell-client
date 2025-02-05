@@ -36,12 +36,11 @@ const GradientButton = ({
 const styles = StyleSheet.create({
   buttonBox: {
     flex: 1,
-    //paddingBottom: 45,
   },
 
   gradient: {
     width: "100%",
-    height: height * 0.08,
+    height: "100%",
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",
