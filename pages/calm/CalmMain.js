@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
+import MenuBar from "../components/MenuBar";
 import { ImageBackground, StyleSheet, View } from "react-native";
 
 const CalmMain = ({ navigation }) => {
@@ -20,6 +21,8 @@ const CalmMain = ({ navigation }) => {
           <View style={styles.placeholder} />
         </LinearGradient>
       </View>
+
+      <MenuBar navigation={navigation} activeScreen="CalmMain" />
 
       {/* Other planner content goes here */}
     </ImageBackground>
