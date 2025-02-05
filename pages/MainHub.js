@@ -35,11 +35,14 @@ const MainHub = ({ navigation }) => {
       resizeMode="cover"
     >
       <UpperMenu />
-      <TouchableOpacity onPress={handleLogout} style={{ marginTop: 50, marginRight: 16 }}>
+      <TouchableOpacity
+        onPress={handleLogout}
+        style={{ marginTop: 50, marginRight: 16 }}
+      >
         <Text style={{ color: "blue" }}>Logout</Text>
       </TouchableOpacity>
       <DuckAnimation />
-      <MenuBar navigation={navigation} />
+      <MenuBar navigation={navigation} activeScreen="MainHub" />
     </ImageBackground>
   );
 };
