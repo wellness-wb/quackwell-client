@@ -119,7 +119,10 @@ const BottomMenu = () => {
       {/* "+" Button */}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => setShowForm(true)}
+        onPress={() => {
+          expandMenu();
+          setShowForm(true);
+        }}
       >
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
@@ -325,51 +328,6 @@ const BottomMenu = () => {
             </View>
           </>
         )}
-
-        {/* Date Picker Modal */}
-        {/* {showDatePicker && (
-          <DateTimePicker
-            value={date || new Date()}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                setDate(selectedDate);
-              }
-            }}
-          />
-        )} */}
-
-        {/* Start Time Picker Modal */}
-        {/* {showStartTimePicker && (
-          <DateTimePicker
-            value={startTime || new Date()}
-            mode="time"
-            display="default"
-            onChange={(event, selectedTime) => {
-              setShowStartTimePicker(false);
-              if (selectedTime) {
-                setStartTime(selectedTime);
-              }
-            }}
-          />
-        )} */}
-
-        {/* End Time Picker Modal */}
-        {/* {showEndTimePicker && (
-          <DateTimePicker
-            value={endTime || new Date()}
-            mode="time"
-            display="default"
-            onChange={(event, selectedTime) => {
-              setShowEndTimePicker(false);
-              if (selectedTime) {
-                setEndTime(selectedTime);
-              }
-            }}
-          />
-        )} */}
       </LinearGradient>
 
       {/* Slider Handle */}
