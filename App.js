@@ -1,5 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from "@react-navigation/stack";
 import React from "react";
 import { AuthProvider, useAuth } from "./utils/authContext";
 
@@ -25,7 +28,11 @@ const Stack = createStackNavigator();
 function AuthStack() {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
+      }}
       initialRouteName="WelcomePage"
     >
       <Stack.Screen name="Login" component={Login} />
@@ -41,7 +48,11 @@ function AuthStack() {
 function AppStack() {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
+      }}
       initialRouteName="MainHub"
     >
       {/* Main */}
