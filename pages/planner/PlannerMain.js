@@ -1,6 +1,6 @@
 import React from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
-import CalMenu from "./CalendarTab";
+import CalendarMenu from "./CalendarTab";
 import MenuBar from "../components/MenuBar";
 import PlansTab from "./PlansTab";
 
@@ -12,7 +12,7 @@ const PlannerMain = ({ navigation }) => {
       resizeMode="cover"
     >
       {/* Add the calendar at the top */}
-      <CalMenu />
+      <CalendarMenu />
 
       {/* Other planner content goes here */}
       <PlansTab />
