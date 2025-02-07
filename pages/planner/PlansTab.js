@@ -64,6 +64,8 @@ const BottomMenu = () => {
   const unselectedBackground = "#e2baa1";
   const unselectedTextColor = "#153CE6";
 
+  const dateTimeColor = "#F3CAAF"
+
   // Helper: Expand the menu immediately
   const expandMenu = () => {
     Animated.timing(menuHeight, {
@@ -136,117 +138,82 @@ const BottomMenu = () => {
         {showForm ? (
           // Form for new task input
           <View style={styles.formContainer}>
+            {/* Close new task form */}
+            <TouchableOpacity
+              style={styles.closeMenuButton}
+              onPress={() => {setShowForm(false);}}
+            >
+              <Text style={styles.closeMenuButtonText}>x</Text>
+            </TouchableOpacity>
+
             <TextInput
-              placeholder="Title *"
-              style={styles.input}
+              placeholder="(Task Name)"
+              style={styles.titleInput}
               value={name}
               onChangeText={setName}
+              placeholderTextColor = "#153CE6" //plan on changing to a color diff from when the title is input
             />
-            {/* Date Picker */}
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => {
-                expandMenu();
-                setShowDatePicker(true);
-              }}
-            >
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date || new Date()}
-                  mode="date"
-                  display="default"
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      setDate(selectedDate);
-                    }
-                  }}
-                />
-              )}
-              <Text
-                style={{
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  color: date ? "#000" : "#888",
-                }}
-              >
-                {formatDate(date)}
-              </Text>
-            </TouchableOpacity>
-            {/* Start Time Picker */}
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => {
-                expandMenu();
-                setShowStartTimePicker(true);
-              }}
-            >
-              {showStartTimePicker && (
-                <DateTimePicker
-                  value={startTime || new Date()}
-                  mode="time"
-                  display="default"
-                  onChange={(event, selectedTime) => {
-                    setShowStartTimePicker(false);
-                    if (selectedTime) {
-                      setStartTime(selectedTime);
-                    }
-                  }}
-                />
-              )}
-              <Text
-                style={{
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  color: startTime ? "#000" : "#888",
-                }}
-              >
-                {formatTime(startTime)}
-              </Text>
-            </TouchableOpacity>
-            {/* End Time Picker */}
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => {
-                expandMenu();
-                setShowEndTimePicker(true);
-              }}
-            >
-              {showEndTimePicker && (
-                <DateTimePicker
-                  value={endTime || new Date()}
-                  mode="time"
-                  display="default"
-                  onChange={(event, selectedTime) => {
-                    setShowEndTimePicker(false);
-                    if (selectedTime) {
-                      setEndTime(selectedTime);
-                    }
-                  }}
-                />
-              )}
-              <Text
-                style={{
-                  fontFamily: "Inter",
-                  fontSize: 16,
-                  color: endTime ? "#000" : "#888",
-                }}
-              >
-                {formatTime(endTime)}
-              </Text>
-            </TouchableOpacity>
-            <TextInput
-              placeholder="Location"
-              style={styles.input}
-              value={location}
-              onChangeText={setLocation}
-            />
+
             <TextInput
               placeholder="Category"
-              style={styles.input}
+              style={styles.pickCategory}
               value={category}
               onChangeText={setCategory}
+              placeholderTextColor = "#e2baa1"
             />
+
+            {/* Date Picker */}
+            
+            <DateTimePicker
+              style={styles.selectDate}
+              value={date || new Date()}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+                if (selectedDate) {
+                  setDate(selectedDate);
+                }
+              }}
+            />
+
+          <View style={styles.timeContainer}>
+            {/* Start Time Picker */}
+            <DateTimePicker
+              style={styles.selectTime}
+              value={startTime || new Date()}
+              mode="time"
+              display="default"
+              onChange={(event, selectedTime) => {
+              if (selectedTime) {
+                  setStartTime(selectedTime);
+                }
+              }}
+            />
+
+            {/* End Time Picker */}
+            <DateTimePicker
+              style={styles.selectTime}
+              value={endTime || new Date()}
+              mode="time"
+              display="default"
+              onChange={(event, selectedTime) => {
+                if (selectedTime) {
+                  setEndTime(selectedTime);
+                }
+              }}
+                />
+
+          </View>
+
+            <TextInput
+              placeholder="📍 Location"
+              style={styles.pickLocation}
+              value={location}
+              onChangeText={setLocation}
+              placeholderTextColor = "#e2baa1"
+            />
+
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}
@@ -256,61 +223,6 @@ const BottomMenu = () => {
           </View>
         ) : (
           <>
-            {/* Calendar Content (Buttons) */}
-            <View style={styles.calendarContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor:
-                      selectedOption === "today"
-                        ? selectedBackground
-                        : unselectedBackground,
-                  },
-                ]}
-                onPress={() => setSelectedOption("today")}
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    {
-                      color:
-                        selectedOption === "today"
-                          ? selectedTextColor
-                          : unselectedTextColor,
-                    },
-                  ]}
-                >
-                  today
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  {
-                    backgroundColor:
-                      selectedOption === "all"
-                        ? selectedBackground
-                        : unselectedBackground,
-                  },
-                ]}
-                onPress={() => setSelectedOption("all")}
-              >
-                <Text
-                  style={[
-                    styles.buttonText,
-                    {
-                      color:
-                        selectedOption === "all"
-                          ? selectedTextColor
-                          : unselectedTextColor,
-                    },
-                  ]}
-                >
-                  all
-                </Text>
-              </TouchableOpacity>
-            </View>
 
             {/* Tasks Container */}
             <View style={styles.tasksContainer}>
@@ -371,6 +283,28 @@ const styles = StyleSheet.create({
     color: "#e2baa1",
     fontSize: 24,
     fontWeight: "bold",
+    top: -1
+  },
+  closeMenuButton: {
+    position: "absolute",
+    top: -50,
+    left: 10,
+    zIndex: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 3,
+    borderWidth: 2, 
+    borderColor: "#153CE6", // Blue circular outline for today
+    borderRadius: 50, // Fully rounded
+  },
+  closeMenuButtonText:  {
+    color: "#153CE6",
+    fontSize: 24,
+    height: 32,
+    fontFamily: "Inter",
   },
   calendarContainer: {
     marginTop: 50, // Give space for the slider handle and header
@@ -396,6 +330,8 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     fontFamily: "Inter",
     fontWeight: "bold",
+    color: "white"
+    
   },
   tasksContainer: {
     flex: 1,
@@ -423,16 +359,8 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
     marginTop: 60, // Leave space for the "+" button and any header
-  },
-  input: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 5,
-    fontSize: 16,
-    fontFamily: "Inter",
+    alignItems: "center",
   },
   submitButton: {
     backgroundColor: "#153CE6",
@@ -456,6 +384,60 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     borderRadius: 5,
   },
+  timeContainer:  {
+    flexDirection: "row", // Places elements in a row
+    width: "90%", // Ensures it takes the full width
+    paddingHorizontal: 10, // Optional: Padding for spacing
+  },
+  selectTime: {
+    flex: 1,
+    backgroundColor: "#3657c1",
+    borderRadius: 20,
+    marginVertical: 5,
+    marginHorizontal: 5,
+    fontSize: 16,
+    fontFamily: "Inter",
+  },
+  selectDate: {
+    backgroundColor: "#3657c1",
+    borderRadius: 20, 
+    height: 52,
+    width: 290,
+  },
+  titleInput:{
+    textAlign: "center",
+    color: "#153CE6",
+    padding: 10,
+    fontSize: 30,
+    fontFamily: "Inter",
+    fontWeight: "bold",
+    placeholderTextColor: "black",
+    bottom: 25
+  },
+  pickCategory:{
+    textAlign: "center",
+    color: "#e2baa1",
+    backgroundColor: "#3657c1",
+    bottom: 25,
+    width: 86,
+    height: 25,
+    borderRadius: 20,
+    padding: 10,
+    fontSize: 14,
+    fontFamily: "Inter",
+  },
+  pickLocation:{
+    backgroundColor: "#3657c1",
+    borderRadius: 20,
+    padding: 10,
+    height: 52,
+    width: 290,
+    marginVertical: 5,
+    fontSize: 20,
+    fontFamily: "Inter",
+    color: "#e2baa1",
+  },
+
 });
 
 export default BottomMenu;

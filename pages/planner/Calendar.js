@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Calendar = () => {
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date()); // Store selected day
 

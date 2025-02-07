@@ -1,6 +1,6 @@
 import React from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
-import CalMenu from "./calMenu";
+import CalMenu from "./CalendarTab";
 import MenuBar from "../components/MenuBar";
 import PlansTab from "./PlansTab";
 

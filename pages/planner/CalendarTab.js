@@ -1,9 +1,9 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import Calendar from "../planner/Calendar.js";
+import Calendar from "./Calendar.js";
 
-const UpperMenu = () => {
+const CalendarTab = () => {
   return (
     <View style={styles.menuBar}>
       <LinearGradient
@@ -12,7 +12,7 @@ const UpperMenu = () => {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* Calendar inside UpperMenu */}
+        {/* Calendar inside Tab */}
         <View style={styles.calendarContainer}>
           <Calendar />
         </View>
@@ -25,13 +25,9 @@ const styles = StyleSheet.create({
   menuBar: {
     width: "100%",
     height: 175,
-    top: 0,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
   },
   gradient: {
     flex: 1,
@@ -44,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UpperMenu;
+export default CalendarTab;

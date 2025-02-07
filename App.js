@@ -18,8 +18,6 @@ import CalmMain from "./pages/calm/CalmMain";
 import HydrationMain from "./pages/hydration/HydrationMain";
 import HydrationTracker from "./pages/hydration/HydrationTracker";
 import MainHub from "./pages/MainHub";
-import PlannerDetails from "./pages/planner/PlannerDetails";
-import PlannerList from "./pages/planner/PlannerList";
 import PlannerMain from "./pages/planner/PlannerMain";
 import WelcomePage from "./pages/WelcomePage";
 
@@ -58,8 +56,6 @@ function AppStack() {
       {/* Main */}
       <Stack.Screen name="MainHub" component={MainHub} />
       {/* Planner */}
-      <Stack.Screen name="PlannerList" component={PlannerList} />
-      <Stack.Screen name="PlannerDetails" component={PlannerDetails} />
       <Stack.Screen name="PlannerMain" component={PlannerMain} />
       {/* Hydration */}
       <Stack.Screen name="HydrationMain" component={HydrationMain} />
