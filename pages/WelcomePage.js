@@ -19,7 +19,11 @@ const WelcomePage = ({ navigation }) => {
   
   const { bounceAnim, handlePress } = useBouncePress();
   const gifLoopAnim = useRef(new Animated.Value(1)).current;
+<<<<<<< HEAD
+
+=======
  
+>>>>>>> 6911f96a54aff2b3fffb889a38f049f6cb8f67b2
   useEffect(() => {
     const startLoopingAnimation = () => {
       Animated.loop(
@@ -124,7 +128,8 @@ const styles = StyleSheet.create({
     },
   
     buttonContainer: {
-      flex: 0.3,
+      flex: 0.2,
+      bottom: -70,
       justifyContent: "flex-start",
       alignItems: "center",
       alignSelf: "stretch",
