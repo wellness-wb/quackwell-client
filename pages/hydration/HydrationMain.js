@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 40,
   },
-  
+
   gradientInput: {
     flex: 1,
     borderRadius: 30,
