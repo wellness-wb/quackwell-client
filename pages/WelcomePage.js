@@ -19,7 +19,7 @@ const WelcomePage = ({ navigation }) => {
   
   const { bounceAnim, handlePress } = useBouncePress();
   const gifLoopAnim = useRef(new Animated.Value(1)).current;
- 
+
   useEffect(() => {
     const startLoopingAnimation = () => {
       Animated.loop(
@@ -112,32 +112,38 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        height: height * 0.4,
-        width: width * 0.8,
-        zIndex: 5,
+        height: height * 0.2,
+        width: width * 0.7,
+        zIndex: 2,
+        overflow: "hidden",
       },
       headerImage: {
         resizeMode: "contain",
-        width: width * 0.9,
-        height: height * 0.6,
+        width: width * 0.7,
+        height: height * 0.5,
       },
     },
   
     buttonContainer: {
-      flex: 0.3,
+      flex: 0.2,
+      bottom: -70,
       justifyContent: "flex-start",
       alignItems: "center",
-      alignSelf: "stretch",
+      alignSelf: "center",
+      width: width * 0.6,
+      height: height * 0.1,
+      zIndex: 5,
     },
 
     animationBox: {
       position: 'absolute',
-      top: height * 0.5,
+      top: height * 0.76,
       left: width * 0.01,
-      width: width * 0.8,
-      height: height * 0.8,
+      width: width * 0.4,
+      height: height * 0.4,
       justifyContent: "center",
       alignItems: "center",
+      zIndex: 0,
     },
 
     animation:  {
@@ -155,6 +161,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         width: width * 0.2,
         height: height * 0.25,
+        zIndex: 5,
       },
       logo: {
         width: "100%",
