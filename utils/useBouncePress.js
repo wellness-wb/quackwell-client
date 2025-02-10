@@ -11,7 +11,7 @@ export const useBouncePress = () => {
     }
     Animated.sequence([
       Animated.spring(bounceAnim, {
-        toValue: 1.2,
+        toValue: 1.05,
         useNativeDriver: true,
         speed: 20,
         bounciness: 10,
