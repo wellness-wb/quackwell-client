@@ -51,7 +51,7 @@ function AppStack() {
         cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
         cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
       }}
-      initialRouteName="CalmMain"
+      initialRouteName="MainHub"
     >
       {/* Main */}
       <Stack.Screen name="MainHub" component={MainHub} />

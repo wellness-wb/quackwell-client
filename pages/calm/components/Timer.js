@@ -240,7 +240,6 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    padding: 20,
   },
   timerText: {
     fontSize: 48,
@@ -248,9 +247,9 @@ const styles = StyleSheet.create({
   },
   labelsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "80%",
-    marginBottom: 10,
+    width: "100%",
+    marginBottom: 20,
+    gap: 40,
   },
   label: {
     fontWeight: "bold",

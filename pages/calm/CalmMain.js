@@ -58,23 +58,25 @@ const CalmMain = ({ navigation }) => {
           onStatusChange={handleStatusChange}
         />
 
-        <View style={styles.quickOptionsContainer}>
-          <TimerQuickOption
-            label="10:00"
-            duration={600}
-            onPress={handleQuickOptionPress}
-          />
-          <TimerQuickOption
-            label="15:00"
-            duration={900}
-            onPress={handleQuickOptionPress}
-          />
-          <TimerQuickOption
-            label="30:00"
-            duration={1800}
-            onPress={handleQuickOptionPress}
-          />
-        </View>
+        {!timerStatus.isRunning && (
+          <View style={styles.quickOptionsContainer}>
+            <TimerQuickOption
+              label="10:00"
+              duration={600}
+              onPress={handleQuickOptionPress}
+            />
+            <TimerQuickOption
+              label="15:00"
+              duration={900}
+              onPress={handleQuickOptionPress}
+            />
+            <TimerQuickOption
+              label="30:00"
+              duration={1800}
+              onPress={handleQuickOptionPress}
+            />
+          </View>
+        )}
 
         <View style={styles.controlButtonsContainer}>
           {!timerStatus.isRunning && (
@@ -102,24 +104,23 @@ const CalmMain = ({ navigation }) => {
 const styles = StyleSheet.create({
   bgContainer: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
   },
   content: {
-    marginTop: 100,
+    height: "90%",
+    justifyContent: "center",
     alignItems: "center",
   },
   quickOptionsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
+    justifyContent: "space-between",
     width: "80%",
+    paddingTop: 100,
   },
   controlButtonsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 20,
-    width: "80%",
+    width: "60%",
+    marginTop: 80,
   },
 });
 
