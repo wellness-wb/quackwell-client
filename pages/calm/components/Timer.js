@@ -20,8 +20,9 @@ Notifications.setNotificationHandler({
 const ITEM_HEIGHT = 50;
 const VISIBLE_ITEMS = 3;
 
-const PickerColumn = ({ data, selectedIndex, onValueChange }) => {
+const PickerColumn = ({ data, selectedIndex, onValueChange, resetTrigger }) => {
   const scrollRef = useRef(null);
+  const isUserScrollingRef = useRef(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -30,13 +31,7 @@ const PickerColumn = ({ data, selectedIndex, onValueChange }) => {
         animated: true,
       });
     }
-  }, [selectedIndex]);
-
-  const handleMomentumScrollEnd = (event) => {
-    const offsetY = event.nativeEvent.contentOffset.y;
-    const index = Math.round(offsetY / ITEM_HEIGHT);
-    onValueChange(index);
-  };
+  }, [selectedIndex, resetTrigger]);
 
   return (
     <ScrollView
@@ -45,7 +40,17 @@ const PickerColumn = ({ data, selectedIndex, onValueChange }) => {
       showsVerticalScrollIndicator={false}
       snapToInterval={ITEM_HEIGHT}
       decelerationRate="fast"
-      onMomentumScrollEnd={handleMomentumScrollEnd}
+      onScrollBeginDrag={() => {
+        isUserScrollingRef.current = true;
+      }}
+      onMomentumScrollEnd={(event) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        const index = Math.round(offsetY / ITEM_HEIGHT);
+        if (isUserScrollingRef.current && index !== selectedIndex) {
+          onValueChange(index);
+        }
+        isUserScrollingRef.current = false;
+      }}
       contentContainerStyle={{
         paddingVertical: ITEM_HEIGHT * Math.floor(VISIBLE_ITEMS / 2),
       }}
@@ -60,6 +65,8 @@ const PickerColumn = ({ data, selectedIndex, onValueChange }) => {
 };
 
 const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
+  const [resetTrigger, setResetTrigger] = useState(0);
+
   const [timeLeft, setTimeLeft] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [notificationId, setNotificationId] = useState(null);
@@ -80,7 +87,6 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
         selectedHour * 3600 + selectedMinute * 60 + selectedSecond;
       setTimeLeft(newTime);
     }
-
     if (typeof onStatusChange === "function") {
       onStatusChange({ isRunning, isPaused });
     }
@@ -92,6 +98,8 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     isPaused,
     onStatusChange,
   ]);
+
+  const timerIntervalRef = useRef(null);
 
   const pauseTimer = () => {
     if (isRunning && !isPaused) {
@@ -128,8 +136,6 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     }
   };
 
-  const timerIntervalRef = useRef(null);
-
   const startTimer = async () => {
     if (isRunning) return;
     const _endTime = Date.now() + timeLeft * 1000;
@@ -163,6 +169,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
+    setTimeLeft(selectedHour * 3600 + selectedMinute * 60 + selectedSecond);
     setIsRunning(false);
     setIsPaused(false);
     setEndTime(null);
@@ -170,6 +177,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
       setNotificationId(null);
     }
+    setResetTrigger((prev) => prev + 1);
   };
 
   useImperativeHandle(ref, () => ({
@@ -203,18 +211,21 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
           </View>
           <View style={styles.columnsContainer}>
             <PickerColumn
+              resetTrigger={resetTrigger}
               data={hoursData}
               selectedIndex={selectedHour}
               onValueChange={setSelectedHour}
             />
             <Text style={styles.separator}>:</Text>
             <PickerColumn
+              resetTrigger={resetTrigger}
               data={minutesData}
               selectedIndex={selectedMinute}
               onValueChange={setSelectedMinute}
             />
             <Text style={styles.separator}>:</Text>
             <PickerColumn
+              resetTrigger={resetTrigger}
               data={secondsData}
               selectedIndex={selectedSecond}
               onValueChange={setSelectedSecond}

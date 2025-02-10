@@ -1,4 +1,3 @@
-// CalmMain.js
 import React, { useCallback, useRef, useState } from "react";
 import { Button, ImageBackground, StyleSheet, View } from "react-native";
 import MenuBar from "../components/MenuBar";
