@@ -124,7 +124,8 @@ const styles = StyleSheet.create({
     },
   
     buttonContainer: {
-      flex: 0.3,
+      flex: 0.2,
+      bottom: -70,
       justifyContent: "flex-start",
       alignItems: "center",
       alignSelf: "stretch",
