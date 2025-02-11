@@ -1,25 +1,50 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Keyboard,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 
-const editableInput = ({
+const EditableInput = ({
   placeholder,
   value,
   onChangeText,
   secureTextEntry = false,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef(null);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      const keyboardListener = Keyboard.addListener("keyboardDidHide", () => {
+        setIsEditing(false);
+      });
+
+      return () => keyboardListener.remove();
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
       {isEditing ? (
         <TextInput
+          ref={inputRef}
           style={styles.input}
           value={value}
           onChangeText={onChangeText}
@@ -30,10 +55,7 @@ const editableInput = ({
           secureTextEntry={secureTextEntry}
         />
       ) : (
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setIsEditing(true)}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleEdit}>
           <LinearGradient
             colors={["#F3CAAF", "#739CEF"]}
             start={{ x: 0, y: 0 }}
@@ -41,7 +63,11 @@ const editableInput = ({
             style={styles.gradient}
           >
             <View style={styles.textContainer}>
-              <Text style={styles.buttonText}>
+              <Text
+                style={styles.buttonText}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {value ? (secureTextEntry ? "••••••" : value) : placeholder}
               </Text>
             </View>
@@ -55,13 +81,12 @@ const editableInput = ({
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
+    marginBottom: 20,
   },
   button: {
-    width: 260,
-    height: 70,
-    borderRadius: 30,
+    width: wp("70%"),
+    height: hp("6%"),
+    borderRadius: 25,
     overflow: "hidden",
   },
   gradient: {
@@ -72,26 +97,24 @@ const styles = StyleSheet.create({
     opacity: 0.77,
   },
   textContainer: {
-    justifyContent: "center",
     flex: 1,
+    justifyContent: "center",
     alignItems: "flex-start",
-    marginLeft: 30,
+    marginLeft: wp("5%"),
   },
   buttonText: {
     color: "#153CE6",
-    fontSize: 18,
     fontWeight: "bold",
   },
   input: {
-    width: 260,
-    height: 70,
-    borderRadius: 30,
+    width: wp("70%"),
+    height: hp("7%"),
+    borderRadius: 25,
     backgroundColor: "rgba(115, 156, 239, 0.3)",
     paddingHorizontal: 20,
-    fontSize: 18,
     fontWeight: "bold",
     color: "#153CE6",
   },
 });
 
-export default editableInput;
+export default EditableInput;
