@@ -1,15 +1,16 @@
-// dependencies npm install -g npm@10.9.1
-// npx expo install expo-linear-gradient
 import { Audio } from "expo-av";
 import React, { useEffect } from "react";
 import {
   Animated,
   ImageBackground,
+  Keyboard,
   Pressable,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { useBouncePress } from "../../utils/useBouncePress";
 import BubbleBackground from "./components/bubble/BubbleBackground";
 import AuthButton from "./components/button/AuthButton";
@@ -18,7 +19,6 @@ import UserHeader from "./components/UserHeader";
 const Signup = ({ navigation }) => {
   const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
-  // load the sound when the component mounts
   useEffect(() => {
     const loadSound = async () => {
       const { sound } = await Audio.Sound.createAsync(
@@ -29,7 +29,6 @@ const Signup = ({ navigation }) => {
 
     loadSound();
 
-    // unload the sound when the component unmounts
     return () => {
       if (soundRef.current) {
         soundRef.current.unloadAsync();
@@ -43,40 +42,43 @@ const Signup = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-      {/* Header Message */}
-      <UserHeader fontSize={35} title="Welcome to Quackwell" />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          {/* Header Message */}
+          <UserHeader title="Welcome to Quackwell" />
 
-      {/* Bubbles */}
-      <BubbleBackground />
+          {/* Bubbles */}
+          <BubbleBackground />
 
-      {/* GIF with bounce */}
-      <Pressable onPress={handlePress}>
-        <Animated.Image
-          source={require("../../assets/logo_animated.gif")}
-          style={[styles.gif.gifIcon, { transform: [{ scale: bounceAnim }] }]}
-          resizeMode="contain"
-        />
-      </Pressable>
-      <View style={styles.gif.messageWrapper}>
-        <Text style={styles.gif.message}>Sign Up</Text>
-      </View>
+          {/* GIF with bounce */}
+          <Pressable onPress={handlePress} style={styles.gifIcon}>
+            <Animated.Image
+              source={require("../../assets/logo_animated.gif")}
+              style={[styles.gifIcon, { transform: [{ scale: bounceAnim }] }]}
+            />
+          </Pressable>
+          <Text style={styles.gifMessage}>Sign Up</Text>
 
-      {/* buttons */}
-      <View style={styles.buttonContainer}>
-        <AuthButton
-          onPress={() => navigation.navigate("CreateAccount")}
-          buttonText="Sign up with Email"
-          iconName="mail"
-        />
+          {/* buttons */}
+          <View style={styles.buttonContainer}>
+            <AuthButton
+              onPress={() => navigation.navigate("CreateAccount")}
+              buttonText="Sign up with Email"
+              iconName="mail"
+              style={styles.spacing}
+            />
 
-        <AuthButton
-          onPress={() => {
-            alert("Google Sign Up");
-          }}
-          buttonText="Continue with Google"
-          iconName="google"
-        />
-      </View>
+            <AuthButton
+              onPress={() => {
+                alert("Google Sign Up");
+              }}
+              buttonText="Continue with Google"
+              iconName="google"
+              style={styles.spacing}
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
 
       {/* log in option */}
       <View style={styles.footer.container}>
@@ -96,51 +98,37 @@ const Signup = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1, // the background takes up the full height and width of the container
-    justifyContent: "flex-start", // start the content from the top
-    alignItems: "center", // all child components will be horizontally centered
+    width: "100%",
+    height: "100%",
   },
-  header: {
-    top: -300,
+  container: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    flexDirection: "column",
     alignItems: "center",
+    marginTop: hp("5%"),
   },
-  topText: {
-    position: "absolute", // will allow the position adjustment by me not by the container rules
-    top: 400,
+  gifIcon: {
+    height: hp("30%"),
+    aspectRatio: 1,
+  },
+  gifMessage: {
+    position: "absolute",
+    top: hp("33%"),
     color: "#153CE6",
-    fontSize: 20,
+    fontSize: hp("3.5%"),
     fontFamily: "Inter",
-    fontWeight: "normal",
-    textAlign: "center", // align always horizontally
-    width: "80%",
-  },
-  gif: {
-    gifIcon: {
-      width: "140%",
-      height: undefined,
-      aspectRatio: 1, // scaling GIF proportionally
-    },
-    messageWrapper: {
-      position: "absolute",
-      top: 350,
-      alignItems: "center",
-    },
-    message: {
-      width: "100%",
-      color: "#153CE6",
-      fontSize: 50,
-      fontFamily: "Inter",
-      fontWeight: "bold",
-      textAlign: "center", // align always horizontally
-      marginBottom: 30,
-    },
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonContainer: {
-    position: "absolute",
-    top: "50%",
     width: "100%",
     alignItems: "center",
-    gap: 10,
+    flexGrow: 1,
+  },
+  spacing: {
+    marginBottom: hp("2.5%"),
   },
   footer: {
     container: {
