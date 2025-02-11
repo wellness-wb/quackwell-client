@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 const UserHeader = ({ title, fontSize }) => {
   return (
@@ -18,14 +19,13 @@ const UserHeader = ({ title, fontSize }) => {
 
 const styles = StyleSheet.create({
   header: {
-    position: "absolute",
-    top: 130,
-    alignItems: "center",
     width: "100%",
+    marginTop: hp("8%"),
+    paddingHorizontal: hp("2%"),
   },
   topText: {
+    fontSize: hp("4%"),
     color: "#153CE6",
-    fontSize: 40,
     fontFamily: "Inter",
     fontWeight: "bold",
     textAlign: "center",
