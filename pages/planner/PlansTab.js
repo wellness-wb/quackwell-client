@@ -9,10 +9,12 @@ import {
   Text,
   TextInput,
   Alert,
+  Button,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const BottomMenu = () => {
+const PlansTab = () => {
   const [menuHeight] = useState(new Animated.Value(50)); // Initial collapsed height
   const [selectedOption, setSelectedOption] = useState("today"); // "today" is selected by default
   const [tasks, setTasks] = useState([]);
@@ -31,6 +33,8 @@ const BottomMenu = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("Set Date");
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -64,7 +68,7 @@ const BottomMenu = () => {
   const unselectedBackground = "#e2baa1";
   const unselectedTextColor = "#153CE6";
 
-  const dateTimeColor = "#F3CAAF"
+  const dateTimeColor = "#F3CAAF";
 
   // Helper: Expand the menu immediately
   const expandMenu = () => {
@@ -98,9 +102,11 @@ const BottomMenu = () => {
       return;
     }
     // For demonstration, we create a string summary for the task.
-    const newTask = `Name: ${name} | Date: ${formatDate(date)} | ${formatTime(
-      startTime
-    )} - ${formatTime(endTime)} | Location: ${location} | Category: ${category}`;
+    const newTask = `${name}\n
+    ${formatDate(date)}\n
+    ${formatTime(startTime)} - ${formatTime(endTime)}\n
+    ${location}\n
+    ${category}`;
     setTasks([...tasks, newTask]);
 
     // Reset form fields and hide form
@@ -141,7 +147,9 @@ const BottomMenu = () => {
             {/* Close new task form */}
             <TouchableOpacity
               style={styles.closeMenuButton}
-              onPress={() => {setShowForm(false);}}
+              onPress={() => {
+                setShowForm(false);
+              }}
             >
               <Text style={styles.closeMenuButtonText}>x</Text>
             </TouchableOpacity>
@@ -151,7 +159,7 @@ const BottomMenu = () => {
               style={styles.titleInput}
               value={name}
               onChangeText={setName}
-              placeholderTextColor = "#153CE6" //plan on changing to a color diff from when the title is input
+              placeholderTextColor="#153CE6" //plan on changing to a color diff from when the title is input
             />
 
             <TextInput
@@ -159,59 +167,62 @@ const BottomMenu = () => {
               style={styles.pickCategory}
               value={category}
               onChangeText={setCategory}
-              placeholderTextColor = "#e2baa1"
+              placeholderTextColor="#e2baa1"
             />
 
             {/* Date Picker */}
-            
-            <DateTimePicker
-              style={styles.selectDate}
-              value={date || new Date()}
+
+            <View style={styles.selectDate}>
+              <Text style={styles.dateText}>{selectedDate}</Text>
+              <Button title="" onPress={() => setDatePickerVisibility(true)} />
+            </View>
+
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
               mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-                if (selectedDate) {
-                  setDate(selectedDate);
-                }
+              themeVariant="light"
+              //display="inline"
+              onConfirm={(date) => {
+                setSelectedDate(date.toDateString());
+                setDatePickerVisibility(false);
               }}
+              onCancel={() => setDatePickerVisibility(false)}
             />
 
-          <View style={styles.timeContainer}>
-            {/* Start Time Picker */}
-            <DateTimePicker
-              style={styles.selectTime}
-              value={startTime || new Date()}
-              mode="time"
-              display="default"
-              onChange={(event, selectedTime) => {
-              if (selectedTime) {
-                  setStartTime(selectedTime);
-                }
-              }}
-            />
+            <View style={styles.timeContainer}>
+              {/* Start Time Picker */}
+              <DateTimePicker
+                style={styles.selectTime}
+                value={startTime || new Date()}
+                mode="time"
+                display="default"
+                onChange={(event, selectedTime) => {
+                  if (selectedTime) {
+                    setStartTime(selectedTime);
+                  }
+                }}
+              />
 
-            {/* End Time Picker */}
-            <DateTimePicker
-              style={styles.selectTime}
-              value={endTime || new Date()}
-              mode="time"
-              display="default"
-              onChange={(event, selectedTime) => {
-                if (selectedTime) {
-                  setEndTime(selectedTime);
-                }
-              }}
-                />
-
-          </View>
+              {/* End Time Picker */}
+              <DateTimePicker
+                style={styles.selectTime}
+                value={endTime || new Date()}
+                mode="time"
+                display="default"
+                onChange={(event, selectedTime) => {
+                  if (selectedTime) {
+                    setEndTime(selectedTime);
+                  }
+                }}
+              />
+            </View>
 
             <TextInput
               placeholder="📍 Location"
               style={styles.pickLocation}
               value={location}
               onChangeText={setLocation}
-              placeholderTextColor = "#e2baa1"
+              placeholderTextColor="#e2baa1"
             />
 
             <TouchableOpacity
@@ -223,7 +234,6 @@ const BottomMenu = () => {
           </View>
         ) : (
           <>
-
             {/* Tasks Container */}
             <View style={styles.tasksContainer}>
               {tasks.length === 0 ? (
@@ -283,7 +293,7 @@ const styles = StyleSheet.create({
     color: "#e2baa1",
     fontSize: 24,
     fontWeight: "bold",
-    top: -1
+    top: -1,
   },
   closeMenuButton: {
     position: "absolute",
@@ -296,11 +306,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 3,
-    borderWidth: 2, 
+    borderWidth: 2,
     borderColor: "#153CE6", // Blue circular outline for today
     borderRadius: 50, // Fully rounded
   },
-  closeMenuButtonText:  {
+  closeMenuButtonText: {
     color: "#153CE6",
     fontSize: 24,
     height: 32,
@@ -330,12 +340,11 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     fontFamily: "Inter",
     fontWeight: "bold",
-    color: "white"
-    
+    color: "white",
   },
   tasksContainer: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     paddingVertical: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -346,7 +355,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
   },
   taskItem: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F0A26F",
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -384,7 +393,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
     borderRadius: 5,
   },
-  timeContainer:  {
+  timeContainer: {
     flexDirection: "row", // Places elements in a row
     width: "90%", // Ensures it takes the full width
     paddingHorizontal: 10, // Optional: Padding for spacing
@@ -400,11 +409,18 @@ const styles = StyleSheet.create({
   },
   selectDate: {
     backgroundColor: "#3657c1",
-    borderRadius: 20, 
+    borderRadius: 20,
+    //padding: 10,
     height: 52,
     width: 290,
+    marginVertical: 5,
   },
-  titleInput:{
+  dateText: {
+    fontSize: 20,
+    fontFamily: "Inter",
+    color: "#e2baa1",
+  },
+  titleInput: {
     textAlign: "center",
     color: "#153CE6",
     padding: 10,
@@ -412,9 +428,9 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     fontWeight: "bold",
     placeholderTextColor: "black",
-    bottom: 25
+    bottom: 25,
   },
-  pickCategory:{
+  pickCategory: {
     textAlign: "center",
     color: "#e2baa1",
     backgroundColor: "#3657c1",
@@ -426,7 +442,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter",
   },
-  pickLocation:{
+  pickLocation: {
     backgroundColor: "#3657c1",
     borderRadius: 20,
     padding: 10,
@@ -437,7 +453,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter",
     color: "#e2baa1",
   },
-
 });
 
-export default BottomMenu;
+export default PlansTab;
