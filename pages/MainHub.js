@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Image,
-  ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { signOut } from "../utils/auth";
+import MainHubDay from "./components/MainHubDay";
+import MainHubNight from "./components/MainHubNight";
 import MenuBar from "./components/MenuBar";
 import UpperMenu from "./components/UpperMenu";
 
 const MainHub = ({ navigation }) => {
+  const [isDayTime, setIsDayTime] = useState(true);
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -25,62 +27,50 @@ const MainHub = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 7 && currentHour <= 19) {
+      setIsDayTime(true); 
+    } else {
+      setIsDayTime(false); 
+    }
+  }, []);
+
+
   return (
-    <ImageBackground
-      source={require("../assets/background.png")}
-      style={styles.background}
-      resizeMode="cover"
-    >
+    <View style={styles.background}>
+      {isDayTime ? <MainHubDay /> : <MainHubNight />}
+
       <UpperMenu />
+
       <TouchableOpacity
         onPress={handleLogout}
         style={{ marginTop: 50, marginRight: 16 }}
       >
+    
         <Text style={{ color: "blue" }}>Logout</Text>
       </TouchableOpacity>
-      <DuckAnimation />
+  
       <MenuBar navigation={navigation} activeScreen="MainHub" />
-    </ImageBackground>
-  );
-};
-
-const DuckAnimation = () => {
-  const [isFirstImage, setIsFirstImage] = useState(true); // tracking which image is displayed
-  const handlePress = () => {
-    setIsFirstImage((prevState) => !prevState); // toggle the state
-  };
-
-  return (
-    <View style={styles.imageBox}>
-      <TouchableOpacity onPress={handlePress}>
-        <Image
-          source={
-            isFirstImage
-              ? require("../assets/duckwithbodynohearts.png")
-              : require("../assets/duckwithbody.png")
-          }
-          style={styles.image}
-        />
-      </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
   },
-  imageBox: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
+  UpperMenuBox: {
+
   },
-  image: {
-    width: 300,
-    height: 300,
-    resizeMode: "contain",
-    zIndex: 0,
+
+  buttonBox: {
+
+  },
+
+  menuBarBox: {
+
   },
 });
 
