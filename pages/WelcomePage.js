@@ -6,9 +6,12 @@ import {
   ImageBackground,
   Pressable,
   StyleSheet,
-  View
+  View,
 } from "react-native";
-import FastImage from "react-native-fast-image";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 import { useBouncePress } from "../utils/useBouncePress";
 import GradientButton from "./components/GradientButton";
 import BubbleBackground from "./user/components/bubble/BubbleBackground";
@@ -16,10 +19,9 @@ import BubbleBackground from "./user/components/bubble/BubbleBackground";
 const { width, height } = Dimensions.get("window");
 
 const WelcomePage = ({ navigation }) => {
-  
   const { bounceAnim, handlePress } = useBouncePress();
   const gifLoopAnim = useRef(new Animated.Value(1)).current;
- 
+
   useEffect(() => {
     const startLoopingAnimation = () => {
       Animated.loop(
@@ -37,7 +39,7 @@ const WelcomePage = ({ navigation }) => {
         ])
       ).start();
     };
- 
+
     startLoopingAnimation();
 
     return () => {
@@ -51,27 +53,30 @@ const WelcomePage = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
-    <View style={styles.header.box}>
-      <Pressable onPress={handlePress}>
-        <Animated.Image
+      <View style={styles.header.box}>
+        <Pressable onPress={handlePress}>
+          <Animated.Image
             source={require("../assets/welcome.png")}
-            style={[styles.header.headerImage, { transform: [{ scale: bounceAnim }] }]}
-            resizeMode={FastImage.resizeMode.contain}
+            style={[
+              styles.header.headerImage,
+              { transform: [{ scale: bounceAnim }] },
+            ]}
+            // resizeMode={FastImage.resizeMode.contain}
           />
-          </Pressable>
-    </View>
+        </Pressable>
+      </View>
 
-     {/* Button Container */}
-     <View style={styles.buttonContainer}>
-          <GradientButton
-            text="Let's Get Started"
-            width={width * 0.58}
-            height={height * 0.08}
-            colors={["#F3CAAF", "#739CEF"]}
-            textColor="#153CE6"
-            onPress={() => navigation.navigate("Login")}
-          />
-        </View>
+      {/* Button Container */}
+      <View style={styles.buttonContainer}>
+        <GradientButton
+          text="Let's Get Started"
+          width={width * 0.58}
+          height={height * 0.08}
+          colors={["#F3CAAF", "#739CEF"]}
+          textColor="#153CE6"
+          onPress={() => navigation.navigate("Login")}
+        />
+      </View>
 
       {/* Bubbles */}
       <BubbleBackground pointerEvents="box-none" />
@@ -85,96 +90,93 @@ const WelcomePage = ({ navigation }) => {
         />
       </View>
 
-      <Animated.View style={[styles.animationBox, { transform: [{ scale: gifLoopAnim }] }]}>
+      <Animated.View
+        style={[styles.animationBox, { transform: [{ scale: gifLoopAnim }] }]}
+      >
         <Image
-          source={require("../assets/welcome_animated.gif")} 
+          source={require("../assets/welcome_animated.gif")}
           style={styles.animation}
           resizeMode="contain"
         />
       </Animated.View>
-
     </ImageBackground>
   );
 };
 
-
 const styles = StyleSheet.create({
-    background: {
-      flex: 1,
-      flexDirection: "column",
+  background: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  header: {
+    box: {
+      // flex: 1,
       justifyContent: "center",
-      alignItems: "center",
-    },
-  
-    header: {
-      box: {
-        flex: 0,
-        top: height * -(0.1),
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        height: height * 0.3,
-        width: "90%",
-        zIndex: 2,
-        overflow: "hidden",
-      },
-      headerImage: {
-        resizeMode: "contain",
-        width: width * 0.8,
-        height: height * 0.5,
-      },
-    },
-  
-    buttonContainer: {
-      flex: 0.2,
-      bottom: height * 0.1,
-      justifyContent: "flex-start",
       alignItems: "center",
       alignSelf: "center",
-      width: width * 0.6,
-      height: height * 0.1,
+
+      // width: width * 0.8,
       zIndex: 5,
     },
-
-    animationBox: {
-      position: 'absolute',
-      top: height * 0.58,
-      left: width * 0.01,
-      width: width * 0.7,
-      height: height * 0.65,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-
-    animation:  {
-      width: "100%",
-      height: "100%",
+    headerImage: {
+      // borderWidth: 1,
+      // borderColor: "black",
+      width: wp("60%"),
+      height: hp("40%"),
       aspectRatio: 1,
     },
-    
-    footer: {
-      box: {
-        position: "absolute",
-        top: height * 0.03,
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        width: width * 0.2,
-        height: height * 0.25,
-      },
-      logo: {
-        width: "100%",
-        height: "100%",
-        alignSelf: "center",
-        borderRadius: Math.min(width, height) * 0.1,
-        opacity: 0.77,
-        shadowColor: "black",
-        shadowOffset: { width: 0, height: height * 0.005 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-        elevation: 5,
-        justifyContent: "center",
-      },
+  },
+
+  buttonContainer: {
+    flex: 0.25,
+    bottom: -70,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    alignSelf: "stretch",
+    zIndex: 6,
+  },
+
+  animationBox: {
+    position: "absolute",
+    top: height * 0.55,
+    left: width * 0.01,
+    width: width * 0.8,
+    height: height * 0.8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  animation: {
+    width: "100%",
+    height: "100%",
+    aspectRatio: 1,
+  },
+
+  footer: {
+    box: {
+      position: "absolute",
+      top: height * 0.08,
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      width: width * 0.2,
+      height: height * 0.25,
     },
-  });
+    logo: {
+      width: "100%",
+      height: "100%",
+      alignSelf: "center",
+      borderRadius: Math.min(width, height) * 0.1,
+      opacity: 0.77,
+      shadowColor: "black",
+      shadowOffset: { width: 0, height: height * 0.005 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+      justifyContent: "center",
+    },
+  },
+});
 export default WelcomePage;
