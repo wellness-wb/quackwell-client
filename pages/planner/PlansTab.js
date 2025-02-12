@@ -10,31 +10,32 @@ import {
   TextInput,
   Alert,
   Button,
+  Icon,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const PlansTab = () => {
   const [menuHeight] = useState(new Animated.Value(50)); // Initial collapsed height
-  const [selectedOption, setSelectedOption] = useState("today"); // "today" is selected by default
+
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
   // Form state
   const [name, setName] = useState("");
   // We'll store date, start time, and end time as Date objects
-  const [date, setDate] = useState(null);
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
+  const [date, setDate] = useState("Set Date");
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
 
   // Picker visibility state
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
-  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const [startTime, setStartTime] = useState("Start Time");
+  const [isStartTimePickerVisible, setStartTimePickerVisibility] = useState(false);
+  const [endTime, setEndTime] = useState("End Time");
+  const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("Set Date");
+
+  const [errors, setErrors] = useState({ name: false, date: false, startTime: false, endTime: false });
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -62,13 +63,6 @@ const PlansTab = () => {
     },
   });
 
-  // Define colors for selected and unselected states
-  const selectedBackground = "#153CE6";
-  const selectedTextColor = "#e2baa1";
-  const unselectedBackground = "#e2baa1";
-  const unselectedTextColor = "#153CE6";
-
-  const dateTimeColor = "#F3CAAF";
 
   // Helper: Expand the menu immediately
   const expandMenu = () => {
@@ -79,41 +73,35 @@ const PlansTab = () => {
     }).start();
   };
 
-  // Format Date object into a readable string
-  const formatDate = (d) => {
-    if (!d) return "Select Date";
-    return d.toLocaleDateString();
-  };
-
-  // Format Time object into a readable time string
-  const formatTime = (t) => {
-    if (!t) return "Select Time";
-    return t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   // Handle form submission
   const handleSubmit = () => {
     // Validate mandatory fields: name, date, start time, and end time.
-    if (!name || !date || !startTime || !endTime) {
-      Alert.alert(
-        "Missing Input",
-        "Name, Date, Start Time, and End Time are mandatory!"
-      );
+    const newErrors = {
+      name: !name,
+      date: date === "Set Date",
+      startTime: (startTime === "Start Time" || startTime > endTime),
+      endTime: (endTime === "End Time" || startTime > endTime),
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).includes(true)) {
       return;
     }
+
     // For demonstration, we create a string summary for the task.
     const newTask = `${name}\n
-    ${formatDate(date)}\n
-    ${formatTime(startTime)} - ${formatTime(endTime)}\n
+    ${date}\n
+    ${startTime} - ${endTime}\n
     ${location}\n
     ${category}`;
     setTasks([...tasks, newTask]);
 
     // Reset form fields and hide form
     setName("");
-    setDate(null);
-    setStartTime(null);
-    setEndTime(null);
+    setDate("Set Date");
+    setStartTime("Start Time");
+    setEndTime("End Time");
     setLocation("");
     setCategory("");
     setShowForm(false);
@@ -159,7 +147,7 @@ const PlansTab = () => {
               style={styles.titleInput}
               value={name}
               onChangeText={setName}
-              placeholderTextColor="#153CE6" //plan on changing to a color diff from when the title is input
+              placeholderTextColor={errors.name ? "#e34060" : "#4462e3"}
             />
 
             <TextInput
@@ -171,19 +159,21 @@ const PlansTab = () => {
             />
 
             {/* Date Picker */}
-
-            <View style={styles.selectDate}>
-              <Text style={styles.dateText}>{selectedDate}</Text>
-              <Button title="" onPress={() => setDatePickerVisibility(true)} />
-            </View>
+            <TouchableOpacity style={[styles.selectDate, errors.date && styles.errorInput]} onPress={() => setDatePickerVisibility(true)}>
+              <FontAwesome5
+                        name="calendar-day"
+                        solid size = {20}
+                        color={"#e2baa1"}
+                        />
+              <Text style={[styles.dateTimeText, { color: errors.date ? "#e34060" : "#e2baa1" }]}>{date}</Text>
+            </TouchableOpacity>
 
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
               mode="date"
               themeVariant="light"
-              //display="inline"
               onConfirm={(date) => {
-                setSelectedDate(date.toDateString());
+                setDate(date.toDateString());
                 setDatePickerVisibility(false);
               }}
               onCancel={() => setDatePickerVisibility(false)}
@@ -191,29 +181,41 @@ const PlansTab = () => {
 
             <View style={styles.timeContainer}>
               {/* Start Time Picker */}
-              <DateTimePicker
-                style={styles.selectTime}
-                value={startTime || new Date()}
+              <TouchableOpacity 
+                style={[styles.selectTime, errors.endTime && styles.errorInput]}
+                onPress={() => setStartTimePickerVisibility(true)}
+              >
+                <Text style={[styles.dateTimeText, { color: errors.startTime ? "#e34060" : "#e2baa1" }]}>{startTime}</Text>
+              </TouchableOpacity>
+
+              <DateTimePickerModal
+                isVisible={isStartTimePickerVisible}
                 mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                  if (selectedTime) {
-                    setStartTime(selectedTime);
-                  }
+                themeVariant="light"
+                onConfirm={(startTime) => {
+                  setStartTime(startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+                  setStartTimePickerVisibility(false);
                 }}
+                onCancel={() => setStartTimePickerVisibility(false)}
               />
 
               {/* End Time Picker */}
-              <DateTimePicker
-                style={styles.selectTime}
-                value={endTime || new Date()}
+              <TouchableOpacity
+                style={[styles.selectTime, errors.endTime && styles.errorInput]}
+                onPress={() => setEndTimePickerVisibility(true)}
+              >
+                <Text style={[styles.dateTimeText, { color: errors.endTime ? "#e34060" : "#e2baa1" }]}>{endTime}</Text>
+              </TouchableOpacity>
+
+              <DateTimePickerModal
+                isVisible={isEndTimePickerVisible}
                 mode="time"
-                display="default"
-                onChange={(event, selectedTime) => {
-                  if (selectedTime) {
-                    setEndTime(selectedTime);
-                  }
+                themeVariant="light"
+                onConfirm={(endTime) => {
+                  setEndTime(endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+                  setEndTimePickerVisibility(false);
                 }}
+                onCancel={() => setEndTimePickerVisibility(false)}
               />
             </View>
 
@@ -225,12 +227,18 @@ const PlansTab = () => {
               placeholderTextColor="#e2baa1"
             />
 
+            {/* Submit Button */}
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}
             >
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
+
+            {/* Error Message */}
+            {Object.values(errors).some((error) => error) && (
+              <Text style={styles.errorMessage}>Invalid Input</Text>
+            )}
           </View>
         ) : (
           <>
@@ -316,14 +324,6 @@ const styles = StyleSheet.create({
     height: 32,
     fontFamily: "Inter",
   },
-  calendarContainer: {
-    marginTop: 50, // Give space for the slider handle and header
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 30,
@@ -334,13 +334,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 2,
     bottom: 25,
-  },
-  buttonText: {
-    fontSize: 16,
-    textTransform: "capitalize",
-    fontFamily: "Inter",
-    fontWeight: "bold",
-    color: "white",
   },
   tasksContainer: {
     flex: 1,
@@ -399,6 +392,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10, // Optional: Padding for spacing
   },
   selectTime: {
+    height: 40,
     flex: 1,
     backgroundColor: "#3657c1",
     borderRadius: 20,
@@ -406,19 +400,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     fontSize: 16,
     fontFamily: "Inter",
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 7,
   },
   selectDate: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#3657c1",
     borderRadius: 20,
-    //padding: 10,
+    padding: 10,
     height: 52,
     width: 290,
     marginVertical: 5,
   },
-  dateText: {
+  dateTimeText: {
     fontSize: 20,
     fontFamily: "Inter",
-    color: "#e2baa1",
+    marginHorizontal: 5,
   },
   titleInput: {
     textAlign: "center",
@@ -427,7 +426,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: "Inter",
     fontWeight: "bold",
-    placeholderTextColor: "black",
     bottom: 25,
   },
   pickCategory: {
@@ -436,7 +434,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3657c1",
     bottom: 25,
     width: 86,
-    height: 25,
+    height: 30,
     borderRadius: 20,
     padding: 10,
     fontSize: 14,
@@ -452,6 +450,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Inter",
     color: "#e2baa1",
+  },
+  errorMessage: {
+    color: "#e34060",
+    marginTop: 10,
+    textAlign: "center",
   },
 });
 
