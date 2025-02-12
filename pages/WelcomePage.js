@@ -109,34 +109,39 @@ const styles = StyleSheet.create({
     header: {
       box: {
         flex: 0,
+        top: height * -(0.1),
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        height: height * 0.4,
-        width: width * 0.8,
-        zIndex: 5,
+        height: height * 0.3,
+        width: "90%",
+        zIndex: 2,
+        overflow: "hidden",
       },
       headerImage: {
         resizeMode: "contain",
-        width: width * 0.9,
-        height: height * 0.6,
+        width: width * 0.8,
+        height: height * 0.5,
       },
     },
   
     buttonContainer: {
       flex: 0.2,
-      bottom: -70,
+      bottom: height * 0.1,
       justifyContent: "flex-start",
       alignItems: "center",
-      alignSelf: "stretch",
+      alignSelf: "center",
+      width: width * 0.6,
+      height: height * 0.1,
+      zIndex: 5,
     },
 
     animationBox: {
       position: 'absolute',
-      top: height * 0.5,
+      top: height * 0.58,
       left: width * 0.01,
-      width: width * 0.8,
-      height: height * 0.8,
+      width: width * 0.7,
+      height: height * 0.65,
       justifyContent: "center",
       alignItems: "center",
     },
@@ -150,7 +155,7 @@ const styles = StyleSheet.create({
     footer: {
       box: {
         position: "absolute",
-        top: height * 0.08,
+        top: height * 0.03,
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
