@@ -31,7 +31,7 @@ function AuthStack() {
         cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS,
         cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
       }}
-      initialRouteName="Login"
+      initialRouteName="WelcomePage"
     >
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
