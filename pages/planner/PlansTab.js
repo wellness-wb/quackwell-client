@@ -108,12 +108,15 @@ const PlansTab = () => {
       return;
     }
 
-    // For demonstration, we create a string summary for the task.
-    const newTask = `${name}\n
-    ${date}\n
-    ${startTime} - ${endTime}\n
-    ${location}\n
-    ${category}`;
+    // Create a task object with individual properties
+    const newTask = {
+      name,
+      date,
+      startTime,
+      endTime,
+      location,
+      category,
+    };
     setTasks([...tasks, newTask]);
 
     // Reset form fields and hide form
@@ -188,7 +191,7 @@ const PlansTab = () => {
               onPress={() => setDatePickerVisibility(true)}
             >
               <FontAwesome5
-                name="calendar-day"
+                name="calendar-alt"
                 solid
                 size={20}
                 color={'#e2baa1'}
@@ -312,9 +315,28 @@ const PlansTab = () => {
               data={tasks}
               keyExtractor={(index) => index.toString()}
               renderItem={({ item }) => (
-                <View style={styles.taskItem}>
-                  <Text style={styles.taskText}>{item}</Text>
-                </View>
+                <LinearGradient
+                  colors={['#f5eedf', '#f2b58c']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.taskItem}
+                >
+                  <View style={styles.taskHeader}>
+                    {/* Task Name */}
+                    <View>
+                      <Text style={styles.nameText}>{item.name}</Text>
+                      <Text style={styles.catText}>({item.category})</Text>
+                    </View>
+                    {/* Start Time and End Time aligned to the right */}
+                    <View>
+                      <Text style={styles.timeText}>{item.startTime}</Text>
+                      <Text style={styles.timeText}>{item.endTime}</Text>
+                    </View>
+                  </View>
+
+                  {/* <Text style={styles.dateText}>{item.date}</Text> */}
+                  <Text style={styles.locText}>📍 {item.location}</Text>
+                </LinearGradient>
               )}
               renderHiddenItem={({ index }) => (
                 <TouchableOpacity
@@ -330,7 +352,6 @@ const PlansTab = () => {
                         },
                         { text: 'Cancel' },
                       ],
-                      { cancelable: true },
                     )
                   }
                 >
@@ -359,7 +380,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: -30,
-    opacity: 0.77,
+    opacity: 1,
     borderTopLeftRadius: 20, // Rounded corners at the top
     borderTopRightRadius: 20,
     overflow: 'hidden',
@@ -422,18 +443,6 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 2,
     bottom: 25,
-  },
-  tasksContainer: {
-    flex: 1,
-    paddingHorizontal: 50,
-    paddingVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noTasksText: {
-    fontSize: 18,
-    color: '#333',
-    fontFamily: 'Inter',
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -532,28 +541,65 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
+  noTasksText: {
+    fontSize: 18,
+    color: '#333',
+    fontFamily: 'Inter',
+  },
   taskItem: {
-    backgroundColor: '#fff',
+    flex: 1,
     padding: 15,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-    //paddingVertical: '5',
+    marginVertical: 20,
+    marginHorizontal: 35,
+    top: 50,
+    borderRadius: 20,
+    paddingVertical: 10,
+    height: 120,
   },
   taskText: {
     fontSize: 16,
+    fontFamily: 'Inter',
+    color: 'green',
   },
   deleteButton: {
     backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
     width: 100,
-    height: '100%',
+    height: 120,
     position: 'absolute',
+    flex: 1,
     right: 0,
+    marginVertical: 20,
+    marginHorizontal: 35,
+    top: 50,
+    borderRadius: 20,
   },
-  deleteButtonText: {
-    color: 'white',
+  taskHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Aligns the name and times to both sides of the container
+    alignItems: 'center',
+    //marginVertical: 10,
+    marginBottom: 10,
+  },
+  nameText: {
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#153CE6',
+  },
+  catText: {
+    color: '#153CE6',
+  },
+  timeText: {
+    fontWeight: 'medium',
+    color: '#153CE6',
+    fontSize: 20,
+  },
+  dateText: {},
+  locText: {
+    fontWeight: 'light',
+    fontSize: 20,
+    color: '#153CE6',
   },
 });
 
