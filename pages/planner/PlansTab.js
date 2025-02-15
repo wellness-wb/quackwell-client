@@ -1,5 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import {
   Animated,
   PanResponder,
@@ -9,11 +9,10 @@ import {
   Text,
   TextInput,
   Alert,
-  Button,
-  Icon,
-} from "react-native";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+} from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 const PlansTab = () => {
   const [menuHeight] = useState(new Animated.Value(50)); // Initial collapsed height
@@ -22,53 +21,73 @@ const PlansTab = () => {
   const [showForm, setShowForm] = useState(false);
 
   // Form state
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   // We'll store date, start time, and end time as Date objects
-  const [date, setDate] = useState("Set Date");
-  const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("");
+  const [date, setDate] = useState('Set Date');
+  const [location, setLocation] = useState('');
+  const [category, setCategory] = useState('');
 
   // Picker visibility state
-  const [startTime, setStartTime] = useState("Start Time");
-  const [isStartTimePickerVisible, setStartTimePickerVisibility] = useState(false);
-  const [endTime, setEndTime] = useState("End Time");
+  const [startTime, setStartTime] = useState('Start Time');
+  const [isStartTimePickerVisible, setStartTimePickerVisibility] =
+    useState(false);
+  const [endTime, setEndTime] = useState('End Time');
   const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const [errors, setErrors] = useState({ name: false, date: false, startTime: false, endTime: false });
+  const [errors, setErrors] = useState({
+    name: false,
+    date: false,
+    startTime: false,
+    endTime: false,
+  });
 
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event(
-      [null, { dy: menuHeight }], // Adjust height based on swipe direction
-      { useNativeDriver: false }
-    ),
+    onStartShouldSetPanResponder: (evt, gestureState) => {
+      // Only allow movement if the touch starts at the top 50px of the menu
+      return evt.nativeEvent.locationY < 50;
+    },
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      return Math.abs(gestureState.dy) > 10; // Only react if swipe is significant
+    },
+    onPanResponderMove: (_, gestureState) => {
+      let newHeight = menuHeight._value - gestureState.dy; // Calculate new height
+
+      // Ensure the height stays within the bounds (50 - 600)
+      newHeight = Math.max(50, Math.min(600, newHeight));
+
+      menuHeight.setValue(newHeight);
+    },
     onPanResponderRelease: (_, gestureState) => {
-      const threshold = 20; // Minimum swipe distance to trigger expansion/collapse
+      const threshold = 100; // Minimum swipe distance to trigger expansion/collapse
+
       if (gestureState.dy < -threshold) {
-        // Swiping UP expands the menu
-        Animated.timing(menuHeight, {
-          toValue: 600, // Expanded height
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
+        expandMenu(); // Swiping up -> expand
+      } else if (gestureState.dy > threshold) {
+        collapseMenu(); // Swiping down -> collapse
       } else {
-        // Swiping DOWN collapses the menu
-        Animated.timing(menuHeight, {
-          toValue: 50, // Collapsed height
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
+        // Snap to closest state if not past threshold
+        if (menuHeight._value > 300) {
+          expandMenu();
+        } else {
+          collapseMenu();
+        }
       }
     },
   });
 
-
-  // Helper: Expand the menu immediately
   const expandMenu = () => {
     Animated.timing(menuHeight, {
       toValue: 600,
-      duration: 300,
+      duration: 400,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const collapseMenu = () => {
+    Animated.timing(menuHeight, {
+      toValue: 50,
+      duration: 400,
       useNativeDriver: false,
     }).start();
   };
@@ -78,9 +97,9 @@ const PlansTab = () => {
     // Validate mandatory fields: name, date, start time, and end time.
     const newErrors = {
       name: !name,
-      date: date === "Set Date",
-      startTime: (startTime === "Start Time" || startTime > endTime),
-      endTime: (endTime === "End Time" || startTime > endTime),
+      date: date === 'Set Date',
+      startTime: startTime === 'Start Time' || startTime > endTime,
+      endTime: endTime === 'End Time' || startTime > endTime,
     };
 
     setErrors(newErrors);
@@ -98,13 +117,18 @@ const PlansTab = () => {
     setTasks([...tasks, newTask]);
 
     // Reset form fields and hide form
-    setName("");
-    setDate("Set Date");
-    setStartTime("Start Time");
-    setEndTime("End Time");
-    setLocation("");
-    setCategory("");
+    setName('');
+    setDate('Set Date');
+    setStartTime('Start Time');
+    setEndTime('End Time');
+    setLocation('');
+    setCategory('');
     setShowForm(false);
+  };
+
+  const handleDeleteTask = (index) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
   };
 
   return (
@@ -124,7 +148,7 @@ const PlansTab = () => {
       </TouchableOpacity>
 
       <LinearGradient
-        colors={["#9bddff", "#F3CAAF"]}
+        colors={['#9bddff', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
@@ -147,7 +171,7 @@ const PlansTab = () => {
               style={styles.titleInput}
               value={name}
               onChangeText={setName}
-              placeholderTextColor={errors.name ? "#e34060" : "#4462e3"}
+              placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
             />
 
             <TextInput
@@ -159,13 +183,24 @@ const PlansTab = () => {
             />
 
             {/* Date Picker */}
-            <TouchableOpacity style={[styles.selectDate, errors.date && styles.errorInput]} onPress={() => setDatePickerVisibility(true)}>
+            <TouchableOpacity
+              style={[styles.selectDate, errors.date && styles.errorInput]}
+              onPress={() => setDatePickerVisibility(true)}
+            >
               <FontAwesome5
-                        name="calendar-day"
-                        solid size = {20}
-                        color={"#e2baa1"}
-                        />
-              <Text style={[styles.dateTimeText, { color: errors.date ? "#e34060" : "#e2baa1" }]}>{date}</Text>
+                name="calendar-day"
+                solid
+                size={20}
+                color={'#e2baa1'}
+              />
+              <Text
+                style={[
+                  styles.dateTimeText,
+                  { color: errors.date ? '#e34060' : '#e2baa1' },
+                ]}
+              >
+                {date}
+              </Text>
             </TouchableOpacity>
 
             <DateTimePickerModal
@@ -173,7 +208,13 @@ const PlansTab = () => {
               mode="date"
               themeVariant="light"
               onConfirm={(date) => {
-                setDate(date.toDateString());
+                setDate(
+                  date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  }),
+                );
                 setDatePickerVisibility(false);
               }}
               onCancel={() => setDatePickerVisibility(false)}
@@ -181,11 +222,18 @@ const PlansTab = () => {
 
             <View style={styles.timeContainer}>
               {/* Start Time Picker */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.selectTime, errors.endTime && styles.errorInput]}
                 onPress={() => setStartTimePickerVisibility(true)}
               >
-                <Text style={[styles.dateTimeText, { color: errors.startTime ? "#e34060" : "#e2baa1" }]}>{startTime}</Text>
+                <Text
+                  style={[
+                    styles.dateTimeText,
+                    { color: errors.startTime ? '#e34060' : '#e2baa1' },
+                  ]}
+                >
+                  {startTime}
+                </Text>
               </TouchableOpacity>
 
               <DateTimePickerModal
@@ -193,7 +241,12 @@ const PlansTab = () => {
                 mode="time"
                 themeVariant="light"
                 onConfirm={(startTime) => {
-                  setStartTime(startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+                  setStartTime(
+                    startTime.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }),
+                  );
                   setStartTimePickerVisibility(false);
                 }}
                 onCancel={() => setStartTimePickerVisibility(false)}
@@ -204,7 +257,14 @@ const PlansTab = () => {
                 style={[styles.selectTime, errors.endTime && styles.errorInput]}
                 onPress={() => setEndTimePickerVisibility(true)}
               >
-                <Text style={[styles.dateTimeText, { color: errors.endTime ? "#e34060" : "#e2baa1" }]}>{endTime}</Text>
+                <Text
+                  style={[
+                    styles.dateTimeText,
+                    { color: errors.endTime ? '#e34060' : '#e2baa1' },
+                  ]}
+                >
+                  {endTime}
+                </Text>
               </TouchableOpacity>
 
               <DateTimePickerModal
@@ -212,7 +272,12 @@ const PlansTab = () => {
                 mode="time"
                 themeVariant="light"
                 onConfirm={(endTime) => {
-                  setEndTime(endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+                  setEndTime(
+                    endTime.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    }),
+                  );
                   setEndTimePickerVisibility(false);
                 }}
                 onCancel={() => setEndTimePickerVisibility(false)}
@@ -243,19 +308,42 @@ const PlansTab = () => {
         ) : (
           <>
             {/* Tasks Container */}
-            <View style={styles.tasksContainer}>
-              {tasks.length === 0 ? (
-                <Text style={styles.noTasksText}>
-                  nothing planned for today
-                </Text>
-              ) : (
-                tasks.map((task, index) => (
-                  <View key={index} style={styles.taskItem}>
-                    <Text style={styles.taskText}>{task}</Text>
-                  </View>
-                ))
+            <SwipeListView
+              data={tasks}
+              keyExtractor={(index) => index.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.taskItem}>
+                  <Text style={styles.taskText}>{item}</Text>
+                </View>
               )}
-            </View>
+              renderHiddenItem={({ index }) => (
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() =>
+                    Alert.alert(
+                      'Are you sure you want to delete this task?',
+                      'This action cannot be undone',
+                      [
+                        {
+                          text: 'Delete',
+                          onPress: () => handleDeleteTask(index),
+                        },
+                        { text: 'Cancel' },
+                      ],
+                      { cancelable: true },
+                    )
+                  }
+                >
+                  <FontAwesome5
+                    name="trash-alt"
+                    solid
+                    size={20}
+                    color={'#e2baa1'}
+                  />
+                </TouchableOpacity>
+              )}
+              rightOpenValue={-100} // Controls how much the item swipes left
+            />
           </>
         )}
       </LinearGradient>
@@ -268,13 +356,13 @@ const PlansTab = () => {
 
 const styles = StyleSheet.create({
   menuBar: {
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     bottom: -30,
     opacity: 0.77,
     borderTopLeftRadius: 20, // Rounded corners at the top
     borderTopRightRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5, // Android shadow
@@ -282,53 +370,53 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    justifyContent: "flex-start", // Push content upwards when expanded
+    justifyContent: 'flex-start', // Push content upwards when expanded
   },
   addButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 10,
     right: 10,
     zIndex: 2,
-    backgroundColor: "#153CE6",
+    backgroundColor: '#153CE6',
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 3,
   },
   addButtonText: {
-    color: "#e2baa1",
+    color: '#e2baa1',
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     top: -1,
   },
   closeMenuButton: {
-    position: "absolute",
+    position: 'absolute',
     top: -50,
     left: 10,
     zIndex: 2,
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 3,
     borderWidth: 2,
-    borderColor: "#153CE6", // Blue circular outline for today
+    borderColor: '#153CE6', // Blue circular outline for today
     borderRadius: 50, // Fully rounded
   },
   closeMenuButtonText: {
-    color: "#153CE6",
+    color: '#153CE6',
     fontSize: 24,
     height: 32,
-    fontFamily: "Inter",
+    fontFamily: 'Inter',
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
@@ -339,75 +427,63 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 50,
     paddingVertical: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   noTasksText: {
     fontSize: 18,
-    color: "#333",
-    fontFamily: "Inter",
-  },
-  taskItem: {
-    backgroundColor: "#F0A26F",
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 10,
-    width: "100%",
-  },
-  taskText: {
-    fontSize: 16,
-    color: "#333",
-    fontFamily: "Inter",
+    color: '#333',
+    fontFamily: 'Inter',
   },
   formContainer: {
     paddingHorizontal: 20,
     marginTop: 60, // Leave space for the "+" button and any header
-    alignItems: "center",
+    alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: "#153CE6",
+    backgroundColor: '#153CE6',
     padding: 15,
     borderRadius: 20,
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 10,
   },
   submitButtonText: {
-    color: "#e2baa1",
+    color: '#e2baa1',
     fontSize: 16,
-    fontFamily: "Inter",
-    fontWeight: "bold",
+    fontFamily: 'Inter',
+    fontWeight: 'bold',
   },
   sliderHandle: {
-    position: "absolute",
+    position: 'absolute',
     top: 8, // Position the handle near the top
-    alignSelf: "center",
+    alignSelf: 'center',
     height: 10,
     width: 80,
-    backgroundColor: "#ccc",
+    backgroundColor: '#ccc',
     borderRadius: 5,
   },
   timeContainer: {
-    flexDirection: "row", // Places elements in a row
-    width: "90%", // Ensures it takes the full width
+    flexDirection: 'row', // Places elements in a row
+    width: '90%', // Ensures it takes the full width
     paddingHorizontal: 10, // Optional: Padding for spacing
   },
   selectTime: {
     height: 40,
     flex: 1,
-    backgroundColor: "#3657c1",
+    backgroundColor: '#3657c1',
     borderRadius: 20,
     marginVertical: 5,
     marginHorizontal: 5,
     fontSize: 16,
-    fontFamily: "Inter",
-    alignItems: "center",
-    flexDirection: "row",
+    fontFamily: 'Inter',
+    alignItems: 'center',
+    flexDirection: 'row',
     padding: 7,
   },
   selectDate: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#3657c1",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3657c1',
     borderRadius: 20,
     padding: 10,
     height: 52,
@@ -416,45 +492,68 @@ const styles = StyleSheet.create({
   },
   dateTimeText: {
     fontSize: 20,
-    fontFamily: "Inter",
+    fontFamily: 'Inter',
     marginHorizontal: 5,
   },
   titleInput: {
-    textAlign: "center",
-    color: "#153CE6",
+    textAlign: 'center',
+    color: '#153CE6',
     padding: 10,
     fontSize: 30,
-    fontFamily: "Inter",
-    fontWeight: "bold",
+    fontFamily: 'Inter',
+    fontWeight: 'bold',
     bottom: 25,
   },
   pickCategory: {
-    textAlign: "center",
-    color: "#e2baa1",
-    backgroundColor: "#3657c1",
+    textAlign: 'center',
+    color: '#e2baa1',
+    backgroundColor: '#3657c1',
     bottom: 25,
     width: 86,
     height: 30,
     borderRadius: 20,
     padding: 10,
     fontSize: 14,
-    fontFamily: "Inter",
+    fontFamily: 'Inter',
   },
   pickLocation: {
-    backgroundColor: "#3657c1",
+    backgroundColor: '#3657c1',
     borderRadius: 20,
     padding: 10,
     height: 52,
     width: 290,
     marginVertical: 5,
     fontSize: 20,
-    fontFamily: "Inter",
-    color: "#e2baa1",
+    fontFamily: 'Inter',
+    color: '#e2baa1',
   },
   errorMessage: {
-    color: "#e34060",
+    color: '#e34060',
     marginTop: 10,
-    textAlign: "center",
+    textAlign: 'center',
+  },
+  taskItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+    //paddingVertical: '5',
+  },
+  taskText: {
+    fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    height: '100%',
+    position: 'absolute',
+    right: 0,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
