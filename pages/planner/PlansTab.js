@@ -313,6 +313,7 @@ const PlansTab = () => {
             {/* Tasks Container */}
             <SwipeListView
               data={tasks}
+              style={styles.swipeListVeiwContainer}
               keyExtractor={(index) => index.toString()}
               renderItem={({ item }) => (
                 <LinearGradient
@@ -546,15 +547,19 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'Inter',
   },
+  swipeListVeiwContainer: {
+    paddingTop: 70, // Add paading top for the
+  },
   taskItem: {
-    flex: 1,
-    padding: 15,
-    marginVertical: 20,
-    marginHorizontal: 35,
-    top: 50,
+    // Removed flex: 1, top, marginVertical (Problem was here)
+    // marginVertical: 20, // Here
+    marginHorizontal: 20,
     borderRadius: 20,
-    paddingVertical: 10,
+    padding: 15,
     height: 120,
+    marginBottom: 15,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
   },
   taskText: {
     fontSize: 16,
@@ -562,18 +567,17 @@ const styles = StyleSheet.create({
     color: 'green',
   },
   deleteButton: {
+    position: 'absolute',
     backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 100,
+    width: 120,
     height: 120,
-    position: 'absolute',
-    flex: 1,
-    right: 0,
-    marginVertical: 20,
-    marginHorizontal: 35,
-    top: 50,
-    borderRadius: 20,
+    right: 20,
+    // marginVertical: 30, // Here
+
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
   },
   taskHeader: {
     flexDirection: 'row',
