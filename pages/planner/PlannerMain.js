@@ -1,13 +1,13 @@
-import React from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
-import CalendarMenu from "./CalendarTab";
-import MenuBar from "../components/MenuBar";
-import PlansTab from "./PlansTab";
+import React from 'react';
+import { ImageBackground, StyleSheet, View } from 'react-native';
+import CalendarMenu from './CalendarTab';
+import MenuBar from '../components/MenuBar';
+import PlansTab from './PlansTab';
 
 const PlannerMain = ({ navigation }) => {
   return (
     <ImageBackground
-      source={require("../../assets/background.png")}
+      source={require('../../assets/background.png')}
       style={styles.background}
       resizeMode="cover"
     >
@@ -25,8 +25,8 @@ const PlannerMain = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: "flex-start", // Start content from the top
-    alignItems: "center", // Center everything horizontally
+    justifyContent: 'flex-start', // Start content from the top
+    alignItems: 'center', // Center everything horizontally
   },
 });
 

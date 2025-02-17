@@ -1,6 +1,6 @@
-import React from "react";
-import bubbleImage from "../../../../assets/bubble.png";
-import FloatingBubble from "./FloatingBubble";
+import React from 'react';
+import bubbleImage from '../../../../assets/bubble.png';
+import FloatingBubble from './FloatingBubble';
 
 const BubbleBackground = () => {
   const bubblesConfig = [

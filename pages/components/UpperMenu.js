@@ -1,6 +1,6 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
-import { Animated, PanResponder, StyleSheet, View } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { Animated, PanResponder, StyleSheet, View } from 'react-native';
 
 const UpperMenu = () => {
   // useState hook const [state, setState ] = useState(initalValue). in this case no setState bc it will be handled by animated view
@@ -18,7 +18,7 @@ const UpperMenu = () => {
           dy: menuHeight, // vertical gesture to change the height of menu
         },
       ],
-      { useNativeDriver: false } // don't need the native threads, for better animation
+      { useNativeDriver: false }, // don't need the native threads, for better animation
     ),
     onPanResponderRelease: (_, gestureState) => {
       // is activated when the user lifts their finger off the screen
@@ -48,7 +48,7 @@ const UpperMenu = () => {
       style={[styles.menuBar, { height: menuHeight }]} // will have the same argument as animation function
     >
       <LinearGradient
-        colors={["#A4CDF1", "#F3CAAF"]}
+        colors={['#A4CDF1', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
@@ -64,14 +64,14 @@ const UpperMenu = () => {
 
 const styles = StyleSheet.create({
   menuBar: {
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     top: 0,
     opacity: 0.77,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    overflow: "hidden",
-    shadowColor: "#000",
+    overflow: 'hidden',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -79,23 +79,23 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   placeholder: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sliderHandle: {
-    position: "absolute",
-    top: "75%",
+    position: 'absolute',
+    top: '75%',
     height: 10,
     width: 70,
-    backgroundColor: "#E8CDC0",
+    backgroundColor: '#E8CDC0',
     borderRadius: 5,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginBottom: 5,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,

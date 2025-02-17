@@ -1,23 +1,23 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
 import {
-    ImageBackground,
-    Keyboard,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableWithoutFeedback,
-    View,
-} from "react-native";
+  ImageBackground,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
-import { AnimatedCircularProgress } from "react-native-circular-progress";
-import GradientButton from "../components/GradientButton";
-import MenuBar from "../components/MenuBar";
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import GradientButton from '../components/GradientButton';
+import MenuBar from '../components/MenuBar';
 
 const HydrationTracker = ({ route, navigation }) => {
   const { hydrationGoal, unit } = route.params; // Retrieve params from HydrationMain
   const [currentHydration, setCurrentHydration] = useState(0); // current hydration deafult 0, setCurretntHydration will update it
-  const [inputHydration, setInputHydration] = useState(""); // const for use input
+  const [inputHydration, setInputHydration] = useState(''); // const for use input
   const [showConfetti, setShowConfetti] = useState(false); // confetti trigger
 
   const handleAddWater = () => {
@@ -27,10 +27,10 @@ const HydrationTracker = ({ route, navigation }) => {
       // passing a function tot calculate based on the previous state
       const newHydration = Math.min(
         currentHydration + input,
-        parseFloat(hydrationGoal)
+        parseFloat(hydrationGoal),
       );
       setCurrentHydration(newHydration);
-      setInputHydration(""); // Clear input after adding
+      setInputHydration(''); // Clear input after adding
       Keyboard.dismiss(); // Dismiss the keyboard
 
       if (newHydration >= hydrationGoal) {
@@ -41,19 +41,19 @@ const HydrationTracker = ({ route, navigation }) => {
         }, 5000); // show confetti for 3 seconds
       }
     } else {
-      alert("Please enter a valid amount!");
+      alert('Please enter a valid amount!');
     }
   };
 
   const handleSetNewGoal = () => {
-    navigation.navigate("HydrationMain");
+    navigation.navigate('HydrationMain');
   };
 
   // Convert liters to fl oz if needed
   const displayGoal =
-    unit === "fl oz" ? (hydrationGoal * 33.814).toFixed(1) : hydrationGoal;
+    unit === 'fl oz' ? (hydrationGoal * 33.814).toFixed(1) : hydrationGoal;
   const displayCurrent =
-    unit === "fl oz"
+    unit === 'fl oz'
       ? (currentHydration * 33.814).toFixed(1)
       : currentHydration;
 
@@ -61,7 +61,7 @@ const HydrationTracker = ({ route, navigation }) => {
     // everything on the screen (unless states otyherwise will dismiss the keyboard)
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
-        source={require("../../assets/background.png")}
+        source={require('../../assets/background.png')}
         style={styles.background}
         // image fully covers the container, even if some parts of the image are cut off
         resizeMode="cover"
@@ -81,8 +81,8 @@ const HydrationTracker = ({ route, navigation }) => {
         {/* Main Container */}
         <LinearGradient
           colors={[
-            "rgba(164, 205, 241, 0.77)", // Slightly transparent blue
-            "rgba(243, 202, 175, 0.77)", // Slightly transparent peach
+            'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
+            'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -134,7 +134,7 @@ const HydrationTracker = ({ route, navigation }) => {
               text="Add"
               width={120}
               height={50}
-              colors={["#153CE6", "#0C2180"]}
+              colors={['#153CE6', '#0C2180']}
               textColor="#F3CAAF"
               onPress={handleAddWater}
             />
@@ -142,7 +142,7 @@ const HydrationTracker = ({ route, navigation }) => {
               text="Set New"
               width={120}
               height={50}
-              colors={["#F3CAAF", "#F0A26F"]}
+              colors={['#F3CAAF', '#F0A26F']}
               textColor="#153CE6"
               onPress={handleSetNewGoal}
             />
@@ -157,73 +157,73 @@ const HydrationTracker = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    justifyContent: "flex-start",
-    alignItems: "center",
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   // gradient container
   container: {
-    position: "absolute",
+    position: 'absolute',
     top: 250,
     height: 400,
-    width: "100%",
+    width: '100%',
     borderRadius: 30,
     padding: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
 
   progressContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 35,
   },
 
   progressContent: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   currentHydrationText: {
     fontSize: 40,
-    fontWeight: "bold",
-    color: "#153CE6",
+    fontWeight: 'bold',
+    color: '#153CE6',
   },
   goalText: {
     fontSize: 16,
-    color: "#153CE6",
+    color: '#153CE6',
   },
   inputContainer: {
-    postion: "absolute",
+    postion: 'absolute',
     top: 210,
     marginVertical: 20,
-    width: "80%",
+    width: '80%',
   },
 
   input: {
-    borderColor: "#153CE6",
+    borderColor: '#153CE6',
     borderRadius: 10,
     height: 50,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 18,
-    color: "#153CE6",
+    color: '#153CE6',
   },
 
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
     marginTop: 200,
   },
 
   congratulationsContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 100,
-    alignItems: "center",
-    width: "100%",
+    alignItems: 'center',
+    width: '100%',
   },
 
   congratulationsText: {
     fontSize: 30,
-    fontWeight: "bold",
-    fontFamily: "Inter",
-    color: "#153CE6",
-    textAlign: "center",
+    fontWeight: 'bold',
+    fontFamily: 'Inter',
+    color: '#153CE6',
+    textAlign: 'center',
   },
 });
 

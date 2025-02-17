@@ -1,8 +1,8 @@
-import React, { useCallback, useRef, useState } from "react";
-import { Button, ImageBackground, StyleSheet, View } from "react-native";
-import MenuBar from "../components/MenuBar";
-import Timer from "./components/Timer";
-import TimerQuickOption from "./components/TimerQuickOption";
+import React, { useCallback, useRef, useState } from 'react';
+import { Button, ImageBackground, StyleSheet, View } from 'react-native';
+import MenuBar from '../components/MenuBar';
+import Timer from './components/Timer';
+import TimerQuickOption from './components/TimerQuickOption';
 
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
@@ -47,7 +47,7 @@ const CalmMain = ({ navigation }) => {
 
   return (
     <ImageBackground
-      source={require("../../assets/background.png")}
+      source={require('../../assets/background.png')}
       style={styles.bgContainer}
       resizeMode="cover"
     >
@@ -106,20 +106,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    height: "90%",
-    justifyContent: "center",
-    alignItems: "center",
+    height: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   quickOptionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
     paddingTop: 100,
   },
   controlButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "60%",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '60%',
     marginTop: 80,
   },
 });

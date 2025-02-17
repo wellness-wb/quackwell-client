@@ -1,25 +1,25 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from '@react-navigation/native';
 import {
   CardStyleInterpolators,
   createStackNavigator,
-} from "@react-navigation/stack";
-import React from "react";
-import { AuthProvider, useAuth } from "./utils/authContext";
+} from '@react-navigation/stack';
+import React from 'react';
+import { AuthProvider, useAuth } from './utils/authContext';
 
 // Authencation Screens
-import CreateAccount from "./pages/user/CreateAccount";
-import ForgotPassword from "./pages/user/ForgotPassword";
-import Login from "./pages/user/Login";
-import Profile from "./pages/user/Profile";
-import Signup from "./pages/user/Signup";
+import CreateAccount from './pages/user/CreateAccount';
+import ForgotPassword from './pages/user/ForgotPassword';
+import Login from './pages/user/Login';
+import Profile from './pages/user/Profile';
+import Signup from './pages/user/Signup';
 
 // App (Main)  Screens
-import CalmMain from "./pages/calm/CalmMain";
-import HydrationMain from "./pages/hydration/HydrationMain";
-import HydrationTracker from "./pages/hydration/HydrationTracker";
-import MainHub from "./pages/MainHub";
-import PlannerMain from "./pages/planner/PlannerMain";
-import WelcomePage from "./pages/WelcomePage";
+import CalmMain from './pages/calm/CalmMain';
+import HydrationMain from './pages/hydration/HydrationMain';
+import HydrationTracker from './pages/hydration/HydrationTracker';
+import MainHub from './pages/MainHub';
+import PlannerMain from './pages/planner/PlannerMain';
+import WelcomePage from './pages/WelcomePage';
 
 const Stack = createStackNavigator();
 

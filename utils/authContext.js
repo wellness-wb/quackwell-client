@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../supabase";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '../supabase';
 
 const AuthContext = createContext({
   session: null,
@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching session:", err);
+        console.error('Error fetching session:', err);
         setIsLoading(false);
       });
 

@@ -1,5 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
   Platform,
@@ -8,11 +8,11 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
-} from "react-native-responsive-screen";
+} from 'react-native-responsive-screen';
 
 const EditableInput = ({
   placeholder,
@@ -31,8 +31,8 @@ const EditableInput = ({
   };
 
   useEffect(() => {
-    if (Platform.OS === "android") {
-      const keyboardListener = Keyboard.addListener("keyboardDidHide", () => {
+    if (Platform.OS === 'android') {
+      const keyboardListener = Keyboard.addListener('keyboardDidHide', () => {
         setIsEditing(false);
       });
 
@@ -57,7 +57,7 @@ const EditableInput = ({
       ) : (
         <TouchableOpacity style={styles.button} onPress={handleEdit}>
           <LinearGradient
-            colors={["#F3CAAF", "#739CEF"]}
+            colors={['#F3CAAF', '#739CEF']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradient}
@@ -68,7 +68,7 @@ const EditableInput = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {value ? (secureTextEntry ? "••••••" : value) : placeholder}
+                {value ? (secureTextEntry ? '••••••' : value) : placeholder}
               </Text>
             </View>
           </LinearGradient>
@@ -80,40 +80,40 @@ const EditableInput = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 20,
   },
   button: {
-    width: wp("70%"),
-    height: hp("6%"),
+    width: wp('70%'),
+    height: hp('6%'),
     borderRadius: 25,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   gradient: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     opacity: 0.77,
   },
   textContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-start",
-    marginLeft: wp("5%"),
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginLeft: wp('5%'),
   },
   buttonText: {
-    color: "#153CE6",
-    fontWeight: "bold",
+    color: '#153CE6',
+    fontWeight: 'bold',
   },
   input: {
-    width: wp("70%"),
-    height: hp("7%"),
+    width: wp('70%'),
+    height: hp('7%'),
     borderRadius: 25,
-    backgroundColor: "rgba(115, 156, 239, 0.3)",
+    backgroundColor: 'rgba(115, 156, 239, 0.3)',
     paddingHorizontal: 20,
-    fontWeight: "bold",
-    color: "#153CE6",
+    fontWeight: 'bold',
+    color: '#153CE6',
   },
 });
 

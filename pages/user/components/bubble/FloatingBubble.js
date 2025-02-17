@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, StyleSheet } from "react-native";
+import React, { useEffect, useRef } from 'react';
+import { Animated, Dimensions, StyleSheet } from 'react-native';
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 const FloatingBubble = ({ source, size = 50 }) => {
   const translateX = useRef(new Animated.Value(Math.random() * width)).current; // Random horizontal start
@@ -64,8 +64,8 @@ const FloatingBubble = ({ source, size = 50 }) => {
 
 const styles = StyleSheet.create({
   bubble: {
-    position: "absolute",
-    resizeMode: "contain",
+    position: 'absolute',
+    resizeMode: 'contain',
     opacity: 0.7,
   },
 });
