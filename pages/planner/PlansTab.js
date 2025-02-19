@@ -14,7 +14,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
-const PlansTab = () => {
+const PlansTab = ({ selectedDate }) => {
   const [menuHeight] = useState(new Animated.Value(50)); // Initial collapsed height
 
   const [tasks, setTasks] = useState([]);
@@ -310,6 +310,7 @@ const PlansTab = () => {
           </View>
         ) : (
           <>
+            <Text>Selected Date: {selectedDate.toLocaleDateString()}</Text>
             {/* Tasks Container */}
             <SwipeListView
               data={tasks}

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
-import CalendarMenu from './CalendarTab';
+import CalendarTab from './CalendarTab';
 import MenuBar from '../components/MenuBar';
 import PlansTab from './PlansTab';
 
 const PlannerMain = ({ navigation }) => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   return (
     <ImageBackground
       source={require('../../assets/background.png')}
@@ -12,10 +14,13 @@ const PlannerMain = ({ navigation }) => {
       resizeMode="cover"
     >
       {/* Add the calendar at the top */}
-      <CalendarMenu />
+      <CalendarTab
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
 
       {/* Other planner content goes here */}
-      <PlansTab />
+      <PlansTab selectedDate={selectedDate} />
 
       <MenuBar navigation={navigation} activeScreen="PlannerMain" />
     </ImageBackground>

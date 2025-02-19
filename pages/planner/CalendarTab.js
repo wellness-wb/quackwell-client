@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Calendar from './Calendar.js';
 
-const CalendarTab = () => {
+const CalendarTab = ({ selectedDate, setSelectedDate }) => {
   return (
     <View style={styles.menuBar}>
       <LinearGradient
@@ -14,7 +14,10 @@ const CalendarTab = () => {
       >
         {/* Calendar inside Tab */}
         <View style={styles.calendarContainer}>
-          <Calendar />
+          <Calendar
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </View>
       </LinearGradient>
     </View>

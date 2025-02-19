@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const Calendar = () => {
+const Calendar = ({ selectedDate, setSelectedDate }) => {
   const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const [currentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Store selected day
 
   useEffect(() => {
     // Calculate the dates for the current week
@@ -55,7 +54,9 @@ const Calendar = () => {
                 isSelected && styles.selectedDay, // Highlight selected day
                 isToday && !isSelected && styles.todayIndicator, // If it's today and NOT selected
               ]}
-              onPress={() => setSelectedDate(date)} // Update selected day
+              onPress={() => {
+                setSelectedDate(date);
+              }} // Update selected day
             >
               <Text
                 style={[
