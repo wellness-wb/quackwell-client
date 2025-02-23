@@ -320,15 +320,17 @@ const PlansTab = ({ selectedDate }) => {
             </View> */}
 
             {/* "+" Button */}
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => {
-                expandMenu();
-                setShowForm(true);
-              }}
-            >
-              <Text style={styles.addButtonText}>+</Text>
-            </TouchableOpacity>
+            <View style={styles.addButtonContainer}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => {
+                  expandMenu();
+                  setShowForm(true);
+                }}
+              >
+                <Text style={styles.addButtonText}>+</Text>
+              </TouchableOpacity>
+            </View>
 
             {/* Buttons for all / individual day task view*/}
             <View style={styles.taskViewButtons}>
@@ -472,13 +474,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -30,
     opacity: 1,
-    borderTopLeftRadius: 20, // Rounded corners at the top
+    borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     overflow: 'hidden',
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5, // Android shadow
-    minHeight: 250, // Ensure it starts small
+    elevation: 5,
+    minHeight: 250,
   },
   gradient: {
     flex: 1,
@@ -486,21 +488,20 @@ const styles = StyleSheet.create({
   },
   addButton: {
     position: 'absolute',
-    top: 10,
     right: 10,
-    zIndex: 2,
-    backgroundColor: '#153CE6',
-    width: 40,
-    height: 40,
+    backgroundColor: '#3657c1',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
+    alignSelf: 'flex-end',
+    marginTop: 10,
   },
   addButtonText: {
     color: '#e2baa1',
     fontSize: 24,
-    fontWeight: 'bold',
     top: -1,
   },
   closeMenuButton: {
