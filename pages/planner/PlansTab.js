@@ -35,6 +35,15 @@ const PlansTab = ({ selectedDate }) => {
   const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  const [selectedOption, setSelectedOption] = useState(
+    selectedDate.toLocaleDateString(),
+  );
+
+  const selectedBackground = '#3657c1';
+  const selectedTextColor = '#e2baa1';
+  const unselectedBackground = '#e2baa1';
+  const unselectedTextColor = '#3657c1';
+
   const [errors, setErrors] = useState({
     name: false,
     date: false,
@@ -139,17 +148,6 @@ const PlansTab = ({ selectedDate }) => {
       {...panResponder.panHandlers}
       style={[styles.menuBar, { height: menuHeight }]}
     >
-      {/* "+" Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          expandMenu();
-          setShowForm(true);
-        }}
-      >
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
-
       <LinearGradient
         colors={['#9bddff', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
@@ -287,6 +285,7 @@ const PlansTab = ({ selectedDate }) => {
               />
             </View>
 
+            {/* Location Picker */}
             <TextInput
               placeholder="📍 Location"
               style={styles.pickLocation}
@@ -310,10 +309,100 @@ const PlansTab = ({ selectedDate }) => {
           </View>
         ) : (
           <>
-            <Text>Selected Date: {selectedDate.toLocaleDateString()}</Text>
+            {/* <View style={styles.dateContainer}>
+              <Text style={styles.dateStyle}>
+                {selectedDate.toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              </Text>
+            </View> */}
+
+            {/* "+" Button */}
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => {
+                expandMenu();
+                setShowForm(true);
+              }}
+            >
+              <Text style={styles.addButtonText}>+</Text>
+            </TouchableOpacity>
+
+            {/* Buttons for all / individual day task view*/}
+            <View style={styles.taskViewButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor:
+                      selectedOption === selectedDate.toLocaleDateString()
+                        ? selectedBackground
+                        : unselectedBackground,
+                  },
+                ]}
+                onPress={() =>
+                  setSelectedOption(selectedDate.toLocaleDateString())
+                }
+              >
+                <Text
+                  style={[
+                    styles.buttonText,
+                    {
+                      color:
+                        selectedOption === selectedDate.toLocaleDateString()
+                          ? selectedTextColor
+                          : unselectedTextColor,
+                    },
+                  ]}
+                >
+                  {selectedDate.toLocaleDateString()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor:
+                      selectedOption === 'all'
+                        ? selectedBackground
+                        : unselectedBackground,
+                  },
+                ]}
+                onPress={() => setSelectedOption('all')}
+              >
+                <Text
+                  style={[
+                    styles.buttonText,
+                    {
+                      color:
+                        selectedOption === 'all'
+                          ? selectedTextColor
+                          : unselectedTextColor,
+                    },
+                  ]}
+                >
+                  all
+                </Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Tasks Container */}
             <SwipeListView
-              data={tasks}
+              data={
+                selectedOption === 'all'
+                  ? tasks
+                  : tasks.filter(
+                      (task) =>
+                        task.date ===
+                        selectedDate.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        }),
+                    )
+              }
               style={styles.swipeListVeiwContainer}
               keyExtractor={(index) => index.toString()}
               renderItem={({ item }) => (
@@ -336,7 +425,7 @@ const PlansTab = ({ selectedDate }) => {
                     </View>
                   </View>
 
-                  {/* <Text style={styles.dateText}>{item.date}</Text> */}
+                  <Text style={styles.dateText}>{item.date}</Text>
                   <Text style={styles.locText}>📍 {item.location}</Text>
                 </LinearGradient>
               )}
@@ -417,7 +506,7 @@ const styles = StyleSheet.create({
   closeMenuButton: {
     position: 'absolute',
     top: -50,
-    left: 10,
+    right: 10,
     zIndex: 2,
     width: 40,
     height: 40,
@@ -435,20 +524,27 @@ const styles = StyleSheet.create({
     height: 32,
     fontFamily: 'Inter',
   },
+  taskViewButtons: {
+    padding: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
-    elevation: 2,
-    bottom: 25,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
   },
   formContainer: {
     paddingHorizontal: 20,
-    marginTop: 60, // Leave space for the "+" button and any header
+    marginTop: 60,
     alignItems: 'center',
   },
   submitButton: {
@@ -549,11 +645,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
   },
   swipeListVeiwContainer: {
-    paddingTop: 70, // Add paading top for the
+    //paddingTop: 70, // Add paading top for the
   },
   taskItem: {
-    // Removed flex: 1, top, marginVertical (Problem was here)
-    // marginVertical: 20, // Here
     marginHorizontal: 20,
     borderRadius: 20,
     padding: 15,
@@ -575,16 +669,13 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     right: 20,
-    // marginVertical: 30, // Here
-
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
   },
   taskHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Aligns the name and times to both sides of the container
+    justifyContent: 'space-between',
     alignItems: 'center',
-    //marginVertical: 10,
     marginBottom: 10,
   },
   nameText: {
@@ -605,6 +696,14 @@ const styles = StyleSheet.create({
     fontWeight: 'light',
     fontSize: 20,
     color: '#153CE6',
+  },
+  dateContainer: {
+    alignItems: 'center',
+    padding: 25,
+  },
+  dateStyle: {
+    color: '#153CE6',
+    fontWeight: 'bold',
   },
 });
 

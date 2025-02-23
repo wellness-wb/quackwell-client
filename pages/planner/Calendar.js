@@ -54,9 +54,7 @@ const Calendar = ({ selectedDate, setSelectedDate }) => {
                 isSelected && styles.selectedDay, // Highlight selected day
                 isToday && !isSelected && styles.todayIndicator, // If it's today and NOT selected
               ]}
-              onPress={() => {
-                setSelectedDate(date);
-              }} // Update selected day
+              onPress={() => setSelectedDate(date)} // Update selected day
             >
               <Text
                 style={[
@@ -92,10 +90,6 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
   header: {
     flexDirection: 'row',
@@ -130,7 +124,7 @@ const styles = StyleSheet.create({
   dayContainer: {
     alignItems: 'center',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   selectedDay: {
     backgroundColor: '#739CEF',
