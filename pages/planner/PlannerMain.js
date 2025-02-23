@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
+import { ImageBackground, StyleSheet } from 'react-native';
 import CalendarTab from './CalendarTab';
 import MenuBar from '../components/MenuBar';
 import PlansTab from './PlansTab';

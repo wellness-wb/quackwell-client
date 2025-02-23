@@ -9,13 +9,14 @@ import {
   Text,
   TextInput,
   Alert,
+  ScrollView,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 const PlansTab = ({ selectedDate }) => {
-  const [menuHeight] = useState(new Animated.Value(50)); // Initial collapsed height
+  const [menuHeight] = useState(new Animated.Value(100)); // Initial collapsed height
 
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -51,13 +52,27 @@ const PlansTab = ({ selectedDate }) => {
     endTime: false,
   });
 
+  const [menuPosition, setMenuPosition] = useState(0);
+
+  const onLayout = (event) => {
+    const { y } = event.nativeEvent.layout; // Get the y-position of the menu
+    setMenuPosition(y); // Save the menu's position
+  };
+
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => {
+      // Get the touch location relative to the screen (pageY)
+      const touchY = evt.nativeEvent.pageY;
+
+      // Get the position of the menu (you may need to calculate this or get it dynamically)
+      const menuTop = menuPosition; // This should be the top position of your menu on the screen
+
       // Only allow movement if the touch starts at the top 50px of the menu
-      return evt.nativeEvent.locationY < 50;
+      return touchY >= menuTop && touchY <= menuTop + 50;
     },
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dy) > 10; // Only react if swipe is significant
+      // Only react if swipe is significant
+      return Math.abs(gestureState.dy) > 10;
     },
     onPanResponderMove: (_, gestureState) => {
       let newHeight = menuHeight._value - gestureState.dy; // Calculate new height
@@ -114,11 +129,12 @@ const PlansTab = ({ selectedDate }) => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).includes(true)) {
-      return;
+      //return;
     }
 
     // Create a task object with individual properties
     const newTask = {
+      id: Date.now(),
       name,
       date,
       startTime,
@@ -126,7 +142,7 @@ const PlansTab = ({ selectedDate }) => {
       location,
       category,
     };
-    setTasks([...tasks, newTask]);
+    setTasks((prevTasks) => [...prevTasks, newTask]);
 
     // Reset form fields and hide form
     setName('');
@@ -147,6 +163,7 @@ const PlansTab = ({ selectedDate }) => {
     <Animated.View
       {...panResponder.panHandlers}
       style={[styles.menuBar, { height: menuHeight }]}
+      onLayout={onLayout}
     >
       <LinearGradient
         colors={['#9bddff', '#F3CAAF']}
@@ -167,13 +184,16 @@ const PlansTab = ({ selectedDate }) => {
               <Text style={styles.closeMenuButtonText}>x</Text>
             </TouchableOpacity>
 
-            <TextInput
-              placeholder="(Task Name)"
-              style={styles.titleInput}
-              value={name}
-              onChangeText={setName}
-              placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
-            />
+            {/* Task Name Input */}
+            <View>
+              <TextInput
+                placeholder="(Task Name)"
+                style={styles.titleInput}
+                value={name}
+                onChangeText={setName}
+                placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
+              />
+            </View>
 
             <TextInput
               placeholder="Category"
@@ -309,16 +329,6 @@ const PlansTab = ({ selectedDate }) => {
           </View>
         ) : (
           <>
-            {/* <View style={styles.dateContainer}>
-              <Text style={styles.dateStyle}>
-                {selectedDate.toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </Text>
-            </View> */}
-
             {/* "+" Button */}
             <View style={styles.addButtonContainer}>
               <TouchableOpacity
@@ -405,8 +415,7 @@ const PlansTab = ({ selectedDate }) => {
                         }),
                     )
               }
-              style={styles.swipeListVeiwContainer}
-              keyExtractor={(index) => index.toString()}
+              keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <LinearGradient
                   colors={['#f5eedf', '#f2b58c']}
@@ -457,6 +466,7 @@ const PlansTab = ({ selectedDate }) => {
                 </TouchableOpacity>
               )}
               rightOpenValue={-100} // Controls how much the item swipes left
+              contentContainerStyle={{ paddingBottom: 200 }}
             />
           </>
         )}
@@ -524,24 +534,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     height: 32,
     fontFamily: 'Inter',
-  },
-  taskViewButtons: {
-    padding: 50,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    shadowOffset: { width: 0, height: 1 },
-  },
-  buttonText: {
-    fontWeight: 'bold',
-    textTransform: 'capitalize',
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -645,8 +637,23 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'Inter',
   },
-  swipeListVeiwContainer: {
-    //paddingTop: 70, // Add paading top for the
+  taskViewButtons: {
+    padding: 25,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 1 },
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
   },
   taskItem: {
     marginHorizontal: 20,
