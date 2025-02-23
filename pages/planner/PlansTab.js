@@ -337,7 +337,7 @@ const PlansTab = ({ selectedDate }) => {
                   styles.button,
                   {
                     backgroundColor:
-                      selectedOption === selectedDate.toLocaleDateString()
+                      selectedOption !== 'all'
                         ? selectedBackground
                         : unselectedBackground,
                   },
@@ -351,7 +351,7 @@ const PlansTab = ({ selectedDate }) => {
                     styles.buttonText,
                     {
                       color:
-                        selectedOption === selectedDate.toLocaleDateString()
+                        selectedOption !== 'all'
                           ? selectedTextColor
                           : unselectedTextColor,
                     },
