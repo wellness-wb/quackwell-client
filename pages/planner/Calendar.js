@@ -1,31 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
-const Calendar = () => {
-  const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
-  const [currentDate] = useState(new Date());
+const config = {
+  velocityThreshold: 0.3,
+  directionalOffsetThreshold: 80,
+};
+
+const Calendar = ({ selectedDate, setSelectedDate }) => {
+  const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Store selected day
+  const translateX = useRef(new Animated.Value(0)).current;
+  const animationDuration = 250; // Speed of swipe animation
 
-  useEffect(() => {
-    // Calculate the dates for the current week
-    const startOfWeek = new Date(
-      currentDate.setDate(currentDate.getDate() - (currentDate.getDay() === 0 ? 6 : currentDate.getDay()))
-    );
-    const dates = [];
-    for (let i = 0; i < 7; i++) {
+  // Calculate week dates
+  const getWeekDates = (startDate) => {
+    const startOfWeek = new Date(startDate);
+    startOfWeek.setDate(startDate.getDate() - (startDate.getDay() || 7) + 1);
+
+    return Array.from({ length: 7 }, (_, i) => {
       const newDate = new Date(startOfWeek);
       newDate.setDate(startOfWeek.getDate() + i);
-      dates.push(newDate);
-    }
-    setWeekDates(dates);
-  }, [currentDate]);
+      return newDate;
+    });
+  };
+
+  useEffect(() => {
+    setWeekDates(getWeekDates(currentWeekStart));
+  }, [currentWeekStart]);
+
+  // Animate dates when swiping
+  const changeWeek = (direction) => {
+    const swipeDistance = direction === 'next' ? -100 : 100; // Move left or right
+
+    Animated.timing(translateX, {
+      toValue: swipeDistance,
+      duration: animationDuration,
+      useNativeDriver: true,
+    }).start(() => {
+      setCurrentWeekStart((prev) => {
+        const newDate = new Date(prev);
+        newDate.setDate(prev.getDate() + (direction === 'next' ? 7 : -7));
+        return newDate;
+      });
+
+      translateX.setValue(0); // Reset for next swipe
+    });
+  };
 
   return (
-    <View style={styles.container}>
-      {/* Month and Icons */}
+    <GestureRecognizer
+      onSwipeLeft={() => changeWeek('next')}
+      onSwipeRight={() => changeWeek('prev')}
+      config={config}
+      style={styles.container}
+    >
+      {/* Static Header (Does NOT move) */}
       <View style={styles.header}>
-        <Text style={styles.month}>{weekDates[0]?.toLocaleString("default", { month: "short" })}</Text>
+        <Text style={styles.month}>
+          {weekDates[0]?.toLocaleString('default', { month: 'short' })}
+        </Text>
         <View style={styles.iconContainer}>
           <TouchableOpacity>
             <Text style={styles.icon}>+</Text>
@@ -36,26 +77,29 @@ const Calendar = () => {
         </View>
       </View>
 
-      {/* Days and Dates */}
-      <View style={styles.weekContainer}>
+      {/* Animated Dates Only */}
+      <Animated.View
+        style={[styles.weekContainer, { transform: [{ translateX }] }]}
+      >
         {weekDates.map((date, index) => {
           const isToday = new Date().toDateString() === date.toDateString();
-          const isSelected = selectedDate.toDateString() === date.toDateString();
+          const isSelected =
+            selectedDate.toDateString() === date.toDateString();
           return (
             <TouchableOpacity
               key={index}
               style={[
                 styles.dayContainer,
-                isSelected && styles.selectedDay, // Highlight selected day
-                isToday && !isSelected && styles.todayIndicator, // If it's today and NOT selected
+                isSelected && styles.selectedDay,
+                isToday && !isSelected && styles.todayIndicator,
               ]}
-              onPress={() => setSelectedDate(date)} // Update selected day
+              onPress={() => setSelectedDate(date)}
             >
               <Text
                 style={[
                   styles.day,
-                  isSelected && styles.selectedText, // Selected day text
-                  isToday && !isSelected && styles.todayText, // Today text if NOT selected
+                  isSelected && styles.selectedText,
+                  isToday && !isSelected && styles.todayText,
                 ]}
               >
                 {daysOfWeek[index]}
@@ -63,8 +107,8 @@ const Calendar = () => {
               <Text
                 style={[
                   styles.date,
-                  isSelected && styles.selectedText, // Selected day text
-                  isToday && !isSelected && styles.todayText, // Today text if NOT selected
+                  isSelected && styles.selectedText,
+                  isToday && !isSelected && styles.todayText,
                 ]}
               >
                 {date.getDate()}
@@ -72,79 +116,75 @@ const Calendar = () => {
             </TouchableOpacity>
           );
         })}
-      </View>
-    </View>
+      </Animated.View>
+    </GestureRecognizer>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
     top: 0,
     opacity: 0.77,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    overflow: 'hidden',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginTop: 95,
   },
   month: {
-    fontFamily: "Inter",
+    fontFamily: 'Inter',
     fontSize: 23,
-    fontWeight: "bold",
-    color: "#153CE6",
+    fontWeight: 'bold',
+    color: '#153CE6',
     marginTop: 140,
     marginLeft: 19,
   },
   iconContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 140,
   },
   icon: {
     fontSize: 18,
     marginHorizontal: 15,
-    color: "#739CEF",
+    color: '#739CEF',
   },
   weekContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginHorizontal: 12,
   },
   dayContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   selectedDay: {
-    backgroundColor: "#739CEF",
+    backgroundColor: '#739CEF',
   },
   day: {
     fontSize: 20,
-    color: "#153CE6",
+    color: '#153CE6',
   },
   date: {
     fontSize: 14,
-    color: "#153CE6",
+    color: '#153CE6',
   },
   todayIndicator: {
-    borderWidth: 2, 
-    borderColor: "#153CE6", // Blue circular outline for today
-    borderRadius: 50, // Fully rounded
-    padding: 8, 
+    borderWidth: 2,
+    borderColor: '#153CE6',
+    borderRadius: 50,
+    padding: 8,
   },
   todayText: {
-    color: "#153CE6",
-    fontWeight: "bold",
+    color: '#153CE6',
+    fontWeight: 'bold',
   },
 });
 

@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Animated } from "react-native";
+import { useRef } from 'react';
+import { Animated } from 'react-native';
 
 export const useBouncePress = () => {
   const bounceAnim = useRef(new Animated.Value(1)).current;

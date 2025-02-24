@@ -1,26 +1,29 @@
-// AuthButton.js
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 const AuthButton = ({
   onPress,
   buttonText,
   iconName,
-  gradientColors = ["#153CE6", "#0C2180"],
+  gradientColors = ['#153CE6', '#0C2180'],
 }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
         <LinearGradient
-          colors={gradientColors}
+          colors={['#F3CAAF', '#739CEF']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
           <View style={styles.iconContainer}>
-            <AntDesign name={iconName} size={30} color="white" />
+            <AntDesign name={iconName} size={hp('2.8%')} color="#153CE6" />
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.buttonText}>{buttonText}</Text>
@@ -33,37 +36,37 @@ const AuthButton = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
+    alignItems: 'center',
+    marginBottom: 20,
   },
   button: {
-    width: 320,
-    height: 70,
-    borderRadius: 29,
-    overflow: "hidden",
+    width: wp('70%'),
+    height: hp('8%'),
+    borderRadius: 25,
+    overflow: 'hidden',
   },
   gradient: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     opacity: 0.77,
-    paddingHorizontal: 20,
+    paddingHorizontal: wp('5%'),
   },
   iconContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: wp('5%'),
   },
   textContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
+    color: 'white',
+    fontSize: hp('2.1%'),
+    fontWeight: 'bold',
   },
 });
 

@@ -1,13 +1,13 @@
-import * as Notifications from "expo-notifications";
+import * as Notifications from 'expo-notifications';
 import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
-} from "react";
-import { Platform, ScrollView, StyleSheet, Text, View } from "react-native";
-import { formatTime } from "../../../utils/formatTime";
+} from 'react';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { formatTime } from '../../../utils/formatTime';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -74,10 +74,10 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
   const [isPaused, setIsPaused] = useState(false);
 
   const [selectedHour, setSelectedHour] = useState(
-    Math.floor(initialDuration / 3600)
+    Math.floor(initialDuration / 3600),
   );
   const [selectedMinute, setSelectedMinute] = useState(
-    Math.floor((initialDuration % 3600) / 60)
+    Math.floor((initialDuration % 3600) / 60),
   );
   const [selectedSecond, setSelectedSecond] = useState(initialDuration % 60);
 
@@ -87,7 +87,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
         selectedHour * 3600 + selectedMinute * 60 + selectedSecond;
       setTimeLeft(newTime);
     }
-    if (typeof onStatusChange === "function") {
+    if (typeof onStatusChange === 'function') {
       onStatusChange({ isRunning, isPaused });
     }
   }, [
@@ -116,7 +116,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
       timerIntervalRef.current = setInterval(() => {
         const newTimeLeft = Math.max(
           0,
-          Math.round((_endTime - Date.now()) / 1000)
+          Math.round((_endTime - Date.now()) / 1000),
         );
         setTimeLeft(newTimeLeft);
         if (newTimeLeft === 0) {
@@ -144,8 +144,8 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
         title: "Time's up!",
-        body: "Your session is over. Great job staying focused!",
-        sound: Platform.OS === "android" ? "default" : undefined,
+        body: 'Your session is over. Great job staying focused!',
+        sound: Platform.OS === 'android' ? 'default' : undefined,
       },
       trigger: { seconds: timeLeft },
     });
@@ -155,7 +155,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     timerIntervalRef.current = setInterval(() => {
       const newTimeLeft = Math.max(
         0,
-        Math.round((_endTime - Date.now()) / 1000)
+        Math.round((_endTime - Date.now()) / 1000),
       );
       setTimeLeft(newTimeLeft);
       if (newTimeLeft === 0) {
@@ -189,13 +189,13 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
   }));
 
   const hoursData = Array.from({ length: 100 }, (_, i) =>
-    i.toString().padStart(2, "0")
+    i.toString().padStart(2, '0'),
   );
   const minutesData = Array.from({ length: 60 }, (_, i) =>
-    i.toString().padStart(2, "0")
+    i.toString().padStart(2, '0'),
   );
   const secondsData = Array.from({ length: 60 }, (_, i) =>
-    i.toString().padStart(2, "0")
+    i.toString().padStart(2, '0'),
   );
 
   return (
@@ -239,26 +239,26 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   timerText: {
     fontSize: 48,
     marginVertical: 20,
   },
   labelsContainer: {
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
     marginBottom: 20,
     gap: 40,
   },
   label: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: 24,
-    color: "gray",
+    color: 'gray',
   },
   columnsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   column: {
     width: 60,
@@ -266,12 +266,12 @@ const styles = StyleSheet.create({
   },
   item: {
     height: ITEM_HEIGHT,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemText: {
     fontSize: 24,
-    color: "gray",
+    color: 'gray',
   },
   separator: {
     fontSize: 24,
