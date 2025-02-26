@@ -20,6 +20,7 @@ import HydrationTracker from './pages/hydration/HydrationTracker';
 import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
 import SocialMain from './pages/social/SocialMain';
+import TrophyPage from './pages/social/TrophyPage';
 import WelcomePage from './pages/WelcomePage';
 
 const Stack = createStackNavigator();
@@ -65,6 +66,7 @@ function AppStack() {
       <Stack.Screen name="CalmMain" component={CalmMain} />
       {/* Social */}
       <Stack.Screen name="SocialMain" component={SocialMain} />
+      <Stack.Screen name="TrophyPage" component={TrophyPage} />
     </Stack.Navigator>
   );
 }

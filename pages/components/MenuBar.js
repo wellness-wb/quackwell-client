@@ -98,7 +98,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
               solid
               size={iconSize}
               color={
-                ['SocialMain', 'Profile'].includes(activeScreen)
+                ['SocialMain', 'TrophyPage'].includes(activeScreen)
                   ? '#A4CDF1'
                   : '#153CE6'
               }

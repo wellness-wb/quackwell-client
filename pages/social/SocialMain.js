@@ -44,7 +44,7 @@ const SocialMain = ({ navigation }) => {
           {/* Icon Row */}
           <View style={styles.iconContainer}>
             {/* Envelope Icon */}
-            <TouchableOpacity onPress={() => console.log('Envelope Pressed')}>
+            <TouchableOpacity onPress={() => navigation.navigate('TrophyPage')}>
               <LinearGradient
                 colors={['#e6f1fb', '#F3CAAF']}
                 start={{ x: 0, y: 0 }}
@@ -82,7 +82,9 @@ const SocialMain = ({ navigation }) => {
               end={{ x: 1, y: 1 }}
               style={styles.trophyBox}
             >
-              <TouchableOpacity onPress={() => console.log('Trophy Pressed')}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('TrophyPage')}
+              >
                 <FontAwesome5 name="trophy" solid size={40} color={'#153CE6'} />
               </TouchableOpacity>
             </LinearGradient>
