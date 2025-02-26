@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     top: hp('35%'),
     left: wp('20%'),
     zIndex: 10,
-    zIndex: 0,
   },
 });
 
