@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
   Platform,
+  Keyboard,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +16,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
+const EditableInput = ({
 const EditableInput = ({
   placeholder,
   value,
@@ -45,6 +48,7 @@ const EditableInput = ({
       {isEditing ? (
         <TextInput
           ref={inputRef}
+          ref={inputRef}
           style={styles.input}
           value={value}
           onChangeText={onChangeText}
@@ -55,6 +59,7 @@ const EditableInput = ({
           secureTextEntry={secureTextEntry}
         />
       ) : (
+        <TouchableOpacity style={styles.button} onPress={handleEdit}>
         <TouchableOpacity style={styles.button} onPress={handleEdit}>
           <LinearGradient
             colors={['#F3CAAF', '#739CEF']}
@@ -117,4 +122,5 @@ const styles = StyleSheet.create({
   },
 });
 
+export default EditableInput;
 export default EditableInput;

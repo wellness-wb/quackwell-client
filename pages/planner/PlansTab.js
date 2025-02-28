@@ -180,6 +180,9 @@ const PlansTab = ({ selectedDate }) => {
               onPress={() => {
                 setShowForm(false);
               }}
+              onPress={() => {
+                setShowForm(false);
+              }}
             >
               <Text style={styles.closeMenuButtonText}>x</Text>
             </TouchableOpacity>
@@ -200,6 +203,7 @@ const PlansTab = ({ selectedDate }) => {
               style={styles.pickCategory}
               value={category}
               onChangeText={setCategory}
+              placeholderTextColor="#e2baa1"
               placeholderTextColor="#e2baa1"
             />
 
@@ -311,6 +315,7 @@ const PlansTab = ({ selectedDate }) => {
               style={styles.pickLocation}
               value={location}
               onChangeText={setLocation}
+              placeholderTextColor="#e2baa1"
               placeholderTextColor="#e2baa1"
             />
 

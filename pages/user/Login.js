@@ -6,6 +6,7 @@ import {
   Keyboard,
   Pressable,
   ScrollView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -72,6 +73,9 @@ const Login = ({ navigation }) => {
 
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
+
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
     };
   }, [soundRef]);
 
@@ -120,10 +124,34 @@ const Login = ({ navigation }) => {
 
       {!isKeyboardVisible && (
         <View style={styles.footer}>
+            <View style={styles.formContainer}>
+              <EditableInput
+                placeholder="Email..."
+                value={email}
+                onChangeText={setEmail}
+                secureTextEntry={false}
+                style={styles.spacing}
+              />
+              <EditableInput
+                placeholder="Password..."
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true}
+                style={styles.spacing}
+              />
+              <ContinueButton title="Login" onPress={handleLogin} />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+
+      {!isKeyboardVisible && (
+        <View style={styles.footer}>
           <Text
             style={styles.footerLink}
             onPress={() => navigation.navigate('Signup')}
           >
+            Want to Sign Up?
             Want to Sign Up?
           </Text>
           <Text
@@ -133,6 +161,7 @@ const Login = ({ navigation }) => {
             Forgot Password?
           </Text>
         </View>
+      )}
       )}
     </ImageBackground>
   );
