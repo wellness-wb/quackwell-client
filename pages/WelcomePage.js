@@ -64,8 +64,6 @@ const WelcomePage = ({ navigation }) => {
           />
         </Pressable>
       </View>
-        </Pressable>
-      </View>
 
       {/* Button Container */}
       <View style={styles.buttonContainer}>
@@ -90,9 +88,6 @@ const WelcomePage = ({ navigation }) => {
         />
       </View>
 
-      <Animated.View
-        style={[styles.animationBox, { transform: [{ scale: gifLoopAnim }] }]}
-      >
       <Animated.View
         style={[styles.animationBox, { transform: [{ scale: gifLoopAnim }] }]}
       >

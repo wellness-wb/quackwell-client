@@ -6,7 +6,6 @@ import {
   Keyboard,
   Pressable,
   ScrollView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -71,9 +70,6 @@ const CreateAccount = ({ navigation }) => {
 
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
-
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
     };
   }, [soundRef]);
 
@@ -86,14 +82,6 @@ const CreateAccount = ({ navigation }) => {
       {/* Bubbles */}
       <BubbleBackground />
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        keyboardShouldPersistTaps="handled"
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.container}>
-            {/* Header Message */}
-            <UserHeader title="Create Account" />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
@@ -126,27 +114,7 @@ const CreateAccount = ({ navigation }) => {
                 secureTextEntry={true}
                 style={styles.spacing}
               />
-            <View style={styles.formContainer}>
-              <EditableInput
-                placeholder="Email..."
-                value={email}
-                onChangeText={setEmail}
-                secureTextEntry={false}
-                style={styles.spacing}
-              />
-              <EditableInput
-                placeholder="Password..."
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={true}
-                style={styles.spacing}
-              />
 
-              <ContinueButton title="Sign Up" onPress={handleSignUp} />
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
               <ContinueButton title="Sign Up" onPress={handleSignUp} />
             </View>
           </View>

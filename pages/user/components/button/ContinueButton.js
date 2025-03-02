@@ -3,7 +3,6 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const ContinueButton = ({ title, onPress, containerStyle }) => {
-const ContinueButton = ({ title, onPress, containerStyle }) => {
   return (
     <View style={[styles.container, containerStyle]}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
@@ -43,5 +42,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContinueButton;
 export default ContinueButton;
