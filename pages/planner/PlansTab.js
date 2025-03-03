@@ -15,7 +15,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 const PlansTab = ({ selectedDate }) => {
-  const [menuHeight] = useState(new Animated.Value(100)); // Initial collapsed height
+  const [menuHeight] = useState(new Animated.Value(375)); // Initial collapsed height
 
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -110,7 +110,7 @@ const PlansTab = ({ selectedDate }) => {
 
   const collapseMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: 50,
+      toValue: 375,
       duration: 400,
       useNativeDriver: false,
     }).start();
@@ -129,7 +129,7 @@ const PlansTab = ({ selectedDate }) => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).includes(true)) {
-      //return;
+      //return; ***disabled so i can easily test task display without having to input a new task ever time***
     }
 
     // Create a task object with individual properties
@@ -473,11 +473,11 @@ const PlansTab = ({ selectedDate }) => {
                     onPress={() =>
                       Alert.alert(
                         'Would you like to mark this task as completed?',
-                        '',
+                        ' ',
                         [
                           {
                             text: 'Confirm',
-                            //onPress: () => task.setIsCompleted(true),
+                            //onPress: () => handleCompleteTask(index),
                           },
                           { text: 'Cancel' },
                         ],
@@ -496,6 +496,11 @@ const PlansTab = ({ selectedDate }) => {
               rightOpenValue={-100} // Controls how much the item swipes left
               leftOpenValue={100}
               contentContainerStyle={{ paddingBottom: 200 }}
+              ListEmptyComponent={() => (
+                <Text style={styles.emptyText}>
+                  Nothing planned for this day
+                </Text>
+              )}
             />
           </>
         )}
@@ -752,6 +757,11 @@ const styles = StyleSheet.create({
   dateStyle: {
     color: '#153CE6',
     fontWeight: 'bold',
+  },
+  emptyText: {
+    color: '#153CE6',
+    alignSelf: 'center',
+    fontWeight: '700',
   },
 });
 
