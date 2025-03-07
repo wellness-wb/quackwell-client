@@ -58,7 +58,7 @@ const HydrationMain = ({ navigation }) => {
 
           <View style={styles.inputContainer}>
             <LinearGradient
-              colors={['#153CE6', '#0C2180']}
+              colors={['#F3CAAF', '#739CEF']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.gradientInput}
@@ -69,7 +69,7 @@ const HydrationMain = ({ navigation }) => {
                 keyboardType="numeric"
                 value={hydrationGoal}
                 onChangeText={setHydrationGoal}
-                placeholderTextColor="#F3CAAF" // Adjust placeholder color for better visibility
+                placeholderTextColor="#153CE6" // Adjust placeholder color for better visibility
                 returnKeyType="done" // Adds "Set" or "Done" to the keyboard button
                 onSubmitEditing={handleSetGoal}
               />
@@ -82,9 +82,9 @@ const HydrationMain = ({ navigation }) => {
               width={wp('30%')}
               height={hp('6%')}
               colors={
-                unit === 'L' ? ['#F3CAAF', '#F0A26F'] : ['#153CE6', '#0C2180']
+                unit === 'L' ? ['#153CE6', '#0C2180'] : ['#F3CAAF', '#739CEF']
               }
-              textColor={unit === 'L' ? '#153CE6' : '#F3CAAF'} // Dynamic text color
+              textColor={unit === 'L' ? '#F3CAAF' : '#153CE6'} // Dynamic text color
               onPress={() => setUnit('L')}
             />
             <GradientButton
@@ -93,10 +93,10 @@ const HydrationMain = ({ navigation }) => {
               height={hp('6%')}
               colors={
                 unit === 'fl oz'
-                  ? ['#F3CAAF', '#F0A26F']
-                  : ['#153CE6', '#0C2180']
+                  ? ['#153CE6', '#0C2180']
+                  : ['#F3CAAF', '#739CEF']
               }
-              textColor={unit === 'fl oz' ? '#153CE6' : '#F3CAAF'} // Dynamic text color
+              textColor={unit === 'fl oz' ? '#F3CAAF' : '#153CE6'} // Dynamic text color
               onPress={() => setUnit('fl oz')}
             />
           </View>
@@ -105,8 +105,8 @@ const HydrationMain = ({ navigation }) => {
             text="Set"
             width={wp('30%')}
             height={hp('6%')}
-            colors={['#153CE6', '#0C2180']}
-            textColor="#F3CAAF"
+            colors={['#F3CAAF', '#739CEF']}
+            textColor="#153CE6"
             onPress={() => {
               const goal = parseFloat(hydrationGoal);
               if (
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontSize: hp('2.4%'),
-    color: '#F3CAAF',
+    color: '#153CE6',
     marginHorizontal: wp('5%'),
   },
 

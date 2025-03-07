@@ -139,15 +139,15 @@ const HydrationTracker = ({ route, navigation }) => {
               text="Add"
               width={120}
               height={50}
-              colors={['#153CE6', '#0C2180']}
-              textColor="#F3CAAF"
+              colors={['#F3CAAF', '#739CEF']}
+              textColor="#153CE6"
               onPress={handleAddWater}
             />
             <GradientButton
               text="Set New"
               width={120}
               height={50}
-              colors={['#F3CAAF', '#F0A26F']}
+              colors={['#F3CAAF', '#739CEF']}
               textColor="#153CE6"
               onPress={handleSetNewGoal}
             />
