@@ -140,24 +140,19 @@ const styles = StyleSheet.create({
   },
 
   container: {
+    top: hp('29%'),
+    height: hp('47%'),
+    width: wp('98%'),
+    borderRadius: wp('10%'),
+    padding: hp('1%'),
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    top: hp('20%'),
-    width: wp('99%'),
-    height: hp('50%'),
-    borderRadius: 30,
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
   },
 
   title: {
     fontFamily: 'Inter',
     color: '#153CE6',
-    fontSize: 20,
+    fontSize: hp('2.5%'),
     fontWeight: 'bold',
     marginBottom: hp('6%'),
     marginTop: hp('6%'),
@@ -165,8 +160,8 @@ const styles = StyleSheet.create({
 
   inputContainer: {
     width: wp('55%'),
-    height: 50,
-    marginBottom: 40,
+    height: hp('5.5%'),
+    marginBottom: hp('4%'),
   },
 
   gradientInput: {
@@ -181,7 +176,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     flex: 1,
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: hp('2.4%'),
     color: '#F3CAAF',
     marginHorizontal: wp('5%'),
   },

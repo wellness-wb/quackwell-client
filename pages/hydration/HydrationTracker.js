@@ -9,8 +9,13 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import MenuBar from '../components/MenuBar';
 
@@ -36,8 +41,8 @@ const HydrationTracker = ({ route, navigation }) => {
       if (newHydration >= hydrationGoal) {
         setShowConfetti(true);
         setTimeout(() => {
-          setCurrentHydration(0);
           setShowConfetti(false);
+          navigation.navigate('HydrationMain');
         }, 5000); // show confetti for 3 seconds
       }
     } else {
@@ -91,8 +96,8 @@ const HydrationTracker = ({ route, navigation }) => {
           {/* Circular Progress */}
           <View style={styles.progressContainer}>
             <AnimatedCircularProgress
-              size={200}
-              width={15}
+              size={hp('20%')}
+              width={wp('3%')}
               // the circle will show the percentage
               fill={(currentHydration / hydrationGoal) * 100}
               tintColor="#153CE6"
@@ -189,37 +194,35 @@ const styles = StyleSheet.create({
     color: '#153CE6',
   },
   inputContainer: {
-    postion: 'absolute',
-    top: 210,
-    marginVertical: 20,
-    width: '80%',
+    top: hp('23%'),
+    height: hp('7%'),
+    width: wp('80%'),
   },
 
   input: {
     borderColor: '#153CE6',
-    borderRadius: 10,
-    height: 50,
+    height: hp('7%'),
     textAlign: 'center',
-    fontSize: 18,
+    fontSize: hp('2%'),
     color: '#153CE6',
   },
 
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
-    marginTop: 200,
+    width: wp('80%'),
+    marginTop: hp('27%'),
   },
 
   congratulationsContainer: {
     position: 'absolute',
-    top: 100,
+    top: hp('15%'),
     alignItems: 'center',
-    width: '100%',
+    width: wp('80%'),
   },
 
   congratulationsText: {
-    fontSize: 30,
+    fontSize: hp('3%'),
     fontWeight: 'bold',
     fontFamily: 'Inter',
     color: '#153CE6',
