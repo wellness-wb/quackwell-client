@@ -61,7 +61,7 @@ const SocialMain = ({ navigation }) => {
             </TouchableOpacity>
 
             {/* Settings Icon */}
-            <TouchableOpacity onPress={() => console.log('Settings Pressed')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
               <LinearGradient
                 colors={['#e6f1fb', '#F3CAAF']}
                 start={{ x: 0, y: 0 }}

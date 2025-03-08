@@ -21,6 +21,7 @@ import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
 import SocialMain from './pages/social/SocialMain';
 import TrophyPage from './pages/social/TrophyPage';
+import Settings from './pages/social/Settings';
 import WelcomePage from './pages/WelcomePage';
 
 const Stack = createStackNavigator();
@@ -67,6 +68,7 @@ function AppStack() {
       {/* Social */}
       <Stack.Screen name="SocialMain" component={SocialMain} />
       <Stack.Screen name="TrophyPage" component={TrophyPage} />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 }

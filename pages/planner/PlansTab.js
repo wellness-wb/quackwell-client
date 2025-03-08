@@ -39,7 +39,6 @@ const PlansTab = ({ selectedDate }) => {
   const [selectedOption, setSelectedOption] = useState(
     selectedDate.toLocaleDateString(),
   );
-  const [showCompleted, setShowCompleted] = useState(false);
 
   const selectedBackground = '#3657c1';
   const selectedTextColor = '#e2baa1';
