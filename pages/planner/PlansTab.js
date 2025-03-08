@@ -39,6 +39,7 @@ const PlansTab = ({ selectedDate }) => {
   const [selectedOption, setSelectedOption] = useState(
     selectedDate.toLocaleDateString(),
   );
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const selectedBackground = '#3657c1';
   const selectedTextColor = '#e2baa1';
@@ -158,6 +159,16 @@ const PlansTab = ({ selectedDate }) => {
 
   const handleDeleteTask = (index) => {
     const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
+  };
+
+  const handleCompleteTask = (index) => {
+    const updatedTasks = tasks.map((task, i) => {
+      if (i === index) {
+        return { ...task, isCompleted: true };
+      }
+      return task;
+    });
     setTasks(updatedTasks);
   };
 
@@ -405,15 +416,15 @@ const PlansTab = ({ selectedDate }) => {
             <SwipeListView
               data={
                 selectedOption === 'all'
-                  ? tasks
+                  ? tasks.filter((task) => !task.isCompleted)
                   : tasks.filter(
                       (task) =>
                         task.date ===
-                        selectedDate.toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        }),
+                          selectedDate.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          }) && !task.isCompleted,
                     )
               }
               keyExtractor={(item) => item.id.toString()}
@@ -477,7 +488,7 @@ const PlansTab = ({ selectedDate }) => {
                         [
                           {
                             text: 'Confirm',
-                            //onPress: () => handleCompleteTask(index),
+                            onPress: () => handleCompleteTask(index),
                           },
                           { text: 'Cancel' },
                         ],
@@ -697,11 +708,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
-  },
-  taskText: {
-    fontSize: 16,
-    fontFamily: 'Inter',
-    color: 'green',
   },
   deleteButton: {
     position: 'absolute',
