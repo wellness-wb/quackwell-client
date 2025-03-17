@@ -19,9 +19,9 @@ import HydrationMain from './pages/hydration/HydrationMain';
 import HydrationTracker from './pages/hydration/HydrationTracker';
 import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
+import Settings from './pages/social/Settings';
 import SocialMain from './pages/social/SocialMain';
 import TrophyPage from './pages/social/TrophyPage';
-import Settings from './pages/social/Settings';
 import WelcomePage from './pages/WelcomePage';
 
 const Stack = createStackNavigator();

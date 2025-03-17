@@ -1,5 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Button, ImageBackground, StyleSheet, View } from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
@@ -80,18 +86,40 @@ const CalmMain = ({ navigation }) => {
 
         <View style={styles.controlButtonsContainer}>
           {!timerStatus.isRunning && (
-            <Button title="Start Timer" onPress={handleStartTimer} />
+            <TouchableOpacity style={styles.button} onPress={handleStartTimer}>
+              <Text style={styles.buttonText}>Start Timer</Text>
+            </TouchableOpacity>
           )}
           {timerStatus.isRunning && !timerStatus.isPaused && (
             <>
-              <Button title="Delete" onPress={handleCancelTimer} />
-              <Button title="Pause" onPress={handlePauseTimer} />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleCancelTimer}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handlePauseTimer}
+              >
+                <Text style={styles.buttonText}>Pause</Text>
+              </TouchableOpacity>
             </>
           )}
           {timerStatus.isRunning && timerStatus.isPaused && (
             <>
-              <Button title="Delete" onPress={handleCancelTimer} />
-              <Button title="Continue" onPress={handleResumeTimer} />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleCancelTimer}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleResumeTimer}
+              >
+                <Text style={styles.buttonText}>Continue</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -121,6 +149,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '60%',
     marginTop: 80,
+  },
+  button: {
+    backgroundColor: '#739CEF',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
