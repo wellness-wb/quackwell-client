@@ -75,3 +75,21 @@ export async function deleteTodo(id) {
 
   return true;
 }
+
+export async function fetchTodosByWeek(startDate, endDate) {
+  // const date = new Date('2025-03-21');
+  // const formattedDate = date.toISOString().split('T')[0]; // '2025-03-21'
+  const { data, error } = await supabase
+    .from('todos')
+    .select('*')
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching todos by week:', error);
+    throw error;
+  }
+
+  return data;
+}
