@@ -29,7 +29,7 @@ const MainHub = ({ navigation }) => {
 
   useEffect(() => {
     const currentHour = new Date().getHours();
-    if (currentHour >= 7 && currentHour <= 19) {
+    if (currentHour >= 7 && currentHour < 19) {
       setIsDayTime(true);
     } else {
       setIsDayTime(false);
