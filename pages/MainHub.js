@@ -4,6 +4,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import VirtualPet from './components/VirtualPet';
 import MainHubAnimation from './components/MainHubAnimation';
 import MainHubDay from './components/MainHubDay';
 import MainHubNight from './components/MainHubNight';
@@ -28,6 +29,8 @@ const MainHub = ({ navigation }) => {
 
       <UpperMenu />
 
+      <VirtualPet />
+
       <View style={styles.animationBox}>
         <MainHubAnimation />
       </View>
@@ -47,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: wp('70%'),
     height: hp('35%'),
-    top: hp('25%'),
+    top: hp('12%'),
     left: wp('20%'),
     zIndex: 10,
   },
