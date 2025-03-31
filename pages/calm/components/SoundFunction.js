@@ -3,11 +3,11 @@ const loadAndPlaySound = async () => {
   let soundFile;
   // Here funcitonality that let the users choose the sound file based on user's choice
   if (selectedSound === 'raining') {
-    soundFile = require('../../assets/raining.mp3');
+    soundFile = require('../../../assets/raining.mp3');
   } else if (selectedSound === 'meditation') {
-    soundFile = require('../../assets/suzume.mp3');
+    soundFile = require('../../../assets/suzumeChilling.mp3');
   } else {
-    soundFile = require('../../assets/raining.mp3'); //By default, it's raining sound
+    soundFile = require('../../../assets/raining.mp3'); //By default, it's raining sound
   }
 
   // Load the sound with looping enabled (if desired)
