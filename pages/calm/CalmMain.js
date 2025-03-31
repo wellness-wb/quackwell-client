@@ -22,7 +22,7 @@ const CalmMain = ({ navigation }) => {
   const [sound, setSound] = useState(null);
 
   // State for the users' sound choice (by default it is raining sound)
-  const [selectedSound, setSeclectedSound] = useState('raining');
+  const [selectedSound, setSelectedSound] = useState('raining');
 
   const handleStatusChange = useCallback((status) => {
     setTimerStatus(status);
@@ -34,11 +34,22 @@ const CalmMain = ({ navigation }) => {
     }
   };
 
-  const handleStartTimer = () => {
+  const handleStartTimer = async () => {
     if (timerRef.current) {
       timerRef.current.startTimer();
-      //loadAndPlaySound();
     }
+
+    if (sound) {
+      await sound.unloadAsync(); // Stop the previous sound before playing a new one
+    }
+
+    // Helper function to play the sound chosen
+    const { sound: newSound } = await Audio.Sound.createAsync(
+      getSoundFile(selectedSound),
+      { shouldPlay: true },
+    );
+
+    setSound(newSound);
   };
 
   // When you cancel timer, the sound should also be canceled**
@@ -46,7 +57,10 @@ const CalmMain = ({ navigation }) => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
-    //stopSound(); // Stop the sound when the timer is canceled
+    if (sound) {
+      sound.stopAsync(); // Stop the sound when the timer is canceled
+      sound.unloadAsync(); // Unload the sound to free up resources
+    }
   };
 
   // When pausing the timer, the sound should be paused
@@ -76,6 +90,27 @@ const CalmMain = ({ navigation }) => {
       style={styles.bgContainer}
       resizeMode="cover"
     >
+      <View style={styles.soundOptionsContainer}>
+        <TouchableOpacity
+          onPress={() => setSelectedSound('Raining for power nap')}
+          style={styles.soundButton}
+        >
+          <Text style={styles.buttonText}>Rain</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setSelectedSound('Suzume Soundtrack to Calm Yourself')}
+          style={styles.soundButton}
+        >
+          <Text style={styles.buttonText}>Ocean</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setSelectedSound('Ocean Waves to reduce your stress')}
+          style={styles.soundButton}
+        >
+          <Text style={styles.buttonText}>Stress</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.content}>
         <Timer
           ref={timerRef}
@@ -186,6 +221,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+
+  soundOptionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+
+  soundButton: {
+    backgroundColor: '#739CEF',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    marginHorizontal: 5,
   },
 });
 
