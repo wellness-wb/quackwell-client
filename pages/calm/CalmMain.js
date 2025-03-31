@@ -33,7 +33,6 @@ const CalmMain = ({ navigation }) => {
       timerRef.current.updateTime(duration);
     }
   };
-  await;
 
   const handleStartTimer = () => {
     if (timerRef.current) {
