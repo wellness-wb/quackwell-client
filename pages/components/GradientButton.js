@@ -42,6 +42,7 @@ const GradientButton = ({
 const styles = StyleSheet.create({
   buttonBox: {
     flex: 1,
+    zIndex: 5,
   },
 
   gradient: {

@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ImageBackground,
   Keyboard,
@@ -14,43 +14,89 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import MenuBar from '../components/MenuBar';
 
 const HydrationTracker = ({ route, navigation }) => {
-  const { hydrationGoal, unit } = route.params; // Retrieve params from HydrationMain
-  const [currentHydration, setCurrentHydration] = useState(0); // current hydration deafult 0, setCurretntHydration will update it
-  const [inputHydration, setInputHydration] = useState(''); // const for use input
-  const [showConfetti, setShowConfetti] = useState(false); // confetti trigger
+  const { hydrationGoal: initialGoal, unit } = route.params;
+  const [currentHydration, setCurrentHydration] = useState(0);
+  const [inputHydration, setInputHydration] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
-  const handleAddWater = () => {
-    // for user input
+  const [hydrationGoal, setHydrationGoal] = useState(initialGoal);
+
+  useEffect(() => {
+    // Request notification permissions and set up the notification token
+    async function requestPermission() {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status === 'granted') {
+        const token = await Notifications.getExpoPushTokenAsync();
+        console.log('Notification Token:', token.data);
+      } else {
+        console.log('Notification permission denied');
+      }
+    }
+
+    requestPermission();
+
+    // Set up a reminder every 3 hours if the goal is not met
+    const reminderInterval = setInterval(
+      () => {
+        if (currentHydration < hydrationGoal) {
+          sendReminderNotification(); // Send a reminder every 3 hours
+        }
+      },
+      3 * 60 * 60 * 1000, // 3 hours in milliseconds
+    );
+
+    return () => clearInterval(reminderInterval); // Clean up on unmount
+  }, [currentHydration, hydrationGoal]);
+
+  // Send a reminder notification
+  const sendReminderNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Keep Hydrated!',
+        body: `You have consumed ${currentHydration} out of ${hydrationGoal} ${unit}. Keep going!`,
+        sound: 'default',
+      },
+      trigger: {
+        seconds: 10, // Send immediately
+        repeats: true, // Keep repeating every time the condition is checked
+      },
+    });
+  };
+
+  const handleAddWater = async () => {
     const input = parseFloat(inputHydration);
     if (!isNaN(input) && input > 0) {
-      // passing a function tot calculate based on the previous state
-      const newHydration = Math.min(
-        currentHydration + input,
-        parseFloat(hydrationGoal),
-      );
+      const newHydration = Math.min(currentHydration + input, hydrationGoal);
       setCurrentHydration(newHydration);
-      setInputHydration(''); // Clear input after adding
-      Keyboard.dismiss(); // Dismiss the keyboard
+      setInputHydration('');
+      Keyboard.dismiss();
+
+      // Save current hydration value in AsyncStorage
+      await AsyncStorage.setItem('currentHydration', newHydration.toString());
 
       if (newHydration >= hydrationGoal) {
         setShowConfetti(true);
         setTimeout(() => {
           setShowConfetti(false);
           navigation.navigate('HydrationMain');
-        }, 5000); // show confetti for 3 seconds
+        }, 5000); // Show confetti for 5 seconds
       }
     } else {
       alert('Please enter a valid amount!');
     }
   };
 
-  const handleSetNewGoal = () => {
+  const handleSetNewGoal = async () => {
+    // Save new goal in AsyncStorage
+    await AsyncStorage.setItem('hydrationGoal', hydrationGoal.toString());
     navigation.navigate('HydrationMain');
   };
 
