@@ -10,7 +10,8 @@ import {
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
-import SoundFunctions from './components/SoundFunction';
+import SoundFunction from './components/SoundFunction';
+
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
   const [timerStatus, setTimerStatus] = useState({
@@ -53,13 +54,13 @@ const CalmMain = ({ navigation }) => {
   };
 
   // When you cancel timer, the sound should also be canceled**
-  const handleCancelTimer = () => {
+  const handleCancelTimer = async () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
     if (sound) {
-      sound.stopAsync(); // Stop the sound when the timer is canceled
-      sound.unloadAsync(); // Unload the sound to free up resources
+      await sound.stopAsync(); // Stop the sound when the timer is canceled
+      await sound.unloadAsync(); // Unload the sound to free up resources
     }
   };
 
