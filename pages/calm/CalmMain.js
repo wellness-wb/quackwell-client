@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
+import { Audio } from 'expo-av';
 import {
   ImageBackground,
   StyleSheet,
@@ -9,13 +10,19 @@ import {
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
-
+import SoundFunctions from './components/SoundFunctions';
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
   const [timerStatus, setTimerStatus] = useState({
     isRunning: false,
     isPaused: false,
   });
+
+  // State to hold the currently playing sound
+  const [sound, setSound] = useState(null);
+
+  // State for the users' sound choice (by default it is raining sound)
+  const [selectedSound, setSeclectedSound] = useState('raining');
 
   const handleStatusChange = useCallback((status) => {
     setTimerStatus(status);
@@ -26,28 +33,41 @@ const CalmMain = ({ navigation }) => {
       timerRef.current.updateTime(duration);
     }
   };
+  await;
 
   const handleStartTimer = () => {
     if (timerRef.current) {
       timerRef.current.startTimer();
+      loadAndPlaySound();
     }
   };
 
+  // When you cancel timer, the sound should also be canceled**
   const handleCancelTimer = () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
+    stopSound(); // Stop the sound when the timer is canceled
   };
 
-  const handlePauseTimer = () => {
+  // When pausing the timer, the sound should be paused
+  const handlePauseTimer = async () => {
     if (timerRef.current) {
       timerRef.current.pauseTimer();
     }
+    if (sound) {
+      await sound.pauseAsync(); // Here pause the sound when the timer is paused
+    }
   };
 
-  const handleResumeTimer = () => {
+  //When you resume the timer, the sound should play it again without issues
+  const handleResumeTimer = async () => {
     if (timerRef.current) {
       timerRef.current.resumeTimer();
+    }
+    //Here we play the sound again when the timer is resumed
+    if (sound) {
+      await sound.playAsync();
     }
   };
 
