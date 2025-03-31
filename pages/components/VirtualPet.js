@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { use } from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+const neutralGifs = [
+  require('../../assets/blinking.gif'),
+  require('../../assets/shifting.gif'),
+  require('../../assets/winking.gif'),
+];
 
 const states = [
-  require('../../assets/state1.png'),
-  require('../../assets/state2.png'),
-  require('../../assets/state3.png'),
+  require('../../assets/state1.gif'),
+  require('../../assets/state2.gif'),
+  require('../../assets/blinking.gif'),
   require('../../assets/state4.png'),
   require('../../assets/state5.png'),
 ];
@@ -17,12 +22,24 @@ const VirtualPet = () => {
   const [petState, setPetState] = useState(2); // default to neutral
   const [showDevMenu, setShowDevMenu] = useState(false);
   const [stateScore, setStateScore] = useState(0.5);
+  const [currentNeutralGif, setCurrentNeutralGif] = useState(neutralGifs[0]);
 
   useEffect(() => {
     getStateScore(plannerScore, calmScore, hydrationScore);
     const state = getPetState();
-    setPetState(state);
-  }, [plannerScore, calmScore, hydrationScore]);
+
+    // If the state is changing (it’s different from the current state), update pet state
+    if (state !== petState) {
+      setPetState(state);
+
+      // Randomize the neutral GIF only when entering neutral state (state 2)
+      if (state === 2) {
+        const randomGif =
+          neutralGifs[Math.floor(Math.random() * neutralGifs.length)];
+        setCurrentNeutralGif(randomGif);
+      }
+    }
+  }, [plannerScore, calmScore, hydrationScore, petState]);
 
   const getStateScore = (plannerScore, calmScore, hydrationScore) => {
     const normPlanner = Math.max(0, Math.min(1, plannerScore / 5));
@@ -57,7 +74,10 @@ const VirtualPet = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={toggleDevMenu}>
-        <Image source={states[petState]} style={styles.image} />
+        <Image
+          source={petState === 2 ? currentNeutralGif : states[petState]}
+          style={styles.image}
+        />
       </TouchableOpacity>
 
       {/* dev menu  ***FOR TESTING ONLY*** */}
