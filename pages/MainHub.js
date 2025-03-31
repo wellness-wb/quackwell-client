@@ -4,12 +4,11 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import VirtualPet from './components/VirtualPet';
-import MainHubAnimation from './components/MainHubAnimation';
 import MainHubDay from './components/MainHubDay';
 import MainHubNight from './components/MainHubNight';
 import MenuBar from './components/MenuBar';
 import UpperMenu from './components/UpperMenu';
+import VirtualPet from './components/VirtualPet';
 
 const MainHub = ({ navigation }) => {
   const [isDayTime, setIsDayTime] = useState(true);
@@ -29,10 +28,8 @@ const MainHub = ({ navigation }) => {
 
       <UpperMenu />
 
-      <VirtualPet />
-
       <View style={styles.animationBox}>
-        <MainHubAnimation />
+        <VirtualPet />
       </View>
 
       <MenuBar navigation={navigation} activeScreen="MainHub" />
@@ -50,9 +47,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: wp('70%'),
     height: hp('35%'),
-    top: hp('12%'),
+    top: hp('30%'),
     left: wp('20%'),
-    zIndex: 10,
   },
 });
 
