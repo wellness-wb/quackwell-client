@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ImageBackground,
   Keyboard,
@@ -22,6 +22,31 @@ const HydrationMain = ({ navigation }) => {
   const [hydrationGoal, setHydrationGoal] = useState(''); // User input
   const [unit, setUnit] = useState('L'); // Default unit
   const [warningVisible, setWarningVisible] = useState(false); // Warning state
+
+  useEffect(() => {
+    const loadHydrationState = async () => {
+      const storedGoal = await AsyncStorage.getItem('hydrationGoal');
+      const storedHydration = await AsyncStorage.getItem('currentHydration');
+
+      if (storedGoal) setHydrationGoal(parseFloat(storedGoal));
+      if (storedHydration) setCurrentHydration(parseFloat(storedHydration));
+    };
+
+    loadHydrationState();
+  }, []);
+
+  const navigateToTracker = () => {
+    if (currentHydration < hydrationGoal) {
+      // If the user is still in progress, go directly to HydrationTracker
+      navigation.navigate('HydrationTracker', {
+        hydrationGoal,
+        unit,
+      });
+    } else {
+      // Otherwise, go to the main hydration screen
+      navigation.navigate('HydrationMain');
+    }
+  };
 
   const handleSetGoal = () => {
     const goal = parseFloat(hydrationGoal);
