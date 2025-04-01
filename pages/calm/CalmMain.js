@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Audio } from 'expo-av';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -7,6 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
@@ -218,7 +222,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    height: '90%',
+    height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -226,20 +230,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
-    paddingTop: 100,
+    paddingTop: 60,
   },
   controlButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '60%',
-    marginTop: 80,
+    marginTop: 60,
   },
   button: {
     backgroundColor: '#739CEF',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    marginVertical: 10,
+    marginVertical: 5,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -254,17 +258,23 @@ const styles = StyleSheet.create({
   },
 
   soundOptionsContainer: {
+    top: hp('7%'),
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 20,
+    alignItems: 'center',
+    alignContent: 'center',
+    marginTop: hp('5%'),
+    width: '100%',
+    gap: wp('5%'),
   },
 
   soundButton: {
     backgroundColor: '#739CEF',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    marginHorizontal: 5,
+    height: hp('5%'),
+    width: wp('15%'),
+    borderRadius: wp('2%'),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
