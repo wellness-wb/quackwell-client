@@ -96,7 +96,7 @@ const SocialMain = ({ navigation }) => {
               end={{ x: 1, y: 1 }}
               style={styles.friendsBox}
             >
-              <TouchableOpacity onPress={() => console.log('Friends Pressed')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
                 <FontAwesome5
                   name="user-friends"
                   solid
