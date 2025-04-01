@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Audio } from 'expo-av';
 import {
   ImageBackground,
@@ -23,7 +23,18 @@ const CalmMain = ({ navigation }) => {
   const [sound, setSound] = useState(null);
 
   // State for the users' sound choice (by default it is raining sound)
-  const [selectedSound, setSelectedSound] = useState('raining');
+  const [selectedSound, setSelectedSound] = useState({
+    isRunning: false,
+    isPaused: false,
+  });
+
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.unloadAsync(); // Unload the sound when the component unmounts
+      }
+    };
+  }, [sound]);
 
   const handleStatusChange = useCallback((status) => {
     setTimerStatus(status);
@@ -37,20 +48,22 @@ const CalmMain = ({ navigation }) => {
 
   const handleStartTimer = async () => {
     if (timerRef.current) {
-      timerRef.current.startTimer();
+      timerRef.current.startTimer(); // Also check for typos here ("startTimer")
     }
 
     if (sound) {
-      await sound.unloadAsync(); // Stop the previous sound before playing a new one
+      // Instead of calling SoundFunction.unloadAsync() which doesn’t exist,
+      // consider stopping/unloading the current sound:
+      await sound.unloadAsync();
     }
 
-    // Helper function to play the sound chosen
+    // Use SoundFunction.getSoundFile to get the file based on selectedSound
     const { sound: newSound } = await Audio.Sound.createAsync(
-      getSoundFile(selectedSound),
+      SoundFunction.getSoundFile(selectedSound),
       { shouldPlay: true },
     );
 
-    setSound(newSound);
+    setSound(newSound); // Set the new sound to state
   };
 
   // When you cancel timer, the sound should also be canceled**
@@ -93,22 +106,37 @@ const CalmMain = ({ navigation }) => {
     >
       <View style={styles.soundOptionsContainer}>
         <TouchableOpacity
-          onPress={() => setSelectedSound('Raining for power nap')}
+          onPress={async () => {
+            setSelectedSound('Raining for power nap');
+            await SoundFunction.playSound(
+              SoundFunction.getSoundFile('Raining for power nap'),
+            );
+          }}
           style={styles.soundButton}
         >
           <Text style={styles.buttonText}>Rain</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setSelectedSound('Suzume Soundtrack to Calm Yourself')}
-          style={styles.soundButton}
-        >
-          <Text style={styles.buttonText}>Ocean</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setSelectedSound('Ocean Waves to reduce your stress')}
+          onPress={async () => {
+            setSelectedSound('Suzume Soundtrack to Calm Yourself');
+            await SoundFunction.playSound(
+              SoundFunction.getSoundFile('Suzume Soundtrack to Calm Yourself'),
+            );
+          }}
           style={styles.soundButton}
         >
           <Text style={styles.buttonText}>Stress</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={async () => {
+            setSelectedSound('Ocean Waves to reduce your stress');
+            await SoundFunction.playSound(
+              SoundFunction.getSoundFile('Ocean Waves to reduce your stress'),
+            );
+          }}
+          style={styles.soundButton}
+        >
+          <Text style={styles.buttonText}>Ocean</Text>
         </TouchableOpacity>
       </View>
 
