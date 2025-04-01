@@ -19,6 +19,8 @@ import HydrationMain from './pages/hydration/HydrationMain';
 import HydrationTracker from './pages/hydration/HydrationTracker';
 import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
+import Feed from './pages/social/Feed';
+import PostDetail from './pages/social/PostDetail';
 import Settings from './pages/social/Settings';
 import SocialMain from './pages/social/SocialMain';
 import TrophyPage from './pages/social/TrophyPage';
@@ -67,8 +69,10 @@ function AppStack() {
       <Stack.Screen name="CalmMain" component={CalmMain} />
       {/* Social */}
       <Stack.Screen name="SocialMain" component={SocialMain} />
+      <Stack.Screen name="Feed" component={Feed} />
       <Stack.Screen name="TrophyPage" component={TrophyPage} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="PostDetail" component={PostDetail} />
     </Stack.Navigator>
   );
 }
