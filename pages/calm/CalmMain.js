@@ -10,7 +10,7 @@ import {
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
-import SoundFunction from './components/SoundFunction';
+//import SoundFunction from './components/SoundFunction';
 
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
@@ -58,10 +58,11 @@ const CalmMain = ({ navigation }) => {
     }
 
     // Use SoundFunction.getSoundFile to get the file based on selectedSound
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      SoundFunction.getSoundFile(selectedSound),
-      { shouldPlay: true },
-    );
+    const { sound: newSound } = await Audio.Sound
+      .createAsync
+      // SoundFunction.getSoundFile(selectedSound),
+      // { shouldPlay: true },
+      ();
 
     setSound(newSound); // Set the new sound to state
   };
@@ -108,9 +109,9 @@ const CalmMain = ({ navigation }) => {
         <TouchableOpacity
           onPress={async () => {
             setSelectedSound('Raining for power nap');
-            await SoundFunction.playSound(
-              SoundFunction.getSoundFile('Raining for power nap'),
-            );
+            // await SoundFunction.playSound(
+            //   SoundFunction.getSoundFile('Raining for power nap'),
+            // );
           }}
           style={styles.soundButton}
         >
@@ -119,9 +120,9 @@ const CalmMain = ({ navigation }) => {
         <TouchableOpacity
           onPress={async () => {
             setSelectedSound('Suzume Soundtrack to Calm Yourself');
-            await SoundFunction.playSound(
-              SoundFunction.getSoundFile('Suzume Soundtrack to Calm Yourself'),
-            );
+            // await SoundFunction.playSound(
+            //   SoundFunction.getSoundFile('Suzume Soundtrack to Calm Yourself'),
+            // );
           }}
           style={styles.soundButton}
         >
@@ -130,9 +131,9 @@ const CalmMain = ({ navigation }) => {
         <TouchableOpacity
           onPress={async () => {
             setSelectedSound('Ocean Waves to reduce your stress');
-            await SoundFunction.playSound(
-              SoundFunction.getSoundFile('Ocean Waves to reduce your stress'),
-            );
+            // await SoundFunction.playSound(
+            //   SoundFunction.getSoundFile('Ocean Waves to reduce your stress'),
+            // );
           }}
           style={styles.soundButton}
         >
