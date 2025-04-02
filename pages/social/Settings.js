@@ -51,6 +51,24 @@ const Settings = ({ navigation }) => {
     );
   };
 
+  const colors = {
+    textColor: darkMode ? '#f4f3f4' : '#153CE6',
+    backgroundColor: darkMode
+      ? 'rgba(30, 30, 30, 0.8)'
+      : 'rgba(255, 255, 255, 0.8)',
+    gradientColors: darkMode ? ['#2a3852', '#462639'] : ['#739cef', '#f3caaf'],
+    iconGradientColors: darkMode
+      ? ['#364156', '#513643']
+      : ['#e6f1fb', '#F3CAAF'],
+    borderColor: darkMode ? '#f4f3f4' : '#153CE6',
+    switchTrackColor: {
+      false: '#767577',
+      true: darkMode ? '#364156' : '#739cef',
+    },
+    switchThumbColor: darkMode ? '#f4f3f4' : '#153CE6',
+    switchIOSBackgroundColor: darkMode ? '#513643' : '#e6f1fb',
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/background.png')}
@@ -59,46 +77,70 @@ const Settings = ({ navigation }) => {
     >
       <SafeAreaView style={styles.safeArea}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={[
+            styles.backButton,
+            { backgroundColor: colors.backgroundColor },
+          ]}
           onPress={() => navigation.navigate('SocialMain')}
         >
-          <MaterialIcons name="arrow-back" size={28} color="#153CE6" />
+          <MaterialIcons name="arrow-back" size={28} color={colors.textColor} />
         </TouchableOpacity>
       </SafeAreaView>
 
       <View style={styles.container}>
         <View style={styles.topSpace} />
         <LinearGradient
-          colors={['#739cef', '#f3caaf']}
+          colors={colors.gradientColors}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.gradient}
         >
           <View style={styles.contentContainer}>
-            <Text style={styles.header}>Settings:</Text>
+            <Text style={[styles.header, { color: colors.textColor }]}>
+              Settings:
+            </Text>
 
             {/* Accessibility Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionContent}>
-                <Text style={styles.sectionTitle}>Accessibility:</Text>
+            <View style={[styles.section, { borderColor: colors.borderColor }]}>
+              <View
+                style={[
+                  styles.sectionContent,
+                  { backgroundColor: colors.backgroundColor },
+                ]}
+              >
+                <Text
+                  style={[styles.sectionTitle, { color: colors.textColor }]}
+                >
+                  Accessibility:
+                </Text>
 
                 <View style={styles.optionRow}>
-                  <Text style={styles.optionText}>Dark Mode</Text>
+                  <Text
+                    style={[styles.optionText, { color: colors.textColor }]}
+                  >
+                    Dark Mode
+                  </Text>
                   <Switch
-                    trackColor={{ false: '#767577', true: '#739cef' }}
-                    thumbColor={darkMode ? '#153CE6' : '#f4f3f4'}
-                    ios_backgroundColor="#e6f1fb"
+                    trackColor={colors.switchTrackColor}
+                    thumbColor={darkMode ? colors.switchThumbColor : '#f4f3f4'}
+                    ios_backgroundColor={colors.switchIOSBackgroundColor}
                     onValueChange={() => setDarkMode(!darkMode)}
                     value={darkMode}
                   />
                 </View>
 
                 <View style={styles.optionRow}>
-                  <Text style={styles.optionText}>Allow Private Messages</Text>
+                  <Text
+                    style={[styles.optionText, { color: colors.textColor }]}
+                  >
+                    Allow Private Messages
+                  </Text>
                   <Switch
-                    trackColor={{ false: '#767577', true: '#739cef' }}
-                    thumbColor={allowPrivateMessages ? '#153CE6' : '#f4f3f4'}
-                    ios_backgroundColor="#e6f1fb"
+                    trackColor={colors.switchTrackColor}
+                    thumbColor={
+                      allowPrivateMessages ? colors.switchThumbColor : '#f4f3f4'
+                    }
+                    ios_backgroundColor={colors.switchIOSBackgroundColor}
                     onValueChange={() =>
                       setAllowPrivateMessages(!allowPrivateMessages)
                     }
@@ -107,11 +149,15 @@ const Settings = ({ navigation }) => {
                 </View>
 
                 <View style={styles.optionRow}>
-                  <Text style={styles.optionText}>Option 3</Text>
+                  <Text
+                    style={[styles.optionText, { color: colors.textColor }]}
+                  >
+                    Option 3
+                  </Text>
                   <Switch
-                    trackColor={{ false: '#767577', true: '#739cef' }}
-                    thumbColor={option3 ? '#153CE6' : '#f4f3f4'}
-                    ios_backgroundColor="#e6f1fb"
+                    trackColor={colors.switchTrackColor}
+                    thumbColor={option3 ? colors.switchThumbColor : '#f4f3f4'}
+                    ios_backgroundColor={colors.switchIOSBackgroundColor}
                     onValueChange={() => setOption3(!option3)}
                     value={option3}
                   />
@@ -120,17 +166,30 @@ const Settings = ({ navigation }) => {
             </View>
 
             {/* Login Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionContent}>
-                <Text style={styles.sectionTitle}>Login:</Text>
+            <View style={[styles.section, { borderColor: colors.borderColor }]}>
+              <View
+                style={[
+                  styles.sectionContent,
+                  { backgroundColor: colors.backgroundColor },
+                ]}
+              >
+                <Text
+                  style={[styles.sectionTitle, { color: colors.textColor }]}
+                >
+                  Login:
+                </Text>
 
                 <TouchableOpacity
                   style={styles.optionRow}
                   onPress={() => console.log('Change Password')}
                 >
-                  <Text style={styles.optionText}>Change Password</Text>
+                  <Text
+                    style={[styles.optionText, { color: colors.textColor }]}
+                  >
+                    Change Password
+                  </Text>
                   <LinearGradient
-                    colors={['#e6f1fb', '#F3CAAF']}
+                    colors={colors.iconGradientColors}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.iconContainer}
@@ -138,7 +197,7 @@ const Settings = ({ navigation }) => {
                     <MaterialIcons
                       name="lock-outline"
                       size={24}
-                      color="#153CE6"
+                      color={colors.textColor}
                     />
                   </LinearGradient>
                 </TouchableOpacity>
@@ -147,36 +206,61 @@ const Settings = ({ navigation }) => {
                   style={styles.optionRow}
                   onPress={() => console.log('Change Email')}
                 >
-                  <Text style={styles.optionText}>Change Email</Text>
+                  <Text
+                    style={[styles.optionText, { color: colors.textColor }]}
+                  >
+                    Change Email
+                  </Text>
                   <LinearGradient
-                    colors={['#e6f1fb', '#F3CAAF']}
+                    colors={colors.iconGradientColors}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.iconContainer}
                   >
-                    <MaterialIcons name="email" size={24} color="#153CE6" />
+                    <MaterialIcons
+                      name="email"
+                      size={24}
+                      color={colors.textColor}
+                    />
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Logout Section */}
-            <View style={styles.section}>
-              <View style={styles.sectionContent}>
-                <Text style={styles.sectionTitle}>Account:</Text>
+            <View style={[styles.section, { borderColor: colors.borderColor }]}>
+              <View
+                style={[
+                  styles.sectionContent,
+                  { backgroundColor: colors.backgroundColor },
+                ]}
+              >
+                <Text
+                  style={[styles.sectionTitle, { color: colors.textColor }]}
+                >
+                  Account:
+                </Text>
 
                 <TouchableOpacity
                   style={styles.logoutButton}
                   onPress={handleLogout}
                 >
-                  <Text style={styles.logoutText}>Logout</Text>
+                  <Text
+                    style={[styles.logoutText, { color: colors.textColor }]}
+                  >
+                    Logout
+                  </Text>
                   <LinearGradient
-                    colors={['#e6f1fb', '#F3CAAF']}
+                    colors={colors.iconGradientColors}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.iconContainer}
                   >
-                    <MaterialIcons name="logout" size={24} color="#153CE6" />
+                    <MaterialIcons
+                      name="logout"
+                      size={24}
+                      color={colors.textColor}
+                    />
                   </LinearGradient>
                 </TouchableOpacity>
               </View>
