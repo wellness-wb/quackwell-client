@@ -29,6 +29,7 @@ const PlansTab = ({ selectedDate }) => {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCompletedTasks, setShowCompletedTasks] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
@@ -379,6 +380,17 @@ const PlansTab = ({ selectedDate }) => {
               </TouchableOpacity>
             </View>
 
+            <View style={styles.showCompletedTasksContainer}>
+              <TouchableOpacity
+                style={styles.showCompletedTasksButton}
+                onPress={() => {
+                  setShowCompletedTasks((prevState) => !prevState);
+                }}
+              >
+                <Text style={styles.addButtonText}>T</Text>
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.taskViewButtons}>
               <TouchableOpacity
                 style={[
@@ -437,21 +449,45 @@ const PlansTab = ({ selectedDate }) => {
             </View>
 
             <SwipeListView
-              data={tasks.filter((task) => !task.isCompleted)}
+              data={
+                showCompletedTasks
+                  ? tasks.filter((task) => task.isCompleted)
+                  : tasks.filter((task) => !task.isCompleted)
+              }
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <LinearGradient
-                  colors={['#f5eedf', '#f2b58c']}
+                  colors={
+                    showCompletedTasks
+                      ? ['rgb(27, 63, 224)', ' rgb(76, 104, 229)']
+                      : ['#f5eedf', '#f2b58c']
+                  }
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.taskItem}
                 >
                   <View style={styles.taskHeader}>
                     <View>
-                      <Text style={styles.nameText}>{item.name}</Text>
+                      <Text
+                        style={
+                          showCompletedTasks
+                            ? styles.uncompletedNameText
+                            : styles.completedNameText
+                        }
+                      >
+                        {item.name}
+                      </Text>
                     </View>
                     <View>
-                      <Text style={styles.timeText}>{item.dueTime}</Text>
+                      <Text
+                        style={
+                          showCompletedTasks
+                            ? styles.uncompletedTimeText
+                            : styles.completedTimeText
+                        }
+                      >
+                        {item.dueTime}
+                      </Text>
                     </View>
                   </View>
 
@@ -563,6 +599,20 @@ const styles = StyleSheet.create({
     color: '#e2baa1',
     fontSize: 24,
     top: -1,
+  },
+  showCompletedTasksContainer: {},
+  showCompletedTasksButton: {
+    position: 'absolute',
+    left: 10,
+    backgroundColor: '#3657c1',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    alignSelf: 'flex-end',
+    marginTop: 10,
   },
   closeMenuButton: {
     position: 'absolute',
@@ -706,17 +756,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  nameText: {
+  completedNameText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#153CE6',
   },
-  timeText: {
+  uncompletedNameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#e2baa1',
+  },
+  uncompletedTimeText: {
+    fontWeight: 'medium',
+    color: '#e2baa1',
+    fontSize: 20,
+  },
+  completedTimeText: {
     fontWeight: 'medium',
     color: '#153CE6',
     fontSize: 20,
   },
-  dateText: {},
   dateContainer: {
     alignItems: 'center',
     padding: 25,
