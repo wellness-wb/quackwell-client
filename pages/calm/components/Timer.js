@@ -7,6 +7,8 @@ import React, {
   useState,
 } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import Svg, { Circle } from 'react-native-svg';
 import { formatTime } from '../../../utils/formatTime';
 
 Notifications.setNotificationHandler({
@@ -198,10 +200,45 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     i.toString().padStart(2, '0'),
   );
 
+  const radius = wp(30);
+  const circumference = 2 * Math.PI * radius;
+
+  const strokeDashoffset =
+    circumference -
+    (timeLeft / (selectedHour * 3600 + selectedMinute * 60 + selectedSecond)) *
+      circumference;
+
   return (
     <View style={styles.container}>
       {isRunning ? (
-        <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        <View style={styles.timerCircle}>
+          <Svg
+            height={wp(66)}
+            width={wp(66)}
+            viewBox={`0 0 ${wp(66)} ${wp(66)}`}
+          >
+            <Circle
+              stroke="#3D5875"
+              fill="none"
+              cx={wp(33)}
+              cy={wp(33)}
+              r={radius}
+              strokeWidth={10}
+            />
+            <Circle
+              stroke="#739CEF"
+              fill="none"
+              cx={wp(33)}
+              cy={wp(33)}
+              r={radius}
+              strokeWidth={10}
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+            />
+          </Svg>
+          <Text style={styles.timerText}>{formatTime(timeLeft)}</Text>
+        </View>
       ) : (
         <View>
           <View style={styles.labelsContainer}>
@@ -241,24 +278,42 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
+
+  timerCircle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   timerText: {
     fontSize: 48,
-    marginVertical: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    position: 'absolute',
   },
   labelsContainer: {
     flexDirection: 'row',
     width: '100%',
     marginBottom: 20,
-    gap: 40,
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
   },
   label: {
     fontWeight: 'bold',
-    fontSize: 24,
-    color: 'gray',
+    fontSize: 20,
+    color: '#4A4A4A',
   },
   columnsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   column: {
     width: 60,
@@ -271,11 +326,12 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 24,
-    color: 'gray',
+    color: '#4A4A4A',
   },
   separator: {
     fontSize: 24,
     marginHorizontal: 10,
+    color: '#4A4A4A',
   },
 });
 

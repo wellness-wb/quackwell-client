@@ -1,31 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { signOut } from '../utils/auth';
-import MainHubAnimation from './components/MainHubAnimation';
 import MainHubDay from './components/MainHubDay';
 import MainHubNight from './components/MainHubNight';
 import MenuBar from './components/MenuBar';
 import UpperMenu from './components/UpperMenu';
+import VirtualPet from './components/VirtualPet';
 
 const MainHub = ({ navigation }) => {
   const [isDayTime, setIsDayTime] = useState(true);
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      });
-    } catch (error) {
-      console.error(error);
-      alert('Logout error: ' + error);
-    }
-  };
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -43,15 +29,8 @@ const MainHub = ({ navigation }) => {
       <UpperMenu />
 
       <View style={styles.animationBox}>
-        <MainHubAnimation />
+        <VirtualPet />
       </View>
-
-      <TouchableOpacity
-        onPress={handleLogout}
-        style={{ marginTop: 50, marginRight: 16 }}
-      >
-        <Text style={{ color: 'blue' }}>Logout</Text>
-      </TouchableOpacity>
 
       <MenuBar navigation={navigation} activeScreen="MainHub" />
     </View>
@@ -67,10 +46,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: wp('70%'),
-    height: hp('24%'),
-    top: hp('35%'),
+    height: hp('35%'),
+    top: hp('30%'),
     left: wp('20%'),
-    zIndex: 10,
   },
 });
 
