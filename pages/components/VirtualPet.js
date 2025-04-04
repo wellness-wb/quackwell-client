@@ -11,8 +11,8 @@ const states = [
   require('../../assets/state1.gif'),
   require('../../assets/state2.gif'),
   require('../../assets/blinking.gif'),
-  require('../../assets/state4.png'),
-  require('../../assets/state5.png'),
+  require('../../assets/cat.gif'),
+  require('../../assets/pedro.gif'),
 ];
 
 const VirtualPet = () => {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   devMenu: {
     position: 'absolute',
-    top: 150,
+    bottom: 300,
     backgroundColor: '#fff',
     padding: 15,
     borderRadius: 8,

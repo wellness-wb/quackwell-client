@@ -368,7 +368,6 @@ const PlansTab = ({ selectedDate }) => {
           </View>
         ) : (
           <>
-            {' '}
             {/* task view  */}
             {/* add task button */}
             <View>
