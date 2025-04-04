@@ -254,8 +254,9 @@ const PlansTab = ({ selectedDate }) => {
         {showForm ? (
           // Form for new task input
           <View style={styles.formContainer}>
+            {/* cancel task input */}
             <TouchableOpacity
-              style={styles.closeMenuButton}
+              style={[styles.planTabButton, { right: 10 }]}
               onPress={() => {
                 setShowForm(false);
                 setErrors({
@@ -265,7 +266,12 @@ const PlansTab = ({ selectedDate }) => {
                 });
               }}
             >
-              <Text style={styles.closeMenuButtonText}>x</Text>
+              <FontAwesome5
+                name="plus"
+                size="18"
+                color="#e2baa1"
+                style={{ transform: [{ rotate: '45deg' }] }}
+              />
             </TouchableOpacity>
 
             {/* task name input */}
@@ -302,6 +308,7 @@ const PlansTab = ({ selectedDate }) => {
               isVisible={isDatePickerVisible}
               mode="date"
               themeVariant="light"
+              minimumDate={new Date()}
               onConfirm={(date) => {
                 setDate(
                   date.toLocaleDateString('en-US', {
@@ -614,30 +621,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  closeMenuButton: {
-    position: 'absolute',
-    top: -50,
-    right: 10,
-    zIndex: 2,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    borderWidth: 2,
-    borderColor: '#153CE6',
-    borderRadius: 50,
-  },
-  closeMenuButtonText: {
-    color: '#153CE6',
-    fontSize: 24,
-    height: 32,
-    fontFamily: 'Inter',
-  },
   formContainer: {
     paddingHorizontal: 20,
-    marginTop: 60,
+    paddingVertical: 60,
     alignItems: 'center',
   },
   submitButton: {

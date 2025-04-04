@@ -27,7 +27,7 @@ const CalendarTab = ({ selectedDate, setSelectedDate }) => {
 const styles = StyleSheet.create({
   menuBar: {
     width: '100%',
-    height: 175,
+    height: 150,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     overflow: 'hidden',
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   calendarContainer: {
     width: '100%',
-    height: 500,
+    height: 515,
   },
 });
 

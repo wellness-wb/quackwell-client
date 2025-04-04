@@ -67,14 +67,6 @@ const Calendar = ({ selectedDate, setSelectedDate }) => {
         <Text style={styles.month}>
           {weekDates[0]?.toLocaleString('default', { month: 'short' })}
         </Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity>
-            <Text style={styles.icon}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.icon}>☀️</Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* Animated Dates Only */}
@@ -143,16 +135,6 @@ const styles = StyleSheet.create({
     color: '#153CE6',
     marginTop: 140,
     marginLeft: 19,
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 140,
-  },
-  icon: {
-    fontSize: 18,
-    marginHorizontal: 15,
-    color: '#739CEF',
   },
   weekContainer: {
     flexDirection: 'row',
