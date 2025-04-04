@@ -1,38 +1,43 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Animated,
   PanResponder,
   StyleSheet,
-  View,
-  TouchableOpacity,
   Text,
   TextInput,
-  Alert,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useAuth } from '../../utils/authContext';
+import {
+  addTodo,
+  completeTodo,
+  deleteTodo,
+  fetchTodos,
+  fetchTodosByDate,
+} from '../../utils/todos';
 
 const PlansTab = ({ selectedDate }) => {
-  const [menuHeight] = useState(new Animated.Value(100)); // Initial collapsed height
+  const { session } = useAuth();
+  const [menuHeight] = useState(new Animated.Value(375)); // Initial collapsed height
 
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCompletedTasks, setShowCompletedTasks] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
-  // We'll store date, start time, and end time as Date objects
   const [date, setDate] = useState('Set Date');
-  const [location, setLocation] = useState('');
-  const [category, setCategory] = useState('');
 
   // Picker visibility state
-  const [startTime, setStartTime] = useState('Start Time');
-  const [isStartTimePickerVisible, setStartTimePickerVisibility] =
-    useState(false);
-  const [endTime, setEndTime] = useState('End Time');
-  const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
+  const [dueTime, setDueTime] = useState('Due Time');
+  const [isDueTimePickerVisible, setDueTimePickerVisibility] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -48,49 +53,88 @@ const PlansTab = ({ selectedDate }) => {
   const [errors, setErrors] = useState({
     name: false,
     date: false,
-    startTime: false,
-    endTime: false,
+    dueTime: false,
   });
 
   const [menuPosition, setMenuPosition] = useState(0);
 
+  // Update selectedOption when selectedDate changes
+  useEffect(() => {
+    setSelectedOption(selectedDate.toLocaleDateString());
+  }, [selectedDate]);
+
+  // Load todo data
+  const loadTodos = async () => {
+    if (!session) return;
+
+    setIsLoading(true);
+    try {
+      let data;
+      if (selectedOption === 'all') {
+        data = await fetchTodos();
+      } else {
+        const formattedDate = selectedDate.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        data = await fetchTodosByDate(formattedDate);
+      }
+
+      const formattedTasks = data.map((task) => ({
+        id: task.id,
+        name: task.name,
+        date: task.date,
+        dueTime: task.due_time,
+        isCompleted: task.is_completed,
+      }));
+
+      setTasks(formattedTasks);
+    } catch (error) {
+      console.error('Error occurred while loading todos:', error);
+      Alert.alert('Error', 'There was a problem loading your todos.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Load todos on component mount and when selectedOption changes
+  useEffect(() => {
+    loadTodos();
+  }, [session, selectedOption]);
+
+  // Auto-expand menu on mount
+  useEffect(() => {
+    expandMenu();
+  }, []);
+
   const onLayout = (event) => {
-    const { y } = event.nativeEvent.layout; // Get the y-position of the menu
-    setMenuPosition(y); // Save the menu's position
+    const { y } = event.nativeEvent.layout;
+    setMenuPosition(y);
   };
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => {
-      // Get the touch location relative to the screen (pageY)
       const touchY = evt.nativeEvent.pageY;
-
-      // Get the position of the menu (you may need to calculate this or get it dynamically)
-      const menuTop = menuPosition; // This should be the top position of your menu on the screen
-
-      // Only allow movement if the touch starts at the top 50px of the menu
+      const menuTop = menuPosition;
       return touchY >= menuTop && touchY <= menuTop + 50;
     },
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      // Only react if swipe is significant
       return Math.abs(gestureState.dy) > 10;
     },
     onPanResponderMove: (_, gestureState) => {
-      let newHeight = menuHeight._value - gestureState.dy; // Calculate new height
-
-      // Ensure the height stays within the bounds (50 - 600)
+      let newHeight = menuHeight._value - gestureState.dy;
       newHeight = Math.max(50, Math.min(600, newHeight));
-
       menuHeight.setValue(newHeight);
     },
     onPanResponderRelease: (_, gestureState) => {
-      const threshold = 100; // Minimum swipe distance to trigger expansion/collapse
+      const threshold = 100;
 
       if (gestureState.dy < -threshold) {
-        expandMenu(); // Swiping up -> expand
+        expandMenu();
       } else if (gestureState.dy > threshold) {
-        collapseMenu(); // Swiping down -> collapse
+        collapseMenu();
       } else {
-        // Snap to closest state if not past threshold
         if (menuHeight._value > 300) {
           expandMenu();
         } else {
@@ -110,55 +154,88 @@ const PlansTab = ({ selectedDate }) => {
 
   const collapseMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: 50,
+      toValue: 375,
       duration: 400,
       useNativeDriver: false,
     }).start();
   };
 
-  // Handle form submission
-  const handleSubmit = () => {
-    // Validate mandatory fields: name, date, start time, and end time.
+  // Handle form submission with Supabase integration
+  const handleSubmit = async () => {
     const newErrors = {
       name: !name,
       date: date === 'Set Date',
-      startTime: startTime === 'Start Time' || startTime > endTime,
-      endTime: endTime === 'End Time' || startTime > endTime,
+      dueTime: dueTime === 'Due Time',
     };
 
     setErrors(newErrors);
 
     if (Object.values(newErrors).includes(true)) {
-      //return;
+      return;
     }
 
-    // Create a task object with individual properties
-    const newTask = {
-      id: Date.now(),
-      name,
-      date,
-      startTime,
-      endTime,
-      location,
-      category,
-      isCompleted,
-    };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    try {
+      setIsLoading(true);
+      const newTodo = await addTodo(name, date, dueTime);
 
-    // Reset form fields and hide form
-    setName('');
-    setDate('Set Date');
-    setStartTime('Start Time');
-    setEndTime('End Time');
-    setLocation('');
-    setCategory('');
-    setShowForm(false);
-    setIsCompleted(false);
+      setTasks((prevTasks) => [
+        {
+          id: newTodo.id,
+          name: newTodo.name,
+          date: newTodo.date,
+          dueTime: newTodo.due_time,
+          isCompleted: newTodo.is_completed,
+        },
+        ...prevTasks,
+      ]);
+
+      setName('');
+      setDate('Set Date');
+      setDueTime('Due Time');
+      setShowForm(false);
+      setIsCompleted(false);
+
+      setErrors({
+        name: false,
+        date: false,
+        dueTime: false,
+      });
+    } catch (error) {
+      console.error('Error occurred while adding a todo:', error);
+      Alert.alert('Error', 'There was a problem adding your todo.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDeleteTask = (index) => {
-    const updatedTasks = tasks.filter((_, i) => i !== index);
-    setTasks(updatedTasks);
+  const handleDeleteTask = async (id) => {
+    try {
+      setIsLoading(true);
+      await deleteTodo(id);
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error('Error occurred while deleting a todo:', error);
+      Alert.alert('Error', 'There was a problem deleting your todo.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCompleteTask = async (id) => {
+    try {
+      setIsLoading(true);
+      await completeTodo(id, true);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, isCompleted: true } : task,
+        ),
+      );
+    } catch (error) {
+      console.error('Error occurred while completing a todo:', error);
+      Alert.alert('Error', 'There was a problem completing your todo.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -176,17 +253,20 @@ const PlansTab = ({ selectedDate }) => {
         {showForm ? (
           // Form for new task input
           <View style={styles.formContainer}>
-            {/* Close new task form */}
             <TouchableOpacity
               style={styles.closeMenuButton}
               onPress={() => {
                 setShowForm(false);
+                setErrors({
+                  name: false,
+                  date: false,
+                  dueTime: false,
+                });
               }}
             >
               <Text style={styles.closeMenuButtonText}>x</Text>
             </TouchableOpacity>
 
-            {/* Task Name Input */}
             <TextInput
               placeholder="(Task Name)"
               style={styles.titleInput}
@@ -195,16 +275,6 @@ const PlansTab = ({ selectedDate }) => {
               placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
             />
 
-            {/* Category Picker */}
-            <TextInput
-              placeholder="Category"
-              style={styles.pickCategory}
-              value={category}
-              onChangeText={setCategory}
-              placeholderTextColor="#e2baa1"
-            />
-
-            {/* Date Picker */}
             <TouchableOpacity
               style={[styles.selectDate, errors.date && styles.errorInput]}
               onPress={() => setDatePickerVisibility(true)}
@@ -243,107 +313,84 @@ const PlansTab = ({ selectedDate }) => {
             />
 
             <View style={styles.timeContainer}>
-              {/* Start Time Picker */}
               <TouchableOpacity
-                style={[styles.selectTime, errors.endTime && styles.errorInput]}
-                onPress={() => setStartTimePickerVisibility(true)}
+                style={[styles.selectDate, errors.dueTime && styles.errorInput]}
+                onPress={() => setDueTimePickerVisibility(true)}
               >
+                <FontAwesome5 name="clock" solid size={20} color={'#e2baa1'} />
                 <Text
                   style={[
                     styles.dateTimeText,
-                    { color: errors.startTime ? '#e34060' : '#e2baa1' },
+                    {
+                      color: errors.dueTime ? '#e34060' : '#e2baa1',
+                    },
                   ]}
                 >
-                  {startTime}
+                  {dueTime !== 'Due Time' ? dueTime : 'Due Time'}
                 </Text>
               </TouchableOpacity>
 
               <DateTimePickerModal
-                isVisible={isStartTimePickerVisible}
+                isVisible={isDueTimePickerVisible}
                 mode="time"
                 themeVariant="light"
-                onConfirm={(startTime) => {
-                  setStartTime(
-                    startTime.toLocaleTimeString([], {
+                onConfirm={(selectedTime) => {
+                  setDueTime(
+                    selectedTime.toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
                     }),
                   );
-                  setStartTimePickerVisibility(false);
+                  setDueTimePickerVisibility(false);
                 }}
-                onCancel={() => setStartTimePickerVisibility(false)}
-              />
-
-              {/* End Time Picker */}
-              <TouchableOpacity
-                style={[styles.selectTime, errors.endTime && styles.errorInput]}
-                onPress={() => setEndTimePickerVisibility(true)}
-              >
-                <Text
-                  style={[
-                    styles.dateTimeText,
-                    { color: errors.endTime ? '#e34060' : '#e2baa1' },
-                  ]}
-                >
-                  {endTime}
-                </Text>
-              </TouchableOpacity>
-
-              <DateTimePickerModal
-                isVisible={isEndTimePickerVisible}
-                mode="time"
-                themeVariant="light"
-                onConfirm={(endTime) => {
-                  setEndTime(
-                    endTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    }),
-                  );
-                  setEndTimePickerVisibility(false);
-                }}
-                onCancel={() => setEndTimePickerVisibility(false)}
+                onCancel={() => setDueTimePickerVisibility(false)}
               />
             </View>
 
-            {/* Location Picker */}
-            <TextInput
-              placeholder="📍 Location"
-              style={styles.pickLocation}
-              value={location}
-              onChangeText={setLocation}
-              placeholderTextColor="#e2baa1"
-            />
-
-            {/* Submit Button */}
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}
+              disabled={isLoading}
             >
-              <Text style={styles.submitButtonText}>Submit</Text>
+              <Text style={styles.submitButtonText}>
+                {isLoading ? 'Saving...' : 'Submit'}
+              </Text>
             </TouchableOpacity>
 
-            {/* Error Message */}
             {Object.values(errors).some((error) => error) && (
               <Text style={styles.errorMessage}>Invalid Input</Text>
             )}
           </View>
         ) : (
           <>
-            {/* "+" Button */}
             <View style={styles.addButtonContainer}>
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => {
                   expandMenu();
                   setShowForm(true);
+                  setErrors({
+                    name: false,
+                    date: false,
+                    dueTime: false,
+                  });
                 }}
               >
                 <Text style={styles.addButtonText}>+</Text>
               </TouchableOpacity>
             </View>
 
-            {/* Buttons for all / individual day task view*/}
+            <View style={styles.showCompletedTasksContainer}>
+              <TouchableOpacity
+                style={styles.showCompletedTasksButton}
+                onPress={() => {
+                  setShowCompletedTasks((prevState) => !prevState);
+                }}
+              >
+                <Text style={styles.addButtonText}>T</Text>
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.taskViewButtons}>
               <TouchableOpacity
                 style={[
@@ -401,49 +448,54 @@ const PlansTab = ({ selectedDate }) => {
               </TouchableOpacity>
             </View>
 
-            {/* Tasks Container */}
             <SwipeListView
               data={
-                selectedOption === 'all'
-                  ? tasks
-                  : tasks.filter(
-                      (task) =>
-                        task.date ===
-                        selectedDate.toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        }),
-                    )
+                showCompletedTasks
+                  ? tasks.filter((task) => task.isCompleted)
+                  : tasks.filter((task) => !task.isCompleted)
               }
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <LinearGradient
-                  colors={['#f5eedf', '#f2b58c']}
+                  colors={
+                    showCompletedTasks
+                      ? ['rgb(27, 63, 224)', ' rgb(76, 104, 229)']
+                      : ['#f5eedf', '#f2b58c']
+                  }
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.taskItem}
                 >
                   <View style={styles.taskHeader}>
-                    {/* Task Name */}
                     <View>
-                      <Text style={styles.nameText}>{item.name}</Text>
-                      <Text style={styles.catText}>({item.category})</Text>
+                      <Text
+                        style={
+                          showCompletedTasks
+                            ? styles.uncompletedNameText
+                            : styles.completedNameText
+                        }
+                      >
+                        {item.name}
+                      </Text>
                     </View>
-                    {/* Start Time and End Time aligned to the right */}
                     <View>
-                      <Text style={styles.timeText}>{item.startTime}</Text>
-                      <Text style={styles.timeText}>{item.endTime}</Text>
+                      <Text
+                        style={
+                          showCompletedTasks
+                            ? styles.uncompletedTimeText
+                            : styles.completedTimeText
+                        }
+                      >
+                        {item.dueTime}
+                      </Text>
                     </View>
                   </View>
 
                   <Text style={styles.dateText}>{item.date}</Text>
-                  <Text style={styles.locText}>📍 {item.location}</Text>
                 </LinearGradient>
               )}
-              renderHiddenItem={({ index }) => (
+              renderHiddenItem={({ item }) => (
                 <View>
-                  {/* Delete Button */}
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() =>
@@ -453,7 +505,7 @@ const PlansTab = ({ selectedDate }) => {
                         [
                           {
                             text: 'Delete',
-                            onPress: () => handleDeleteTask(index),
+                            onPress: () => handleDeleteTask(item.id),
                           },
                           { text: 'Cancel' },
                         ],
@@ -467,17 +519,16 @@ const PlansTab = ({ selectedDate }) => {
                       color={'#e2baa1'}
                     />
                   </TouchableOpacity>
-                  {/* Complete Button */}
                   <TouchableOpacity
                     style={styles.completeButton}
                     onPress={() =>
                       Alert.alert(
                         'Would you like to mark this task as completed?',
-                        '',
+                        ' ',
                         [
                           {
                             text: 'Confirm',
-                            //onPress: () => task.setIsCompleted(true),
+                            onPress: () => handleCompleteTask(item.id),
                           },
                           { text: 'Cancel' },
                         ],
@@ -493,15 +544,21 @@ const PlansTab = ({ selectedDate }) => {
                   </TouchableOpacity>
                 </View>
               )}
-              rightOpenValue={-100} // Controls how much the item swipes left
+              rightOpenValue={-100}
               leftOpenValue={100}
               contentContainerStyle={{ paddingBottom: 200 }}
+              ListEmptyComponent={() => (
+                <Text style={styles.emptyText}>
+                  {isLoading
+                    ? 'Loading todos...'
+                    : 'Nothing planned for this day'}
+                </Text>
+              )}
             />
           </>
         )}
       </LinearGradient>
 
-      {/* Slider Handle */}
       <View style={styles.sliderHandle} />
     </Animated.View>
   );
@@ -523,7 +580,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
-    justifyContent: 'flex-start', // Push content upwards when expanded
+    justifyContent: 'flex-start',
   },
   addButton: {
     position: 'absolute',
@@ -543,6 +600,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     top: -1,
   },
+  showCompletedTasksContainer: {},
+  showCompletedTasksButton: {
+    position: 'absolute',
+    left: 10,
+    backgroundColor: '#3657c1',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    alignSelf: 'flex-end',
+    marginTop: 10,
+  },
   closeMenuButton: {
     position: 'absolute',
     top: -50,
@@ -555,8 +626,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 3,
     borderWidth: 2,
-    borderColor: '#153CE6', // Blue circular outline for today
-    borderRadius: 50, // Fully rounded
+    borderColor: '#153CE6',
+    borderRadius: 50,
   },
   closeMenuButtonText: {
     color: '#153CE6',
@@ -584,7 +655,7 @@ const styles = StyleSheet.create({
   },
   sliderHandle: {
     position: 'absolute',
-    top: 8, // Position the handle near the top
+    top: 8,
     alignSelf: 'center',
     height: 10,
     width: 80,
@@ -592,22 +663,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   timeContainer: {
-    flexDirection: 'row', // Places elements in a row
-    width: '90%', // Ensures it takes the full width
-    paddingHorizontal: 10, // Optional: Padding for spacing
-  },
-  selectTime: {
-    height: 40,
-    flex: 1,
-    backgroundColor: '#3657c1',
-    borderRadius: 20,
-    marginVertical: 5,
-    marginHorizontal: 5,
-    fontSize: 16,
-    fontFamily: 'Inter',
+    width: '100%',
     alignItems: 'center',
-    flexDirection: 'row',
-    padding: 7,
+    justifyContent: 'center',
   },
   selectDate: {
     flexDirection: 'row',
@@ -632,29 +690,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontWeight: 'bold',
     bottom: 25,
-  },
-  pickCategory: {
-    textAlign: 'center',
-    color: '#e2baa1',
-    backgroundColor: '#3657c1',
-    bottom: 25,
-    width: 86,
-    height: 30,
-    borderRadius: 20,
-    padding: 10,
-    fontSize: 14,
-    fontFamily: 'Inter',
-  },
-  pickLocation: {
-    backgroundColor: '#3657c1',
-    borderRadius: 20,
-    padding: 10,
-    height: 52,
-    width: 290,
-    marginVertical: 5,
-    fontSize: 20,
-    fontFamily: 'Inter',
-    color: '#e2baa1',
   },
   errorMessage: {
     color: '#e34060',
@@ -693,11 +728,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
   },
-  taskText: {
-    fontSize: 16,
-    fontFamily: 'Inter',
-    color: 'green',
-  },
   deleteButton: {
     position: 'absolute',
     backgroundColor: 'red',
@@ -726,24 +756,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  nameText: {
+  completedNameText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#153CE6',
   },
-  catText: {
-    color: '#153CE6',
+  uncompletedNameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#e2baa1',
   },
-  timeText: {
+  uncompletedTimeText: {
+    fontWeight: 'medium',
+    color: '#e2baa1',
+    fontSize: 20,
+  },
+  completedTimeText: {
     fontWeight: 'medium',
     color: '#153CE6',
     fontSize: 20,
-  },
-  dateText: {},
-  locText: {
-    fontWeight: 'light',
-    fontSize: 20,
-    color: '#153CE6',
   },
   dateContainer: {
     alignItems: 'center',
@@ -752,6 +783,11 @@ const styles = StyleSheet.create({
   dateStyle: {
     color: '#153CE6',
     fontWeight: 'bold',
+  },
+  emptyText: {
+    color: '#153CE6',
+    alignSelf: 'center',
+    fontWeight: '700',
   },
 });
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
-import CalendarTab from './CalendarTab';
 import MenuBar from '../components/MenuBar';
+import CalendarTab from './CalendarTab';
 import PlansTab from './PlansTab';
 
 const PlannerMain = ({ navigation }) => {

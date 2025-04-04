@@ -61,7 +61,7 @@ const SocialMain = ({ navigation }) => {
             </TouchableOpacity>
 
             {/* Settings Icon */}
-            <TouchableOpacity onPress={() => console.log('Settings Pressed')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
               <LinearGradient
                 colors={['#e6f1fb', '#F3CAAF']}
                 start={{ x: 0, y: 0 }}
@@ -96,7 +96,7 @@ const SocialMain = ({ navigation }) => {
               end={{ x: 1, y: 1 }}
               style={styles.friendsBox}
             >
-              <TouchableOpacity onPress={() => console.log('Friends Pressed')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
                 <FontAwesome5
                   name="user-friends"
                   solid
