@@ -23,11 +23,27 @@ const CalmMain = ({ navigation }) => {
 
   const handleStartTimer = () => {
     if (timerRef.current) {
-      timerRef.current.startTimer();
+      timerRef.current.startTimer(); // Also check for typos here ("startTimer")
     }
+
+    if (sound) {
+      // Instead of calling SoundFunction.unloadAsync() which doesn’t exist,
+      // consider stopping/unloading the current sound:
+      await sound.unloadAsync();
+    }
+
+    // Use SoundFunction.getSoundFile to get the file based on selectedSound
+    const { sound: newSound } = await Audio.Sound
+      .createAsync
+      // SoundFunction.getSoundFile(selectedSound),
+      // { shouldPlay: true },
+      ();
+
+    setSound(newSound); // Set the new sound to state
   };
 
-  const handleCancelTimer = () => {
+  // When you cancel timer, the sound should also be canceled**
+  const handleCancelTimer = async () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
