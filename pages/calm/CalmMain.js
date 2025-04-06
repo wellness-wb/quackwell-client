@@ -86,14 +86,18 @@ const CalmMain = ({ navigation }) => {
           <View style={{ marginHorizontal: 10 }}>
             <Button
               title="Rain"
-              onPress={() => setSelectedSound('Raining for power nap')}
+              onPress={() =>
+                setSelectedSound('Raining for power nap') ? 'black' : '#888'
+              }
             />
           </View>
           <View style={{ marginHorizontal: 10 }}>
             <Button
               title="Stress"
               onPress={() =>
-                setSelectedSound('Ocean Waves to reduce your stress')
+                setSelectedSound('Suzume Soundtrack to Calm Yourself')
+                  ? 'black'
+                  : '#888'
               }
             />
           </View>
@@ -101,7 +105,9 @@ const CalmMain = ({ navigation }) => {
             <Button
               title="Ocean"
               onPress={() =>
-                setSelectedSound('Suzume Soundtrack to Calm Yourself')
+                setSelectedSound('Ocean Waves to reduce your stress')
+                  ? 'black'
+                  : '#888'
               }
             />
           </View>
