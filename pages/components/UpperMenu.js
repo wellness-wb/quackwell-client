@@ -1,51 +1,71 @@
+import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { Animated, PanResponder, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  PanResponder,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
-const UpperMenu = () => {
-  // useState hook const [state, setState ] = useState(initalValue). in this case no setState bc it will be handled by animated view
-  // Animated.Value is an object represents a mutable value that can be smoothly animated
-  const [menuHeight] = useState(new Animated.Value(50)); // initial height of the menu
+const UpperMenu = ({
+  hydrationGoal = 2000,
+  currentHydration = 500,
+  todayTask = null,
+  navigation,
+}) => {
+  const [menuHeight] = useState(new Animated.Value(80)); // ← start at a visible height
 
-  // PanResponder is a utility that helps with touch gestures
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true, // called every time user moves their finger on the screen
-    // event when the animation should be activated
-    onPanResponderMove: Animated.event(
-      [
-        null, // ignore the native event
-        {
-          dy: menuHeight, // vertical gesture to change the height of menu
-        },
-      ],
-      { useNativeDriver: false }, // don't need the native threads, for better animation
-    ),
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: Animated.event([null, { dy: menuHeight }], {
+      useNativeDriver: false,
+    }),
     onPanResponderRelease: (_, gestureState) => {
-      // is activated when the user lifts their finger off the screen
-      const threshold = 20; // minimum gesture length to expand/collapse
+      const threshold = 20;
       if (gestureState.dy > threshold) {
-        // collapse the menu
         Animated.timing(menuHeight, {
-          toValue: 150, // height when expanded
-          duration: 300, // ms of animation
+          toValue: 200, // expanded
+          duration: 300,
           useNativeDriver: false,
         }).start();
       } else {
-        // expand the menu
         Animated.timing(menuHeight, {
-          toValue: 50, // height when collapsed
-          duration: 300, //ms for animation
+          toValue: 80, // collapsed
+          duration: 300,
           useNativeDriver: false,
         }).start();
       }
     },
   });
 
-  // the container with animation
+  const percent =
+    hydrationGoal > 0
+      ? Math.round((currentHydration / hydrationGoal) * 100)
+      : 0;
+
+  // Fade-in content when expanded
+  const contentOpacity = menuHeight.interpolate({
+    inputRange: [80, 250],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
   return (
     <Animated.View
-      {...panResponder.panHandlers} // attach the responder to the menu
-      style={[styles.menuBar, { height: menuHeight }]} // will have the same argument as animation function
+      {...panResponder.panHandlers}
+      style={[
+        styles.menuBar,
+        {
+          height: menuHeight,
+        },
+      ]}
     >
       <LinearGradient
         colors={['#A4CDF1', '#F3CAAF']}
@@ -53,10 +73,39 @@ const UpperMenu = () => {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* placeholder content */}
-        <View style={styles.placeholder} />
+        {/* Fading content */}
+        <Animated.View
+          style={[styles.contentContainer, { opacity: contentOpacity }]}
+        >
+          <TouchableOpacity
+            onPress={() => navigation.navigate('HydrationMain')}
+          >
+            <View style={styles.hydrationPill}>
+              <LinearGradient
+                colors={['#F3CAAF', '#A4CDF1']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.percentageBubble}
+              >
+                <Text style={styles.percentageText}>{percent}%</Text>
+              </LinearGradient>
+              <FontAwesome5 name="tint" size={24} color="#F3CAAF" />
+            </View>
+          </TouchableOpacity>
+
+          {todayTask && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PlannerMain')}
+            >
+              <View style={styles.taskContainer}>
+                <Text style={styles.taskText}>📌 {todayTask}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
       </LinearGradient>
-      {/* sldier handle */}
+
+      {/* Slider handle */}
       <View style={styles.sliderHandle} />
     </Animated.View>
   );
@@ -65,9 +114,8 @@ const UpperMenu = () => {
 const styles = StyleSheet.create({
   menuBar: {
     width: '100%',
+    height: hp('15%'),
     position: 'absolute',
-    top: 0,
-    opacity: 0.77,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     overflow: 'hidden',
@@ -75,20 +123,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 5, // Android shadow
+    elevation: 5,
   },
   gradient: {
-    flex: 1,
+    height: '100%',
     justifyContent: 'flex-end',
-  },
-  placeholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   sliderHandle: {
     position: 'absolute',
-    top: '75%',
+    top: '85%',
     height: 10,
     width: 70,
     backgroundColor: '#E8CDC0',
@@ -99,7 +142,58 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
-    elevation: 5, // Android shadow
+    elevation: 5,
+  },
+  hydrationPill: {
+    position: 'relative',
+    bottom: hp('5%'),
+    right: wp('20%'),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'center',
+    paddingHorizontal: wp('4%'),
+    width: wp('35%'),
+    height: hp('4%'),
+    borderRadius: 30,
+    backgroundColor: '#153CE6',
+  },
+  percentageBubble: {
+    width: wp('16%'),
+    height: hp('3.5%'),
+    right: wp('3%'),
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: wp('7%'),
+  },
+  percentageText: {
+    fontWeight: 'bold',
+    color: '#153CE6',
+    fontSize: hp('1.8%'),
+  },
+  taskContainer: {
+    width: wp('35%'),
+    height: hp('4%'),
+    position: 'relative',
+    bottom: hp('9%'),
+    left: wp('50%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    backgroundColor: '#153CE6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+
+  taskText: {
+    color: '#F3CAAF',
+    fontWeight: 'bold',
+    fontSize: hp('1.8%'),
+    textAlign: 'center',
   },
 });
 

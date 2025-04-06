@@ -117,6 +117,11 @@ const HydrationTracker = ({ route, navigation }) => {
         // image fully covers the container, even if some parts of the image are cut off
         resizeMode="cover"
       >
+        <UpperMenu
+          hydrationGoal={hydrationGoal}
+          currentHydration={currentHydration}
+        />
+
         {/* Confetti */}
         {showConfetti && (
           <>

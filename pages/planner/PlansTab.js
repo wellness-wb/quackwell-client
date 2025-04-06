@@ -90,6 +90,18 @@ const PlansTab = ({ selectedDate }) => {
       }));
 
       setTasks(formattedTasks);
+      const todaysTasks = formattedTasks.filter(
+        (task) =>
+          task.date ===
+          new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }),
+      );
+
+      // latest task will be the first in your array since you're unshifting new ones
+      const latestTask = todaysTasks.length > 0 ? todaysTasks[0] : null;
     } catch (error) {
       console.error('Error occurred while loading todos:', error);
       Alert.alert('Error', 'There was a problem loading your todos.');
