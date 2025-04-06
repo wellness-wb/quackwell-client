@@ -222,13 +222,21 @@ const PlansTab = ({ selectedDate }) => {
     }
   };
 
+  // modified to toggle a task completed or uncompleted
   const handleCompleteTask = async (id) => {
     try {
       setIsLoading(true);
+
+      const taskToToggle = tasks.find((task) => task.id === id);
+      if (!taskToToggle) return;
+
+      const newStatus = !taskToToggle.isCompleted;
+
       await completeTodo(id, true);
+
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
-          task.id === id ? { ...task, isCompleted: true } : task,
+          task.id === id ? { ...task, isCompleted: newStatus } : task,
         ),
       );
     } catch (error) {
@@ -549,26 +557,47 @@ const PlansTab = ({ selectedDate }) => {
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.completeButton}
-                    onPress={() =>
-                      Alert.alert(
-                        'Would you like to mark this task as completed?',
-                        ' ',
-                        [
-                          {
-                            text: 'Confirm',
-                            onPress: () => handleCompleteTask(item.id),
-                          },
-                          { text: 'Cancel' },
-                        ],
-                      )
+                    style={[
+                      styles.completeButton,
+                      {
+                        backgroundColor: showCompletedTasks
+                          ? '#e2baa1'
+                          : 'blue',
+                      },
+                    ]}
+                    onPress={
+                      showCompletedTasks
+                        ? () =>
+                            Alert.alert(
+                              'Would you like to mark this task as not completed?',
+                              ' ',
+                              [
+                                {
+                                  text: 'Confirm',
+                                  onPress: () => handleCompleteTask(item.id),
+                                },
+                                { text: 'Cancel' },
+                              ],
+                            )
+                        : () =>
+                            Alert.alert(
+                              'Would you like to mark this task as completed?',
+                              ' ',
+                              [
+                                {
+                                  text: 'Confirm',
+                                  onPress: () => handleCompleteTask(item.id),
+                                },
+                                { text: 'Cancel' },
+                              ],
+                            )
                     }
                   >
                     <FontAwesome5
                       name="check"
                       solid
                       size={20}
-                      color={'#e2baa1'}
+                      color={showCompletedTasks ? 'blue' : '#e2baa1'}
                     />
                   </TouchableOpacity>
                 </View>
@@ -727,7 +756,6 @@ const styles = StyleSheet.create({
   },
   completeButton: {
     position: 'absolute',
-    backgroundColor: 'blue',
     justifyContent: 'center',
     alignItems: 'center',
     width: 120,
