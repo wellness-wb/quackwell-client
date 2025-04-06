@@ -44,7 +44,9 @@ const SocialMain = ({ navigation }) => {
           {/* Icon Row */}
           <View style={styles.iconContainer}>
             {/* Envelope Icon */}
-            <TouchableOpacity onPress={() => navigation.navigate('TrophyPage')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('MessagePage')}
+            >
               <LinearGradient
                 colors={['#e6f1fb', '#F3CAAF']}
                 start={{ x: 0, y: 0 }}
@@ -53,6 +55,25 @@ const SocialMain = ({ navigation }) => {
               >
                 <FontAwesome5
                   name="envelope"
+                  solid
+                  size={30}
+                  color={'#153CE6'}
+                />
+              </LinearGradient>
+            </TouchableOpacity>
+
+            {/* Settings Icon */}
+            <TouchableOpacity
+              onPress={() => navigation.navigate('FriendsPage')}
+            >
+              <LinearGradient
+                colors={['#e6f1fb', '#F3CAAF']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.iconBackground}
+              >
+                <FontAwesome5
+                  name="user-friends"
                   solid
                   size={30}
                   color={'#153CE6'}
@@ -98,7 +119,7 @@ const SocialMain = ({ navigation }) => {
             >
               <TouchableOpacity onPress={() => navigation.navigate('Feed')}>
                 <FontAwesome5
-                  name="user-friends"
+                  name="comments"
                   solid
                   size={40}
                   color={'#153CE6'}
@@ -168,12 +189,13 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     alignItems: 'center',
     width: wp('40%'),
     height: hp('5%'),
     bottom: hp('4%'),
     marginBottom: hp('3%'),
+    gap: wp('5%'),
   },
   iconBackground: {
     width: hp('7%'),

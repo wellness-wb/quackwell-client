@@ -1,6 +1,16 @@
+import { FontAwesome } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
-import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import {
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import MenuBar from '../components/MenuBar';
 import TrophyItem from './components/TrophyItem';
 
@@ -11,6 +21,23 @@ const TrophyPage = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <LinearGradient
+          colors={[
+            'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
+            'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
+          ]}
+          start={{ x: 1, y: 1 }}
+          end={{ x: 0, y: 0 }}
+          style={styles.backGradient}
+        >
+          <FontAwesome name="arrow-left" size={hp('2.5%')} color="#153CE6" />
+        </LinearGradient>
+      </TouchableOpacity>
+
       <View style={styles.trophyList}>
         {/* Trophy with Custom GIF */}
         <TrophyItem
@@ -57,6 +84,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     top: hp('25%'),
+  },
+  backButton: {
+    top: hp('8%'),
+    right: wp('38%'),
+    zIndex: 10,
+  },
+
+  backGradient: {
+    overflow: 'hidden',
+    borderRadius: 50,
+    width: wp('12%'),
+    height: wp('12%'),
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
   },
 });
 
