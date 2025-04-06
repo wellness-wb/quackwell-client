@@ -18,7 +18,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
         {/* Calendar */}
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => navigation.navigate('PlannerMain')}
+          onPress={() => navigation.replace('PlannerMain')}
         >
           <View style={styles.iconContainer}>
             <FontAwesome5
@@ -37,7 +37,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
         {/* Hydration */}
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => navigation.navigate('HydrationMain')}
+          onPress={() => navigation.replace('HydrationMain')}
         >
           <View style={styles.iconContainer}>
             <FontAwesome5
@@ -56,7 +56,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
         {/* Home */}
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => navigation.navigate('MainHub')}
+          onPress={() => navigation.replace('MainHub')}
         >
           <View style={styles.iconContainer}>
             <FontAwesome5
@@ -71,7 +71,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
         {/* Calm */}
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => navigation.navigate('CalmMain')}
+          onPress={() => navigation.replace('CalmMain')}
         >
           <View style={styles.iconContainer}>
             <FontAwesome5
@@ -90,7 +90,7 @@ const MenuBar = ({ navigation, activeScreen }) => {
         {/* Feed */}
         <TouchableOpacity
           style={styles.icon}
-          onPress={() => navigation.navigate('SocialMain')}
+          onPress={() => navigation.replace('SocialMain')}
         >
           <View style={styles.iconContainer}>
             <FontAwesome5

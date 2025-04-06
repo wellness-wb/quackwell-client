@@ -113,6 +113,7 @@ const PlansTab = ({ selectedDate }) => {
     setMenuPosition(y);
   };
 
+  //handles movement of the tab when swiping up or down
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (evt, gestureState) => {
       const touchY = evt.nativeEvent.pageY;
@@ -241,7 +242,7 @@ const PlansTab = ({ selectedDate }) => {
   return (
     <Animated.View
       {...panResponder.panHandlers}
-      style={[styles.menuBar, { height: menuHeight }]}
+      style={[styles.tabContainer, { height: menuHeight }]}
       onLayout={onLayout}
     >
       <LinearGradient
@@ -253,8 +254,9 @@ const PlansTab = ({ selectedDate }) => {
         {showForm ? (
           // Form for new task input
           <View style={styles.formContainer}>
+            {/* cancel task input */}
             <TouchableOpacity
-              style={styles.closeMenuButton}
+              style={[styles.planTabButton, { right: 10 }]}
               onPress={() => {
                 setShowForm(false);
                 setErrors({
@@ -264,9 +266,15 @@ const PlansTab = ({ selectedDate }) => {
                 });
               }}
             >
-              <Text style={styles.closeMenuButtonText}>x</Text>
+              <FontAwesome5
+                name="plus"
+                size="18"
+                color="#e2baa1"
+                style={{ transform: [{ rotate: '45deg' }] }}
+              />
             </TouchableOpacity>
 
+            {/* task name input */}
             <TextInput
               placeholder="(Task Name)"
               style={styles.titleInput}
@@ -275,6 +283,7 @@ const PlansTab = ({ selectedDate }) => {
               placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
             />
 
+            {/* date input */}
             <TouchableOpacity
               style={[styles.selectDate, errors.date && styles.errorInput]}
               onPress={() => setDatePickerVisibility(true)}
@@ -299,6 +308,7 @@ const PlansTab = ({ selectedDate }) => {
               isVisible={isDatePickerVisible}
               mode="date"
               themeVariant="light"
+              minimumDate={new Date()}
               onConfirm={(date) => {
                 setDate(
                   date.toLocaleDateString('en-US', {
@@ -312,6 +322,7 @@ const PlansTab = ({ selectedDate }) => {
               onCancel={() => setDatePickerVisibility(false)}
             />
 
+            {/* time picker */}
             <View style={styles.timeContainer}>
               <TouchableOpacity
                 style={[styles.selectDate, errors.dueTime && styles.errorInput]}
@@ -347,6 +358,7 @@ const PlansTab = ({ selectedDate }) => {
               />
             </View>
 
+            {/* submit button */}
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleSubmit}
@@ -363,9 +375,11 @@ const PlansTab = ({ selectedDate }) => {
           </View>
         ) : (
           <>
-            <View style={styles.addButtonContainer}>
+            {/* task view  */}
+            {/* add task button */}
+            <View>
               <TouchableOpacity
-                style={styles.addButton}
+                style={[styles.planTabButton, { right: 10 }]}
                 onPress={() => {
                   expandMenu();
                   setShowForm(true);
@@ -376,22 +390,32 @@ const PlansTab = ({ selectedDate }) => {
                   });
                 }}
               >
-                <Text style={styles.addButtonText}>+</Text>
+                <FontAwesome5 name="plus" size="15" color="#e2baa1" />
               </TouchableOpacity>
             </View>
-
-            <View style={styles.showCompletedTasksContainer}>
+            {/* toggle completed task view button */}
+            <View>
               <TouchableOpacity
-                style={styles.showCompletedTasksButton}
+                style={[
+                  styles.planTabButton,
+                  {
+                    left: 10,
+                    backgroundColor: showCompletedTasks ? '#e2baa1' : '#3657c1',
+                  },
+                ]}
                 onPress={() => {
                   setShowCompletedTasks((prevState) => !prevState);
                 }}
               >
-                <Text style={styles.addButtonText}>T</Text>
+                <FontAwesome5
+                  name="check"
+                  size="15"
+                  color={showCompletedTasks ? '#3657c1' : '#e2baa1'}
+                />
               </TouchableOpacity>
             </View>
-
-            <View style={styles.taskViewButtons}>
+            {/* task view by date button */}
+            <View style={[styles.taskViewButtons, { left: 10 }]}>
               <TouchableOpacity
                 style={[
                   styles.button,
@@ -447,7 +471,7 @@ const PlansTab = ({ selectedDate }) => {
                 </Text>
               </TouchableOpacity>
             </View>
-
+            {/* task item display */}
             <SwipeListView
               data={
                 showCompletedTasks
@@ -459,7 +483,7 @@ const PlansTab = ({ selectedDate }) => {
                 <LinearGradient
                   colors={
                     showCompletedTasks
-                      ? ['rgb(27, 63, 224)', ' rgb(76, 104, 229)']
+                      ? ['#1b3fe0', '#4c68e5']
                       : ['#f5eedf', '#f2b58c']
                   }
                   start={{ x: 0, y: 0 }}
@@ -469,29 +493,34 @@ const PlansTab = ({ selectedDate }) => {
                   <View style={styles.taskHeader}>
                     <View>
                       <Text
-                        style={
-                          showCompletedTasks
-                            ? styles.uncompletedNameText
-                            : styles.completedNameText
-                        }
+                        style={[
+                          styles.nameText,
+                          { color: showCompletedTasks ? '#e2baa1' : '#153CE6' },
+                        ]}
                       >
                         {item.name}
                       </Text>
                     </View>
                     <View>
                       <Text
-                        style={
-                          showCompletedTasks
-                            ? styles.uncompletedTimeText
-                            : styles.completedTimeText
-                        }
+                        style={[
+                          styles.timeText,
+                          { color: showCompletedTasks ? '#e2baa1' : '#153CE6' },
+                        ]}
                       >
                         {item.dueTime}
                       </Text>
                     </View>
                   </View>
 
-                  <Text style={styles.dateText}>{item.date}</Text>
+                  <Text
+                    style={[
+                      styles.dateText,
+                      { color: showCompletedTasks ? '#e2baa1' : '#153CE6' },
+                    ]}
+                  >
+                    {item.date}
+                  </Text>
                 </LinearGradient>
               )}
               renderHiddenItem={({ item }) => (
@@ -565,7 +594,7 @@ const PlansTab = ({ selectedDate }) => {
 };
 
 const styles = StyleSheet.create({
-  menuBar: {
+  tabContainer: {
     width: '100%',
     position: 'absolute',
     bottom: -30,
@@ -574,7 +603,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     overflow: 'hidden',
     shadowOpacity: 0.3,
-    shadowRadius: 4,
     elevation: 5,
     minHeight: 250,
   },
@@ -582,62 +610,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-  addButton: {
+  planTabButton: {
     position: 'absolute',
-    right: 10,
-    backgroundColor: '#3657c1',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 20,
     justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    alignSelf: 'flex-end',
-    marginTop: 10,
-  },
-  addButtonText: {
-    color: '#e2baa1',
-    fontSize: 24,
-    top: -1,
-  },
-  showCompletedTasksContainer: {},
-  showCompletedTasksButton: {
-    position: 'absolute',
-    left: 10,
     backgroundColor: '#3657c1',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 20,
-    justifyContent: 'center',
     alignItems: 'center',
-    elevation: 3,
-    alignSelf: 'flex-end',
     marginTop: 10,
-  },
-  closeMenuButton: {
-    position: 'absolute',
-    top: -50,
-    right: 10,
-    zIndex: 2,
     width: 40,
     height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    borderWidth: 2,
-    borderColor: '#153CE6',
-    borderRadius: 50,
-  },
-  closeMenuButtonText: {
-    color: '#153CE6',
-    fontSize: 24,
-    height: 32,
-    fontFamily: 'Inter',
   },
   formContainer: {
     paddingHorizontal: 20,
-    marginTop: 60,
+    paddingVertical: 60,
     alignItems: 'center',
   },
   submitButton: {
@@ -756,33 +742,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  completedNameText: {
+  nameText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#153CE6',
   },
-  uncompletedNameText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#e2baa1',
-  },
-  uncompletedTimeText: {
+  timeText: {
     fontWeight: 'medium',
-    color: '#e2baa1',
     fontSize: 20,
   },
-  completedTimeText: {
-    fontWeight: 'medium',
-    color: '#153CE6',
-    fontSize: 20,
+  dateText: {
+    fontSize: 16,
   },
   dateContainer: {
     alignItems: 'center',
     padding: 25,
-  },
-  dateStyle: {
-    color: '#153CE6',
-    fontWeight: 'bold',
   },
   emptyText: {
     color: '#153CE6',
