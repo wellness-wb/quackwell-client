@@ -3,6 +3,8 @@ import { Button, ImageBackground, StyleSheet, View } from 'react-native';
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
+import { Audio } from 'expo-av'; // Importing the Audio module from expo-av to handle audio playback
+import SoundFunction from './components/SoundFunction';
 
 const CalmMain = ({ navigation }) => {
   const [sound, setSound] = useState(null);
@@ -30,7 +32,6 @@ const CalmMain = ({ navigation }) => {
     }
 
     if (sound) {
-      await sound.stopAsync(); // Stop the current sound if it's playing
       await sound.unloadAsync(); // Unload the current sound
       setSound(null); // Reset the sound state to null
     }
@@ -81,32 +82,6 @@ const CalmMain = ({ navigation }) => {
       resizeMode="cover"
     >
       <View style={styles.content}>
-        <Timer
-          ref={timerRef}
-          initialDuration={900}
-          onStatusChange={handleStatusChange}
-        />
-
-        {!timerStatus.isRunning && (
-          <View style={styles.quickOptionsContainer}>
-            <TimerQuickOption
-              label="10:00"
-              duration={600}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="15:00"
-              duration={900}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="30:00"
-              duration={1800}
-              onPress={handleQuickOptionPress}
-            />
-          </View>
-        )}
-
         <View style={{ flexDirection: 'row', marginTop: 20 }}>
           <View style={{ marginHorizontal: 10 }}>
             <Button
@@ -132,37 +107,31 @@ const CalmMain = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={styles.soundButtonsContainer}>
-          <Button
-            title="Rain"
-            onPress={() => setSelectedSound('Raining for power nap')}
-            color={
-              selectedSound === 'Raining for power nap' ? '#2E86AB' : '#888'
-            }
-          />
-          <Button
-            title="Stress"
-            onPress={() =>
-              setSelectedSound('Ocean Waves to reduce your stress')
-            }
-            color={
-              selectedSound === 'Ocean Waves to reduce your stress'
-                ? '#2E86AB'
-                : '#888'
-            }
-          />
-          <Button
-            title="Ocean"
-            onPress={() =>
-              setSelectedSound('Suzume Soundtrack to Calm Yourself')
-            }
-            color={
-              selectedSound === 'Suzume Soundtrack to Calm Yourself'
-                ? '#2E86AB'
-                : '#888'
-            }
-          />
-        </View>
+        <Timer
+          ref={timerRef}
+          initialDuration={900}
+          onStatusChange={handleStatusChange}
+        />
+
+        {!timerStatus.isRunning && (
+          <View style={styles.quickOptionsContainer}>
+            <TimerQuickOption
+              label="10:00"
+              duration={600}
+              onPress={handleQuickOptionPress}
+            />
+            <TimerQuickOption
+              label="15:00"
+              duration={900}
+              onPress={handleQuickOptionPress}
+            />
+            <TimerQuickOption
+              label="30:00"
+              duration={1800}
+              onPress={handleQuickOptionPress}
+            />
+          </View>
+        )}
 
         <View style={styles.controlButtonsContainer}>
           {!timerStatus.isRunning && (
