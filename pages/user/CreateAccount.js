@@ -26,12 +26,13 @@ const CreateAccount = ({ navigation }) => {
   const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const handleSignUp = async () => {
     try {
-      await signUp(email, password);
+      await signUp(email, password, username);
       alert('Sign-up success! Please check your email for confirmation link.');
       navigation.navigate('Login');
     } catch (error) {
@@ -100,6 +101,13 @@ const CreateAccount = ({ navigation }) => {
             </Pressable>
 
             <View style={styles.formContainer}>
+              <EditableInput
+                placeholder="Username..."
+                value={username}
+                onChangeText={setUsername}
+                secureTextEntry={false}
+                style={styles.spacing}
+              />
               <EditableInput
                 placeholder="Email..."
                 value={email}

@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -13,9 +13,25 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { getUsername } from '../../utils/auth';
 import MenuBar from '../components/MenuBar';
 
 const SocialMain = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const name = await getUsername();
+        setUsername(name);
+      } catch (error) {
+        console.error('Error fetching username:', error);
+      }
+    };
+
+    fetchUsername();
+  }, []);
+
   return (
     <ImageBackground
       source={require('../../assets/background.png')}
@@ -39,7 +55,7 @@ const SocialMain = ({ navigation }) => {
           style={styles.gradient}
         >
           {/* Profile Name */}
-          <Text style={styles.profileName}>Quack Quackwell Jr</Text>
+          <Text style={styles.profileName}>{username}</Text>
 
           {/* Icon Row */}
           <View style={styles.iconContainer}>
