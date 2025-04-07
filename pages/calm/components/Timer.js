@@ -142,16 +142,6 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     if (isRunning) return;
     const _endTime = Date.now() + timeLeft * 1000;
     setEndTime(_endTime);
-
-    const id = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Time's up!",
-        body: 'Your session is over. Great job staying focused!',
-        sound: Platform.OS === 'android' ? 'default' : undefined,
-      },
-      trigger: { seconds: timeLeft },
-    });
-    setNotificationId(id);
     setIsRunning(true);
 
     timerIntervalRef.current = setInterval(() => {
@@ -163,6 +153,14 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
       if (newTimeLeft === 0) {
         clearInterval(timerIntervalRef.current);
         setIsRunning(false);
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Time's up!",
+            body: 'Your session is over. Great job staying focused!',
+            sound: Platform.OS === 'android' ? 'default' : undefined,
+          },
+          trigger: null,
+        });
       }
     }, 1000);
   };

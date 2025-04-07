@@ -1,15 +1,16 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Button, ImageBackground, StyleSheet, View } from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
-import { Audio } from 'expo-av'; // Importing the Audio module from expo-av to handle audio playback
-import SoundFunction from './components/SoundFunction';
 
 const CalmMain = ({ navigation }) => {
-  const [sound, setSound] = useState(null);
-  const [selectedSound, setSelectedSound] = useState('Raining for power nap');
-
   const timerRef = useRef(null);
   const [timerStatus, setTimerStatus] = useState({
     isRunning: false,
@@ -26,52 +27,27 @@ const CalmMain = ({ navigation }) => {
     }
   };
 
-  const handleStartTimer = async () => {
+  const handleStartTimer = () => {
     if (timerRef.current) {
-      timerRef.current.startTimer(); // Also check for typos here ("startTimer")
+      timerRef.current.startTimer();
     }
-
-    if (sound) {
-      await sound.unloadAsync(); // Unload the current sound
-      setSound(null); // Reset the sound state to null
-    }
-
-    // Use SoundFunction.getSoundFile to get the file based on selectedSound
-    const soundFile = SoundFunction.getSoundFile(selectedSound);
-    const { sound: newSound } = await Audio.Sound.createAsync(soundFile, {
-      shouldPlay: true,
-      isLooping: true,
-    });
-
-    setSound(newSound); // Set the new sound to state
   };
 
-  const handleCancelTimer = async () => {
+  const handleCancelTimer = () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
-    if (sound) {
-      await sound.stopAsync(); // Stop the current sound if it's playing
-      await sound.unloadAsync(); // Unload the current sound
-      setSound(null); // Reset the sound state to null
-    }
   };
 
-  const handlePauseTimer = async () => {
+  const handlePauseTimer = () => {
     if (timerRef.current) {
       timerRef.current.pauseTimer();
     }
-    if (sound) {
-      await sound.pauseAsync();
-    }
   };
 
-  const handleResumeTimer = async () => {
+  const handleResumeTimer = () => {
     if (timerRef.current) {
       timerRef.current.resumeTimer();
-    }
-    if (sound) {
-      await sound.playAsync(); // Resume playing the sound
     }
   };
 
@@ -82,37 +58,6 @@ const CalmMain = ({ navigation }) => {
       resizeMode="cover"
     >
       <View style={styles.content}>
-        <View style={{ flexDirection: 'row', marginTop: 20 }}>
-          <View style={{ marginHorizontal: 10 }}>
-            <Button
-              title="Rain"
-              onPress={() =>
-                setSelectedSound('Raining for power nap') ? 'black' : '#888'
-              }
-            />
-          </View>
-          <View style={{ marginHorizontal: 10 }}>
-            <Button
-              title="Stress"
-              onPress={() =>
-                setSelectedSound('Suzume Soundtrack to Calm Yourself')
-                  ? 'black'
-                  : '#888'
-              }
-            />
-          </View>
-          <View style={{ marginHorizontal: 10 }}>
-            <Button
-              title="Ocean"
-              onPress={() =>
-                setSelectedSound('Ocean Waves to reduce your stress')
-                  ? 'black'
-                  : '#888'
-              }
-            />
-          </View>
-        </View>
-
         <Timer
           ref={timerRef}
           initialDuration={900}
@@ -141,18 +86,40 @@ const CalmMain = ({ navigation }) => {
 
         <View style={styles.controlButtonsContainer}>
           {!timerStatus.isRunning && (
-            <Button title="Start Timer" onPress={handleStartTimer} />
+            <TouchableOpacity style={styles.button} onPress={handleStartTimer}>
+              <Text style={styles.buttonText}>Start Timer</Text>
+            </TouchableOpacity>
           )}
           {timerStatus.isRunning && !timerStatus.isPaused && (
             <>
-              <Button title="Cancel" onPress={handleCancelTimer} />
-              <Button title="Pause" onPress={handlePauseTimer} />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleCancelTimer}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handlePauseTimer}
+              >
+                <Text style={styles.buttonText}>Pause</Text>
+              </TouchableOpacity>
             </>
           )}
           {timerStatus.isRunning && timerStatus.isPaused && (
             <>
-              <Button title="Delete" onPress={handleCancelTimer} />
-              <Button title="Continue" onPress={handleResumeTimer} />
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleCancelTimer}
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleResumeTimer}
+              >
+                <Text style={styles.buttonText}>Continue</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -182,6 +149,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '60%',
     marginTop: 80,
+  },
+  button: {
+    backgroundColor: '#739CEF',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
