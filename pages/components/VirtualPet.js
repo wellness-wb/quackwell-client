@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  getCompletedPlanCount,
+  getCalmTimeAverage,
+  getHydrationPercentage,
+} from '../../utils/petScores';
 
 const neutralGifs = [
   require('../../assets/blinking.gif'),
@@ -25,6 +30,17 @@ const VirtualPet = () => {
   const [currentNeutralGif, setCurrentNeutralGif] = useState(neutralGifs[0]);
 
   useEffect(() => {
+    async function fetchScores() {
+      calmTimeAverage = await getCalmTimeAverage();
+      hydrationPercentage = await getHydrationPercentage();
+      completedPlanCount = await getCompletedPlanCount();
+      setPlannerScore(completedPlanCount);
+      setCalmScore(calmTimeAverage);
+      setHydrationScore(hydrationPercentage);
+    }
+
+    fetchScores();
+
     getStateScore(plannerScore, calmScore, hydrationScore);
     const state = getPetState();
 
