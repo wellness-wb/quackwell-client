@@ -20,9 +20,10 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import MenuBar from '../components/MenuBar';
+import UpperMenu from '../components/UpperMenu';
 
 const HydrationTracker = ({ route, navigation }) => {
-  const { hydrationGoal: initialGoal, unit } = route.params;
+  const { hydrationGoal: initialGoal, unit } = route.params || {};
   const [currentHydration, setCurrentHydration] = useState(0);
   const [inputHydration, setInputHydration] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);

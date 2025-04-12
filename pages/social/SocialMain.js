@@ -16,7 +16,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getUsername } from '../../utils/auth';
 import MenuBar from '../components/MenuBar';
 
-const SocialMain = ({ navigation }) => {
+const ProfilePage = ({ navigation }) => {
   const [username, setUsername] = useState('');
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const SocialMain = ({ navigation }) => {
       </View>
 
       {/* Menu Bar */}
-      <MenuBar navigation={navigation} activeScreen="SocialMain" />
+      <MenuBar navigation={navigation} activeScreen="ProfilePage" />
     </ImageBackground>
   );
 };
@@ -250,4 +250,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SocialMain;
+export default ProfilePage;

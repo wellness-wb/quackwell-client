@@ -21,13 +21,14 @@ import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
 import Feed from './pages/social/Feed';
 import FriendsPage from './pages/social/FriendsPage';
+import FriendsProfile from './pages/social/FriendsProfile';
+import MessageDetail from './pages/social/MessageDetail';
 import MessagePage from './pages/social/MessagePage';
 import PostDetail from './pages/social/PostDetail';
 import Settings from './pages/social/Settings';
 import SocialMain from './pages/social/SocialMain';
 import TrophyPage from './pages/social/TrophyPage';
 import WelcomePage from './pages/WelcomePage';
-
 const Stack = createStackNavigator();
 
 function AuthStack() {
@@ -77,6 +78,8 @@ function AppStack() {
       <Stack.Screen name="PostDetail" component={PostDetail} />
       <Stack.Screen name="FriendsPage" component={FriendsPage} />
       <Stack.Screen name="MessagePage" component={MessagePage} />
+      <Stack.Screen name="FriendsProfile" component={FriendsProfile} />
+      <Stack.Screen name="MessageDetail" component={MessageDetail} />
     </Stack.Navigator>
   );
 }

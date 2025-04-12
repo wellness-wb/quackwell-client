@@ -11,8 +11,8 @@ const states = [
   require('../../assets/state1.gif'),
   require('../../assets/state2.gif'),
   require('../../assets/blinking.gif'),
-  require('../../assets/cat.gif'),
-  require('../../assets/pedro.gif'),
+  require('../../assets/state3.gif'),
+  require('../../assets/state4.gif'),
 ];
 
 const VirtualPet = () => {

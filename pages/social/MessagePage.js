@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -16,22 +16,42 @@ import {
 } from 'react-native-responsive-screen';
 import MenuBar from '../components/MenuBar';
 
-const messages = [
+const messagesData = [
   {
     id: 1,
     name: 'Mr. Quackwell I',
     profilePic: require('../../assets/profilepic.png'),
     status: 'offline',
-    unread: 0,
+    unread: 2,
     lastMessage: "Don't forget the prophecy...",
+    messageHistory: [
+      {
+        sender: 'You',
+        text: 'You getting old...',
+        timestamp: '2:45 AM',
+      },
+      {
+        sender: 'Mr. Quackwell I',
+        text: "Don't forget the prophecy...",
+        timestamp: '9:05 AM',
+      },
+    ],
   },
   {
     id: 2,
     name: 'Duck Norris',
     profilePic: require('../../assets/duck_with_knife.png'),
     status: 'online',
-    unread: 3,
+    unread: 1,
     lastMessage: 'Meet me at dawn.',
+    messageHistory: [
+      {
+        sender: 'Duck Norris',
+        text: 'Meet me at dawn.',
+        timestamp: '10:30 AM',
+      },
+      { sender: 'You', text: "I'll be there!", timestamp: '10:31 AM' },
+    ],
   },
   {
     id: 3,
@@ -68,6 +88,23 @@ const messages = [
 ];
 
 const MessagesPage = ({ navigation }) => {
+  const [messages, setMessages] = useState(messagesData);
+
+  // Function to handle navigation and mark unread as 0
+  const handleMessagePress = (msg) => {
+    const updatedMessages = messages.map((message) =>
+      message.id === msg.id ? { ...message, unread: 0 } : message,
+    );
+    setMessages(updatedMessages); // Update state with read messages
+
+    navigation.navigate('MessageDetail', {
+      name: msg.name,
+      profilePic: msg.profilePic,
+      status: msg.status,
+      lastMessage: msg.lastMessage,
+      messages: msg.messageHistory,
+    });
+  };
   return (
     <ImageBackground
       source={require('../../assets/background.png')}
@@ -99,7 +136,17 @@ const MessagesPage = ({ navigation }) => {
           {messages.map((msg) => (
             <TouchableOpacity
               key={msg.id}
-              onPress={() => {}}
+              onPress={() => {
+                handleMessagePress(msg);
+                navigation.navigate('MessageDetail', {
+                  name: msg.name,
+                  profilePic: msg.profilePic,
+                  status: msg.status,
+                  lastMessage: msg.lastMessage,
+                  // Passing the message history correctly
+                  initialMessages: msg.messageHistory,
+                });
+              }}
               activeOpacity={0.8}
             >
               <LinearGradient
@@ -137,7 +184,7 @@ const MessagesPage = ({ navigation }) => {
           ))}
         </ScrollView>
 
-        <MenuBar navigation={navigation} activeScreen="MessagesPage" />
+        <MenuBar navigation={navigation} activeScreen="SocialMain" />
       </View>
     </ImageBackground>
   );
@@ -180,6 +227,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#153CE6',
     marginBottom: hp('4%'),
+    fontFamily: 'Inter',
+    color: '#153CE6',
   },
   card: {
     flexDirection: 'row',
