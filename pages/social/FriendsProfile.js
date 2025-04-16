@@ -15,7 +15,7 @@ import {
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import TrophyItem from './components/TrophyItem';
 
-const ProfilePage = ({ route }) => {
+const ProfilePage = ({ route, navigation }) => {
   const { name, profilePic, status = 'offline', lastMessage } = route.params;
 
   return (

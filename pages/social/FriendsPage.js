@@ -1,10 +1,12 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Image,
   ImageBackground,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -37,7 +39,9 @@ const FriendsPage = ({ navigation }) => {
   const [friendUsername, setFriendUsername] = useState('');
   const [hasFriendRequests, setHasFriendRequests] = useState(false);
   const [friends, setFriends] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState(null);
   const [isFriendProfileModalVisible, setIsFriendProfileModalVisible] =
     useState(false);
@@ -54,8 +58,19 @@ const FriendsPage = ({ navigation }) => {
 
     fetchUsername();
     checkFriendRequests();
-    fetchFriends();
+    loadFriendsInBackground();
   }, []);
+
+  const loadFriendsInBackground = async () => {
+    try {
+      const friendsList = await getFriends();
+      setFriends(friendsList);
+    } catch (error) {
+      console.error('Background loading error:', error);
+    } finally {
+      setInitialLoadComplete(true);
+    }
+  };
 
   const fetchFriends = async () => {
     setIsLoading(true);
@@ -100,6 +115,15 @@ const FriendsPage = ({ navigation }) => {
     setIsFriendProfileModalVisible(true);
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchFriends();
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   return (
     <ImageBackground
       source={require('../../assets/background.png')}
@@ -128,6 +152,9 @@ const FriendsPage = ({ navigation }) => {
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         >
           {/* Title and Buttons */}
           <View style={styles.titleContainer}>
@@ -178,43 +205,52 @@ const FriendsPage = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Friend Cards */}
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <Text style={styles.loadingText}>Loading friends...</Text>
-            </View>
-          ) : friends.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No friends yet.</Text>
-              <Text style={styles.emptySubText}>
-                Add friends by clicking the button!
-              </Text>
-            </View>
-          ) : (
-            friends.map((friend) => (
-              <TouchableOpacity
-                key={friend.id}
-                onPress={() => handleFriendPress(friend)}
-                activeOpacity={0.8}
-              >
-                <LinearGradient
-                  colors={[
-                    'rgba(164, 205, 241, 0.77)',
-                    'rgba(243, 202, 175, 0.77)',
-                  ]}
-                  start={{ x: 0, y: 1 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.card}
+          {/* Friends List */}
+          <View style={styles.friendsContainer}>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#3E8D9C" />
+                <Text style={styles.loadingText}>Loading friends...</Text>
+              </View>
+            ) : friends.length > 0 ? (
+              friends.map((friend) => (
+                <TouchableOpacity
+                  key={friend.id}
+                  onPress={() => handleFriendPress(friend)}
                 >
-                  <Image source={friend.profilePic} style={styles.avatar} />
-                  <View style={styles.info}>
-                    <Text style={styles.name}>{friend.name}</Text>
-                    <Text style={styles.status}>{friend.status}</Text>
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))
-          )}
+                  <LinearGradient
+                    colors={[
+                      'rgba(164, 205, 241, 0.77)',
+                      'rgba(243, 202, 175, 0.77)',
+                    ]}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.card}
+                  >
+                    <Image
+                      source={friend.profilePic}
+                      style={styles.friendAvatar}
+                    />
+                    <View style={styles.friendInfo}>
+                      <Text style={styles.friendName}>{friend.name}</Text>
+                      <Text style={styles.friendStatus}>{friend.status}</Text>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))
+            ) : initialLoadComplete ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                  No friends yet. Add some friends!
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#3E8D9C" />
+                <Text style={styles.loadingText}>Loading friends...</Text>
+              </View>
+            )}
+          </View>
         </ScrollView>
 
         <AddFriendModal
@@ -423,30 +459,66 @@ const styles = StyleSheet.create({
     width: wp('12%'),
   },
   loadingContainer: {
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    height: hp('20%'),
   },
   loadingText: {
-    fontSize: hp('2%'),
-    color: '#153CE6',
-    fontWeight: '500',
+    marginTop: 10,
+    color: '#666',
+    fontSize: 14,
   },
   emptyContainer: {
+    padding: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    height: hp('20%'),
+    borderRadius: 10,
+    backgroundColor: '#f8f8f8',
+    marginVertical: 10,
   },
   emptyText: {
-    fontSize: hp('2.2%'),
-    color: '#153CE6',
-    fontWeight: 'bold',
-    marginBottom: hp('1%'),
+    color: '#666',
+    fontSize: 14,
+    textAlign: 'center',
   },
-  emptySubText: {
+  sectionTitle: {
+    fontSize: hp('3%'),
+    fontWeight: 'bold',
+    color: '#153CE6',
+    marginBottom: hp('2%'),
+  },
+  friendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: wp('85%'),
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderRadius: 20,
+    padding: hp('2%'),
+    marginBottom: hp('2%'),
+    shadowColor: '#000',
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  friendAvatar: {
+    width: wp('15%'),
+    height: wp('15%'),
+    borderRadius: 100,
+    marginRight: wp('4%'),
+  },
+  friendInfo: {
+    flexShrink: 1,
+  },
+  friendName: {
+    fontSize: hp('2.5%'),
+    fontWeight: 'bold',
+    color: '#153CE6',
+  },
+  friendStatus: {
     fontSize: hp('1.8%'),
     color: '#555',
-    textAlign: 'center',
+    marginTop: 4,
   },
 });
 

@@ -262,71 +262,94 @@ export async function getSentFriendRequests() {
 }
 
 export async function getFriends() {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (userError || !user) {
-    throw new Error('User not found');
-  }
+    if (userError || !user) {
+      throw new Error('User not found');
+    }
 
-  const { data: sentAccepted, error: sentError } = await supabase
-    .from('friends')
-    .select('id, friend_id')
-    .eq('user_id', user.id)
-    .eq('status', 'accepted');
+    const currentUserId = user.id;
 
-  if (sentError) {
-    console.log(sentError.message);
-    throw new Error('Failed to get friends: ' + sentError.message);
-  }
+    // 내가 친구 요청을 보낸 경우의 친구 목록
+    const { data: sentAccepted, error: sentError } = await supabase
+      .from('friends')
+      .select('id, friend_id')
+      .eq('user_id', currentUserId)
+      .eq('status', 'accepted');
 
-  const { data: receivedAccepted, error: receivedError } = await supabase
-    .from('friends')
-    .select('id, user_id')
-    .eq('friend_id', user.id)
-    .eq('status', 'accepted');
+    if (sentError) {
+      console.error('Failed to get sent friends:', sentError.message);
+      throw sentError;
+    }
 
-  if (receivedError) {
-    console.log(receivedError.message);
-    throw new Error('Failed to get friends: ' + receivedError.message);
-  }
+    // 내가 친구 요청을 받은 경우의 친구 목록
+    const { data: receivedAccepted, error: receivedError } = await supabase
+      .from('friends')
+      .select('id, user_id')
+      .eq('friend_id', currentUserId)
+      .eq('status', 'accepted');
 
-  const friendIds = [
-    ...sentAccepted.map((item) => ({ id: item.id, friendId: item.friend_id })),
-    ...receivedAccepted.map((item) => ({
+    if (receivedError) {
+      console.error('Failed to get received friends:', receivedError.message);
+      throw receivedError;
+    }
+
+    // 친구 ID 목록 생성
+    const sentIds = sentAccepted.map((item) => ({
       id: item.id,
-      friendId: item.user_id,
-    })),
-  ];
+      profileId: item.friend_id,
+    }));
 
-  const friendsWithProfiles = await Promise.all(
-    friendIds.map(async ({ id, friendId }) => {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .eq('id', friendId)
-        .single();
+    const receivedIds = receivedAccepted.map((item) => ({
+      id: item.id,
+      profileId: item.user_id,
+    }));
 
-      if (profileError) {
-        console.log(profileError.message);
-        return {
-          id,
-          name: 'Unknown User',
-          status: '',
-          profilePic: require('../assets/duck_with_knife.png'),
-        };
-      }
+    const allFriendIds = [...sentIds, ...receivedIds];
 
+    // 모든 친구 ID 목록이 비어있으면 빈 배열 반환
+    if (allFriendIds.length === 0) {
+      return [];
+    }
+
+    // 프로필 ID 목록
+    const profileIds = allFriendIds.map((item) => item.profileId);
+
+    // 한 번의 쿼리로 모든 프로필 정보 가져오기
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .in('id', profileIds);
+
+    if (profilesError) {
+      console.error('Failed to get profiles:', profilesError.message);
+      throw profilesError;
+    }
+
+    // 프로필 정보를 ID로 빠르게 조회할 수 있는 맵 생성
+    const profileMap = {};
+    profiles.forEach((profile) => {
+      profileMap[profile.id] = profile;
+    });
+
+    // 친구 목록 최종 가공
+    const friendsList = allFriendIds.map((item) => {
+      const profile = profileMap[item.profileId];
       return {
-        id,
-        name: profile.username,
+        id: item.id,
+        name: profile?.username || 'Unknown User',
         status: 'Online',
         profilePic: require('../assets/profilepic.png'),
       };
-    }),
-  );
+    });
 
-  return friendsWithProfiles;
+    return friendsList;
+  } catch (error) {
+    console.error('Error in getFriends:', error.message);
+    throw new Error('Failed to get friends: ' + error.message);
+  }
 }

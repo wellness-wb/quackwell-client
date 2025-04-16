@@ -31,7 +31,7 @@ export async function getCompletedPlanCount() {
   }
   uncompletedData = data.filter((task) => !task.is_completed);
 
-  console.log('Fetched data:', uncompletedData);
+  // console.log('Fetched data:', uncompletedData);
   return data.length - uncompletedData.length;
 }
 
