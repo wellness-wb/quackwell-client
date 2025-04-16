@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import {
   Image,
@@ -14,6 +15,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const MessageDetail = ({ route, navigation }) => {
   const { name, profilePic, status, initialMessages } = route.params;
@@ -70,7 +72,28 @@ const MessageDetail = ({ route, navigation }) => {
     >
       <View style={styles.container}>
         {/* Header Container */}
+
         <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <LinearGradient
+              colors={[
+                'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
+                'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
+              ]}
+              start={{ x: 1, y: 1 }}
+              end={{ x: 0, y: 0 }}
+              style={styles.backGradient}
+            >
+              <FontAwesome5
+                name="arrow-left"
+                size={hp('2.5%')}
+                color="#153CE6"
+              />
+            </LinearGradient>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
               navigation.navigate('FriendsProfile', {
@@ -217,8 +240,9 @@ const styles = StyleSheet.create({
     fontSize: hp('2%'),
   },
   backButton: {
-    top: hp('10%'),
-    left: wp('5%'),
+    alignSelf: 'flex-start',
+    marginTop: hp('2%'),
+    marginLeft: wp('5%'),
     zIndex: 10,
   },
   backGradient: {
