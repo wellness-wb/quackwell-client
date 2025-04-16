@@ -1,6 +1,14 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -11,19 +19,22 @@ const Post = ({
   username,
   contentText,
   contentImage,
-  likes,
   comments,
+  isOwner,
+  onDelete,
 }) => {
-  const [likeCount, setLikeCount] = useState(likes);
-  const [isLiked, setIsLiked] = useState(false);
-
-  const handleLikePress = () => {
-    if (isLiked) {
-      setLikeCount((prev) => prev - 1);
-    } else {
-      setLikeCount((prev) => prev + 1);
-    }
-    setIsLiked(!isLiked);
+  const handleDelete = () => {
+    Alert.alert('Delete Post', 'Are you sure you want to delete this post?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Delete',
+        onPress: onDelete,
+        style: 'destructive',
+      },
+    ]);
   };
 
   return (
@@ -39,10 +50,20 @@ const Post = ({
       >
         {/* Header */}
         <View style={styles.header}>
-          {profilePic && (
-            <Image source={profilePic} style={styles.profilePic} />
+          <View style={styles.headerLeft}>
+            {profilePic && (
+              <Image source={profilePic} style={styles.profilePic} />
+            )}
+            <Text style={styles.username}>{username}</Text>
+          </View>
+          {isOwner && (
+            <TouchableOpacity
+              onPress={handleDelete}
+              style={styles.deleteButton}
+            >
+              <FontAwesome name="trash" size={hp('2.2%')} color="#153CE6" />
+            </TouchableOpacity>
           )}
-          <Text style={styles.username}>{username}</Text>
         </View>
 
         {/* Content */}
@@ -56,9 +77,6 @@ const Post = ({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity onPress={handleLikePress}>
-            <Text style={styles.footerText}>❤️ {likeCount} Likes</Text>
-          </TouchableOpacity>
           <TouchableOpacity>
             <Text style={styles.footerText}>💬 {comments} Comments</Text>
           </TouchableOpacity>
@@ -91,7 +109,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: hp('1%'),
+  },
+
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   profilePic: {
@@ -130,7 +154,7 @@ const styles = StyleSheet.create({
 
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     marginTop: hp('1.5%'),
   },
 
@@ -138,6 +162,10 @@ const styles = StyleSheet.create({
     fontSize: hp('1.8%'),
     color: '#153CE6',
     fontWeight: '600',
+  },
+
+  deleteButton: {
+    padding: wp('2%'),
   },
 });
 

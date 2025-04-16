@@ -18,8 +18,7 @@ import {
 import MenuBar from '../components/MenuBar';
 
 const PostDetail = ({ route, navigation }) => {
-  const { profilePic, username, contentText, contentImage, likes } =
-    route.params;
+  const { profilePic, username, contentText, contentImage } = route.params;
 
   const [comments, setComments] = useState([
     { user: 'DuckFan123', text: 'OMG same!' },
@@ -92,8 +91,6 @@ const PostDetail = ({ route, navigation }) => {
               <Image source={contentImage} style={styles.contentImage} />
             )}
 
-            <Text style={styles.likes}>❤️ {likes} Likes</Text>
-
             <View style={styles.divider} />
 
             {/* Comments Section */}
@@ -150,7 +147,7 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingBottom: hp('12%'),
-    paddingTop: hp('23%'),
+    paddingTop: hp('12%'),
   },
   background: {
     flex: 1,
@@ -185,11 +182,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: 'cover',
     marginVertical: hp('1%'),
-  },
-  likes: {
-    fontSize: hp('1.8%'),
-    color: '#153CE6',
-    marginBottom: hp('2%'),
   },
   divider: {
     height: 1,
