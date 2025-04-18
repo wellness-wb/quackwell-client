@@ -1,11 +1,16 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
+  Animated,
   ImageBackground,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
@@ -17,6 +22,9 @@ const CalmMain = ({ navigation }) => {
     isPaused: false,
   });
 
+  const [showSadGif, setShowSadGif] = useState(false);
+  const fadeSadAnim = useRef(new Animated.Value(1)).current;
+
   const handleStatusChange = useCallback((status) => {
     setTimerStatus(status);
   }, []);
@@ -24,6 +32,9 @@ const CalmMain = ({ navigation }) => {
   const handleQuickOptionPress = (duration) => {
     if (timerRef.current) {
       timerRef.current.updateTime(duration);
+      if (!timerStatus.isRunning) {
+        timerRef.current.startTimer();
+      }
     }
   };
 
@@ -37,6 +48,24 @@ const CalmMain = ({ navigation }) => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
+    setShowSadGif(true);
+
+    Animated.timing(fadeSadAnim, {
+      toValue: 1, // Fade in
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(fadeSadAnim, {
+      toValue: 0,
+      duration: 4000,
+      useNativeDriver: true,
+    }).start();
+
+    setTimeout(() => {
+      setShowSadGif(false);
+      fadeSadAnim.setValue(1);
+    }, 4000);
   };
 
   const handlePauseTimer = () => {
@@ -124,6 +153,13 @@ const CalmMain = ({ navigation }) => {
           )}
         </View>
       </View>
+      {showSadGif && (
+        <Animated.Image
+          source={require('../../assets/calm_sad.gif')}
+          style={[styles.sadGif, { opacity: fadeSadAnim }]} // Apply fade effect
+        />
+      )}
+
       <MenuBar navigation={navigation} activeScreen="CalmMain" />
     </ImageBackground>
   );
@@ -142,7 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
-    paddingTop: 100,
+    paddingTop: 50,
   },
   controlButtonsContainer: {
     flexDirection: 'row',
@@ -167,6 +203,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  sadGif: {
+    position: 'absolute',
+    bottom: hp('9%'),
+    left: wp('50%'),
+    width: wp('50%'),
+    height: hp('27%'),
+    zIndex: 0,
   },
 });
 

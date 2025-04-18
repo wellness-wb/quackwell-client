@@ -128,7 +128,7 @@ const HydrationTracker = ({ navigation }) => {
         setShowConfetti(true);
         setTimeout(() => {
           setShowConfetti(false);
-        }, 5000);
+        }, 3000);
       }
     } else {
       alert('Please enter a valid amount!');
@@ -137,6 +137,15 @@ const HydrationTracker = ({ navigation }) => {
 
   const handleSetNewGoal = async () => {
     await AsyncStorage.removeItem('hydration_goal');
+    await AsyncStorage.setItem(
+      CURRENT_STORAGE_KEY,
+      JSON.stringify({
+        value: 0,
+        date: new Date().toISOString().split('T')[0],
+      }),
+    ); // Reset current hydration to 0 for today
+
+    setCurrentHydration(0); // Reset state to 0
     navigation.replace('HydrationMain');
   };
 
@@ -318,6 +327,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     color: '#153CE6',
     textAlign: 'center',
+  },
+  addGif: {
+    position: 'absolute',
+    top: hp('30%'),
+    left: wp('20%'),
+    width: wp('30%'),
+    height: hp('15%'),
+    zIndex: 100,
+    borderWidth: 1,
+    borderColor: 'red',
   },
 });
 
