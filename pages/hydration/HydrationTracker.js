@@ -19,16 +19,53 @@ import * as Notifications from 'expo-notifications';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
-import MenuBar from '../components/MenuBar';
 import UpperMenu from '../components/UpperMenu';
 
-const HydrationTracker = ({ route, navigation }) => {
-  const { hydrationGoal: initialGoal, unit } = route.params || {};
+const HydrationTracker = ({ navigation }) => {
+  const [hydrationGoal, setHydrationGoal] = useState(0);
+  const [unit, setUnit] = useState('L');
   const [currentHydration, setCurrentHydration] = useState(0);
   const [inputHydration, setInputHydration] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
 
-  const [hydrationGoal, setHydrationGoal] = useState(initialGoal);
+  const GOAL_STORAGE_KEY = 'hydration_goal';
+  const CURRENT_STORAGE_KEY = 'currentHydration';
+
+  useEffect(() => {
+    const loadHydrationData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem(GOAL_STORAGE_KEY);
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          setHydrationGoal(parsed.goal);
+          setUnit(parsed.unit);
+        }
+
+        const storedCurrent = await AsyncStorage.getItem(CURRENT_STORAGE_KEY);
+        const today = new Date().toISOString().split('T')[0];
+        if (storedCurrent) {
+          const parsedCurrent = JSON.parse(storedCurrent);
+          // Compare the saved date with today's date
+          if (parsedCurrent.date === today) {
+            setCurrentHydration(parsedCurrent.value);
+          } else {
+            // reset current hydration on a new day
+            setCurrentHydration(0);
+            await AsyncStorage.setItem(
+              CURRENT_STORAGE_KEY,
+              JSON.stringify({ value: 0, date: today }),
+            );
+          }
+        } else {
+          setCurrentHydration(0);
+        }
+      } catch (error) {
+        console.error('Error loading hydration data', error);
+      }
+    };
+
+    loadHydrationData();
+  }, []);
 
   useEffect(() => {
     // Request notification permissions and set up the notification token
@@ -80,15 +117,18 @@ const HydrationTracker = ({ route, navigation }) => {
       setInputHydration('');
       Keyboard.dismiss();
 
-      // Save current hydration value in AsyncStorage
-      await AsyncStorage.setItem('currentHydration', newHydration.toString());
+      const today = new Date().toISOString().split('T')[0];
+      // Save the updated hydration value with today's date
+      await AsyncStorage.setItem(
+        CURRENT_STORAGE_KEY,
+        JSON.stringify({ value: newHydration, date: today }),
+      );
 
       if (newHydration >= hydrationGoal) {
         setShowConfetti(true);
         setTimeout(() => {
           setShowConfetti(false);
-          navigation.navigate('HydrationMain');
-        }, 5000); // Show confetti for 5 seconds
+        }, 5000);
       }
     } else {
       alert('Please enter a valid amount!');
@@ -96,9 +136,8 @@ const HydrationTracker = ({ route, navigation }) => {
   };
 
   const handleSetNewGoal = async () => {
-    // Save new goal in AsyncStorage
-    await AsyncStorage.setItem('hydrationGoal', hydrationGoal.toString());
-    navigation.navigate('HydrationMain');
+    await AsyncStorage.removeItem('hydration_goal');
+    navigation.replace('HydrationMain');
   };
 
   // Convert liters to fl oz if needed
@@ -148,6 +187,7 @@ const HydrationTracker = ({ route, navigation }) => {
           {/* Circular Progress */}
           <View style={styles.progressContainer}>
             <AnimatedCircularProgress
+              key={`${hydrationGoal}-${currentHydration}`}
               size={hp('20%')}
               width={wp('3%')}
               // the circle will show the percentage
@@ -205,7 +245,6 @@ const HydrationTracker = ({ route, navigation }) => {
             />
           </View>
         </LinearGradient>
-        <MenuBar navigation={navigation} activeScreen="HydrationTracker" />
       </ImageBackground>
     </TouchableWithoutFeedback>
   );

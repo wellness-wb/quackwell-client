@@ -1,215 +1,66 @@
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
-import {
-  ImageBackground,
-  Keyboard,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import GradientButton from '../components/GradientButton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HydrationInit from './HydrationInit';
+import HydrationTracker from './HydrationTracker';
 import MenuBar from '../components/MenuBar';
-import HydrationWarning from './components/HydrationWarning';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, ImageBackground } from 'react-native';
 
 const HydrationMain = ({ navigation }) => {
-  // hydrationGoal is the current value, setHydrationGoal is the function to update it, useState initializes it to ""
-  const [hydrationGoal, setHydrationGoal] = useState(''); // User input
-  const [unit, setUnit] = useState('L'); // Default unit
-  const [warningVisible, setWarningVisible] = useState(false); // Warning state
+  const [isWaterIntakeSet, setIsWaterIntakeSet] = useState(false);
+  const STORAGE_KEY = 'hydration_goal';
 
   useEffect(() => {
-    const loadHydrationState = async () => {
-      const storedGoal = await AsyncStorage.getItem('hydrationGoal');
-      const storedHydration = await AsyncStorage.getItem('currentHydration');
-
-      if (storedGoal) setHydrationGoal(parseFloat(storedGoal));
-      if (storedHydration) setCurrentHydration(parseFloat(storedHydration));
+    const loadData = async () => {
+      try {
+        const storedGoal = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedGoal !== null) {
+          setIsWaterIntakeSet(true);
+        } else {
+          setIsWaterIntakeSet(false);
+        }
+      } catch (e) {
+        console.error('Error loading hydration data', e);
+      }
     };
 
-    loadHydrationState();
+    loadData();
   }, []);
 
-  const navigateToTracker = () => {
-    if (currentHydration < hydrationGoal) {
-      // If the user is still in progress, go directly to HydrationTracker
-      navigation.navigate('HydrationTracker', {
-        hydrationGoal,
-        unit,
-      });
-    } else {
-      // Otherwise, go to the main hydration screen
-      navigation.navigate('HydrationMain');
+  const handleSetGoal = async (goal, unit) => {
+    try {
+      const data = { goal, unit };
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setIsWaterIntakeSet(true);
+    } catch (e) {
+      console.error('Error saving hydration data', e);
     }
   };
 
-  const handleSetGoal = () => {
-    const goal = parseFloat(hydrationGoal);
-    const isInvalid =
-      (unit === 'fl oz' && (goal / 33.814 < 1.5 || goal / 33.814 > 6)) ||
-      (unit === 'L' && (goal < 1.5 || goal > 6));
-
-    setWarningVisible(isInvalid);
-  };
-
   return (
-    // touchablewithoutfeedback is basically for dismissing keyboard
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <ImageBackground
-        source={require('../../assets/background.png')}
-        style={styles.background}
-      >
-        <HydrationWarning
-          isVisible={warningVisible}
-          onClose={() => setWarningVisible(false)}
+    <ImageBackground
+      source={require('../../assets/background.png')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      {isWaterIntakeSet ? (
+        <HydrationTracker
+          onResetWaterIntake={() => setIsWaterIntakeSet(false)}
+          navigation={navigation}
         />
+      ) : (
+        <HydrationInit onSetGoal={handleSetGoal} />
+      )}
 
-        {/* Main Container */}
-        <LinearGradient
-          colors={[
-            'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
-            'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.container}
-        >
-          <Text style={styles.title}>Desired Water Intake per Day:</Text>
-
-          <View style={styles.inputContainer}>
-            <LinearGradient
-              colors={['#F3CAAF', '#739CEF']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.gradientInput}
-            >
-              <TextInput
-                style={styles.input}
-                placeholder="Enter amount"
-                keyboardType="numeric"
-                value={hydrationGoal}
-                onChangeText={setHydrationGoal}
-                placeholderTextColor="#153CE6" // Adjust placeholder color for better visibility
-                returnKeyType="done" // Adds "Set" or "Done" to the keyboard button
-                onSubmitEditing={handleSetGoal}
-              />
-            </LinearGradient>
-          </View>
-
-          <View style={styles.toggleContainer}>
-            <GradientButton
-              text="L"
-              width={wp('30%')}
-              height={hp('6%')}
-              colors={
-                unit === 'L' ? ['#153CE6', '#0C2180'] : ['#F3CAAF', '#739CEF']
-              }
-              textColor={unit === 'L' ? '#F3CAAF' : '#153CE6'} // Dynamic text color
-              onPress={() => setUnit('L')}
-            />
-            <GradientButton
-              text="fl oz"
-              width={wp('30%')}
-              height={hp('6%')}
-              colors={
-                unit === 'fl oz'
-                  ? ['#153CE6', '#0C2180']
-                  : ['#F3CAAF', '#739CEF']
-              }
-              textColor={unit === 'fl oz' ? '#F3CAAF' : '#153CE6'} // Dynamic text color
-              onPress={() => setUnit('fl oz')}
-            />
-          </View>
-
-          <GradientButton
-            text="Set"
-            width={wp('30%')}
-            height={hp('6%')}
-            colors={['#F3CAAF', '#739CEF']}
-            textColor="#153CE6"
-            onPress={() => {
-              const goal = parseFloat(hydrationGoal);
-              if (
-                (unit === 'fl oz' &&
-                  (goal / 33.814 < 1.5 || goal / 33.814 > 6)) ||
-                (unit === 'L' && (goal < 1.5 || goal > 6))
-              ) {
-                setWarningVisible(true); // Show warning
-                return;
-              }
-              setWarningVisible(false); // Hide warning
-              navigation.navigate('HydrationTracker', {
-                hydrationGoal,
-                unit,
-              }); // Pass the data
-            }}
-          />
-        </LinearGradient>
-
-        <MenuBar navigation={navigation} activeScreen="HydrationMain" />
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+      <MenuBar navigation={navigation} activeScreen="HydrationMain" />
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-
-  container: {
-    top: hp('29%'),
-    height: hp('47%'),
-    width: wp('98%'),
-    borderRadius: wp('10%'),
-    padding: hp('1%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  title: {
-    fontFamily: 'Inter',
-    color: '#153CE6',
-    fontSize: hp('2.5%'),
-    fontWeight: 'bold',
-    marginBottom: hp('6%'),
-    marginTop: hp('6%'),
-  },
-
-  inputContainer: {
-    width: wp('55%'),
-    height: hp('5.5%'),
-    marginBottom: hp('4%'),
-  },
-
-  gradientInput: {
-    flex: 1,
-    borderRadius: wp('10%'),
-    justifyContent: 'center',
-    overflow: 'hidden',
-    opacity: 0.77,
-  },
-
-  input: {
-    fontFamily: 'Inter',
-    flex: 1,
-    textAlign: 'center',
-    fontSize: hp('2.4%'),
-    color: '#153CE6',
-    marginHorizontal: wp('5%'),
-  },
-
-  toggleContainer: {
-    flexDirection: 'row',
-    marginBottom: hp('5%'),
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start', // Start content from the top
+    alignItems: 'center', // Center everything horizontally
   },
 });
 
