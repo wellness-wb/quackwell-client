@@ -4,7 +4,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { fetchTodosByDate } from '../utils/todos';
 import MainHubDay from './components/MainHubDay';
 import MainHubNight from './components/MainHubNight';
 import MenuBar from './components/MenuBar';
@@ -13,9 +12,6 @@ import VirtualPet from './components/VirtualPet';
 
 const MainHub = ({ navigation }) => {
   const [isDayTime, setIsDayTime] = useState(true);
-  const [currentHydration, setCurrentHydration] = useState(0);
-  const [hydrationGoal, setHydrationGoal] = useState(2000);
-  const [latestTask, setLatestTask] = useState(null);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -25,41 +21,12 @@ const MainHub = ({ navigation }) => {
       setIsDayTime(false);
     }
   }, []);
-  useEffect(() => {
-    const loadHydration = async () => {
-      const storedHydration = await AsyncStorage.getItem('currentHydration');
-      const storedGoal = await AsyncStorage.getItem('hydrationGoal');
-      setCurrentHydration(Number(storedHydration) || 0);
-      setHydrationGoal(Number(storedGoal) || 2000);
-    };
-
-    const loadTodayTask = async () => {
-      const today = new Date().toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
-      const todos = await fetchTodosByDate(today);
-      if (todos.length > 0) {
-        const latest = todos[0]; // Assuming the latest is first
-        setLatestTask(latest.name);
-      }
-    };
-
-    loadHydration();
-    loadTodayTask();
-  }, []);
 
   return (
     <View style={styles.background}>
       {isDayTime ? <MainHubDay /> : <MainHubNight />}
 
-      <UpperMenu
-        navigation={navigation}
-        currentHydration={currentHydration}
-        hydrationGoal={hydrationGoal}
-        todayTask={latestTask}
-      />
+      <UpperMenu navigation={navigation} />
 
       <View style={styles.animationBox}>
         <VirtualPet />

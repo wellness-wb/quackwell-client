@@ -15,6 +15,7 @@ import {
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { getUsername } from '../../utils/auth';
 import MenuBar from '../components/MenuBar';
+import UpperMenu from '../components/UpperMenu';
 
 const ProfilePage = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -38,6 +39,10 @@ const ProfilePage = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.upperMenu}>
+        <UpperMenu navigation={navigation} />
+      </View>
+
       {/* Profile Circle */}
       <View style={styles.profileCircle}>
         <Image
@@ -147,7 +152,7 @@ const ProfilePage = ({ navigation }) => {
       </View>
 
       {/* Menu Bar */}
-      <MenuBar navigation={navigation} activeScreen="ProfilePage" />
+      <MenuBar navigation={navigation} activeScreen="SocialMain" />
     </ImageBackground>
   );
 };
@@ -157,6 +162,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  upperMenu: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
   profileBox: {
     flex: 1,

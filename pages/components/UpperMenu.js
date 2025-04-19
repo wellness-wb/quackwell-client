@@ -1,120 +1,114 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
-import {
-  Animated,
-  PanResponder,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import { fetchTodosByDate } from '../../utils/todos';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const UpperMenu = ({
-  hydrationGoal = 2000,
-  currentHydration = 500,
-  todayTask = null,
-  navigation,
-}) => {
-  const [menuHeight] = useState(new Animated.Value(80)); // ← start at a visible height
+const UpperMenu = ({ navigation }) => {
+  const [currentHydration, setCurrentHydration] = useState(0);
+  const [hydrationGoal, setHydrationGoal] = useState(2000);
+  const [todayTask, setTodayTask] = useState(null);
 
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event([null, { dy: menuHeight }], {
-      useNativeDriver: false,
-    }),
-    onPanResponderRelease: (_, gestureState) => {
-      const threshold = 20;
-      if (gestureState.dy > threshold) {
-        Animated.timing(menuHeight, {
-          toValue: 200, // expanded
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
-      } else {
-        Animated.timing(menuHeight, {
-          toValue: 80, // collapsed
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
-      }
-    },
-  });
+  const GOAL_STORAGE_KEY = 'hydration_goal';
+  const CURRENT_STORAGE_KEY = 'currentHydration';
 
   const percent =
     hydrationGoal > 0
       ? Math.round((currentHydration / hydrationGoal) * 100)
       : 0;
 
-  // Fade-in content when expanded
-  const contentOpacity = menuHeight.interpolate({
-    inputRange: [80, 250],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
-  });
+  useEffect(() => {
+    const loadHydrationData = async () => {
+      try {
+        const savedData = await AsyncStorage.getItem(GOAL_STORAGE_KEY);
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          setHydrationGoal(parsed.goal);
+        }
+
+        const storedCurrent = await AsyncStorage.getItem(CURRENT_STORAGE_KEY);
+        const today = new Date().toISOString().split('T')[0];
+        if (storedCurrent) {
+          const parsedCurrent = JSON.parse(storedCurrent);
+          // Compare the saved date with today's date
+          if (parsedCurrent.date === today) {
+            setCurrentHydration(parsedCurrent.value);
+          } else {
+            // reset current hydration on a new day
+            setCurrentHydration(0);
+            await AsyncStorage.setItem(
+              CURRENT_STORAGE_KEY,
+              JSON.stringify({ value: 0, date: today }),
+            );
+          }
+        } else {
+          setCurrentHydration(0);
+        }
+      } catch (error) {
+        console.error('Error loading hydration data', error);
+      }
+    };
+
+    const loadTodayTask = async () => {
+      const today = new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+      const todos = await fetchTodosByDate(today);
+      if (todos.length > 0) {
+        const latest = todos[0]; // Assuming the latest is first
+        setTodayTask(latest.name);
+      }
+    };
+
+    loadHydrationData();
+    loadTodayTask();
+  }, []);
 
   return (
-    <Animated.View
-      {...panResponder.panHandlers}
-      style={[
-        styles.menuBar,
-        {
-          height: menuHeight,
-        },
-      ]}
-    >
+    <View style={styles.menu}>
       <LinearGradient
         colors={['#A4CDF1', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* Fading content */}
-        <Animated.View
-          style={[styles.contentContainer, { opacity: contentOpacity }]}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate('HydrationMain')}
-          >
-            <View style={styles.hydrationPill}>
-              <LinearGradient
-                colors={['#F3CAAF', '#A4CDF1']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.percentageBubble}
-              >
-                <Text style={styles.percentageText}>{percent}%</Text>
-              </LinearGradient>
-              <FontAwesome5 name="tint" size={24} color="#F3CAAF" />
+        <TouchableOpacity onPress={() => navigation.replace('HydrationMain')}>
+          <View style={styles.hydrationAndTaskPill}>
+            <LinearGradient
+              colors={['#F3CAAF', '#A4CDF1']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.percentageBubble}
+            >
+              <Text style={styles.percentageText}>{percent}%</Text>
+            </LinearGradient>
+            <FontAwesome5 name="tint" size={24} color="#F3CAAF" />
+          </View>
+        </TouchableOpacity>
+
+        {todayTask && (
+          <TouchableOpacity onPress={() => navigation.replace('PlannerMain')}>
+            <View style={styles.hydrationAndTaskPill}>
+              <Text style={styles.taskText}>📌 {todayTask}</Text>
             </View>
           </TouchableOpacity>
-
-          {todayTask && (
-            <TouchableOpacity
-              onPress={() => navigation.navigate('PlannerMain')}
-            >
-              <View style={styles.taskContainer}>
-                <Text style={styles.taskText}>📌 {todayTask}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        </Animated.View>
+        )}
       </LinearGradient>
-
-      {/* Slider handle */}
-      <View style={styles.sliderHandle} />
-    </Animated.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  menuBar: {
+  menu: {
     width: '100%',
-    height: hp('15%'),
+    height: 130,
     position: 'absolute',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -124,34 +118,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
   gradient: {
     height: '100%',
-    justifyContent: 'flex-end',
+    //flex: 1,
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    padding: 20,
+    justifyContent: 'space-around',
   },
-  sliderHandle: {
-    position: 'absolute',
-    top: '85%',
-    height: 10,
-    width: 70,
-    backgroundColor: '#E8CDC0',
-    borderRadius: 5,
-    alignSelf: 'center',
-    marginBottom: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 5,
-  },
-  hydrationPill: {
-    position: 'relative',
-    bottom: hp('5%'),
-    right: wp('20%'),
+  hydrationAndTaskPill: {
+    opacity: 0.9,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    alignSelf: 'center',
     paddingHorizontal: wp('4%'),
     width: wp('35%'),
     height: hp('4%'),
@@ -172,23 +154,6 @@ const styles = StyleSheet.create({
     color: '#153CE6',
     fontSize: hp('1.8%'),
   },
-  taskContainer: {
-    width: wp('35%'),
-    height: hp('4%'),
-    position: 'relative',
-    bottom: hp('9%'),
-    left: wp('50%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 30,
-    backgroundColor: '#153CE6',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-
   taskText: {
     color: '#F3CAAF',
     fontWeight: 'bold',
