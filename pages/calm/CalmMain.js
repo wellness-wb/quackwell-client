@@ -33,7 +33,9 @@ const CalmMain = ({ navigation }) => {
     if (timerRef.current) {
       timerRef.current.updateTime(duration);
       if (!timerStatus.isRunning) {
-        timerRef.current.startTimer();
+        setTimeout(() => {
+          timerRef.current.startTimer();
+        }, 50); // short delay to allow state update
       }
     }
   };

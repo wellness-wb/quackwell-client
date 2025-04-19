@@ -6,7 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Svg, { Circle } from 'react-native-svg';
 import { formatTime } from '../../../utils/formatTime';
@@ -75,13 +82,9 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
   const [endTime, setEndTime] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  const [selectedHour, setSelectedHour] = useState(
-    Math.floor(initialDuration / 3600),
-  );
-  const [selectedMinute, setSelectedMinute] = useState(
-    Math.floor((initialDuration % 3600) / 60),
-  );
-  const [selectedSecond, setSelectedSecond] = useState(initialDuration % 60);
+  const [selectedHour, setSelectedHour] = useState(0);
+  const [selectedMinute, setSelectedMinute] = useState(0);
+  const [selectedSecond, setSelectedSecond] = useState(0);
 
   useEffect(() => {
     if (!isRunning) {
@@ -140,6 +143,12 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 
   const startTimer = async () => {
     if (isRunning) return;
+
+    if (selectedSecond == 0 && selectedMinute == 0 && selectedMinute == 0) {
+      Alert.alert('Error', 'Please enter a valid time');
+      return;
+    }
+
     const _endTime = Date.now() + timeLeft * 1000;
     setEndTime(_endTime);
     setIsRunning(true);
@@ -178,6 +187,9 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
       setNotificationId(null);
     }
     setResetTrigger((prev) => prev + 1);
+    setSelectedSecond(0);
+    setSelectedMinute(15);
+    setSelectedHour(0);
   };
 
   useImperativeHandle(ref, () => ({
