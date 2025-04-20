@@ -1,4 +1,3 @@
-import * as Notifications from 'expo-notifications';
 import React, {
   forwardRef,
   useEffect,
@@ -14,8 +13,10 @@ import {
   Text,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Svg, { Circle } from 'react-native-svg';
+import * as Notifications from 'expo-notifications';
 import { formatTime } from '../../../utils/formatTime';
 
 Notifications.setNotificationHandler({
@@ -75,17 +76,21 @@ const PickerColumn = ({ data, selectedIndex, onValueChange, resetTrigger }) => {
 
 const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
   const [resetTrigger, setResetTrigger] = useState(0);
-
   const [timeLeft, setTimeLeft] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [notificationId, setNotificationId] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
+  // New state: store the full duration (set when timer starts)
+  const [fullDuration, setFullDuration] = useState(initialDuration);
 
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedMinute, setSelectedMinute] = useState(0);
   const [selectedSecond, setSelectedSecond] = useState(0);
 
+  const timerIntervalRef = useRef(null);
+
+  // Notify parent about status changes
   useEffect(() => {
     if (!isRunning) {
       const newTime =
@@ -104,7 +109,68 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     onStatusChange,
   ]);
 
-  const timerIntervalRef = useRef(null);
+  // Load persisted timer data (end time, start time and full duration) on mount
+  useEffect(() => {
+    const loadTimer = async () => {
+      try {
+        const storedEndTime = await AsyncStorage.getItem('timer_endTime');
+        const storedFullDuration =
+          await AsyncStorage.getItem('timer_fullDuration');
+        if (storedEndTime && storedFullDuration) {
+          const _endTime = parseInt(storedEndTime, 10);
+          const _fullDuration = parseInt(storedFullDuration, 10);
+          const newTimeLeft = Math.max(
+            0,
+            Math.round((_endTime - Date.now()) / 1000),
+          );
+          if (newTimeLeft > 0) {
+            setTimeLeft(newTimeLeft);
+            setEndTime(_endTime);
+            setFullDuration(_fullDuration);
+            setIsRunning(true);
+            timerIntervalRef.current = setInterval(async () => {
+              const updatedTimeLeft = Math.max(
+                0,
+                Math.round((_endTime - Date.now()) / 1000),
+              );
+              setTimeLeft(updatedTimeLeft);
+              if (updatedTimeLeft === 0) {
+                clearInterval(timerIntervalRef.current);
+                setIsRunning(false);
+                await AsyncStorage.multiRemove([
+                  'timer_endTime',
+                  'timer_startTime',
+                  'timer_fullDuration',
+                ]);
+                Notifications.scheduleNotificationAsync({
+                  content: {
+                    title: "Time's up!",
+                    body: 'Your session is over. Great job staying focused!',
+                    sound: Platform.OS === 'android' ? 'default' : undefined,
+                  },
+                  trigger: null,
+                });
+              }
+            }, 1000);
+          } else {
+            // Timer expired during unmount
+            await AsyncStorage.multiRemove([
+              'timer_endTime',
+              'timer_startTime',
+              'timer_fullDuration',
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading persisted timer:', error);
+      }
+    };
+
+    loadTimer();
+    return () => {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
+  }, []);
 
   const pauseTimer = () => {
     if (isRunning && !isPaused) {
@@ -117,6 +183,8 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     if (isRunning && isPaused) {
       const _endTime = Date.now() + timeLeft * 1000;
       setEndTime(_endTime);
+      // Update persisted endTime (the fullDuration remains the same)
+      AsyncStorage.setItem('timer_endTime', _endTime.toString());
       setIsPaused(false);
       timerIntervalRef.current = setInterval(() => {
         const newTimeLeft = Math.max(
@@ -127,6 +195,19 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
         if (newTimeLeft === 0) {
           clearInterval(timerIntervalRef.current);
           setIsRunning(false);
+          AsyncStorage.multiRemove([
+            'timer_endTime',
+            'timer_startTime',
+            'timer_fullDuration',
+          ]);
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Time's up!",
+              body: 'Your session is over. Great job staying focused!',
+              sound: Platform.OS === 'android' ? 'default' : undefined,
+            },
+            trigger: null,
+          });
         }
       }, 1000);
     }
@@ -143,14 +224,21 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 
   const startTimer = async () => {
     if (isRunning) return;
-
-    if (selectedSecond == 0 && selectedMinute == 0 && selectedMinute == 0) {
+    if (selectedSecond === 0 && selectedMinute === 0 && selectedHour === 0) {
       Alert.alert('Error', 'Please enter a valid time');
       return;
     }
-
     const _endTime = Date.now() + timeLeft * 1000;
+    const _startTime = Date.now();
     setEndTime(_endTime);
+    // Store the full timer duration
+    setFullDuration(timeLeft);
+    // Persist end time, start time, and full duration
+    await AsyncStorage.multiSet([
+      ['timer_endTime', _endTime.toString()],
+      ['timer_startTime', _startTime.toString()],
+      ['timer_fullDuration', timeLeft.toString()],
+    ]);
     setIsRunning(true);
 
     timerIntervalRef.current = setInterval(() => {
@@ -162,6 +250,11 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
       if (newTimeLeft === 0) {
         clearInterval(timerIntervalRef.current);
         setIsRunning(false);
+        AsyncStorage.multiRemove([
+          'timer_endTime',
+          'timer_startTime',
+          'timer_fullDuration',
+        ]);
         Notifications.scheduleNotificationAsync({
           content: {
             title: "Time's up!",
@@ -178,10 +271,16 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
     }
+    // Reset state and remove persisted values
     setTimeLeft(selectedHour * 3600 + selectedMinute * 60 + selectedSecond);
     setIsRunning(false);
     setIsPaused(false);
     setEndTime(null);
+    await AsyncStorage.multiRemove([
+      'timer_endTime',
+      'timer_startTime',
+      'timer_fullDuration',
+    ]);
     if (notificationId) {
       await Notifications.cancelScheduledNotificationAsync(notificationId);
       setNotificationId(null);
@@ -192,6 +291,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     setSelectedHour(0);
   };
 
+  // Expose timer functions via ref
   useImperativeHandle(ref, () => ({
     startTimer,
     cancelTimer,
@@ -212,11 +312,11 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 
   const radius = wp(30);
   const circumference = 2 * Math.PI * radius;
-
+  // Use the stored full duration (original duration) to compute the progress fill
   const strokeDashoffset =
-    circumference -
-    (timeLeft / (selectedHour * 3600 + selectedMinute * 60 + selectedSecond)) *
-      circumference;
+    fullDuration > 0
+      ? circumference - (timeLeft / fullDuration) * circumference
+      : 0;
 
   return (
     <View style={styles.container}>
@@ -288,12 +388,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
-
   timerCircle: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   timerText: {
     fontSize: 48,
     color: '#fff',
