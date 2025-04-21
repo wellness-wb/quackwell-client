@@ -20,6 +20,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import UpperMenu from '../components/UpperMenu';
+import { updateHydrationHistory } from './components/HydrationContext';
 
 const HydrationTracker = ({ navigation }) => {
   const [hydrationGoal, setHydrationGoal] = useState(0);
@@ -118,6 +119,7 @@ const HydrationTracker = ({ navigation }) => {
       Keyboard.dismiss();
 
       const today = new Date().toISOString().split('T')[0];
+
       // Save the updated hydration value with today's date
       await AsyncStorage.setItem(
         CURRENT_STORAGE_KEY,
@@ -130,6 +132,8 @@ const HydrationTracker = ({ navigation }) => {
           setShowConfetti(false);
         }, 3000);
       }
+
+      await updateHydrationHistory(newHydration, hydrationGoal);
     } else {
       alert('Please enter a valid amount!');
     }
@@ -211,7 +215,7 @@ const HydrationTracker = ({ navigation }) => {
               {() => (
                 <View style={styles.progressContent}>
                   <Text style={styles.currentHydrationText}>
-                    {displayCurrent}
+                    {parseFloat(displayCurrent).toFixed(1)}
                   </Text>
                   <Text style={styles.goalText}>
                     out of {displayGoal} {unit}

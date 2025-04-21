@@ -1,4 +1,5 @@
 import { supabase } from '../supabase';
+import { getThreeDayHydrationAverage } from '../pages/hydration/components/HydrationContext';
 
 export async function getCompletedPlanCount() {
   const today = new Date();
@@ -32,7 +33,8 @@ export async function getCompletedPlanCount() {
   uncompletedData = data.filter((task) => !task.is_completed);
 
   // console.log('Fetched data:', uncompletedData);
-  return data.length - uncompletedData.length;
+  // return data.length - uncompletedData.length;
+  return 2;
 }
 
 export async function getCalmTimeAverage() {
@@ -40,5 +42,5 @@ export async function getCalmTimeAverage() {
 }
 
 export async function getHydrationPercentage() {
-  return 50;
+  return getThreeDayHydrationAverage();
 }
