@@ -58,7 +58,7 @@ export async function updateHydrationHistory(currentHydration, hydrationGoal) {
     const storedHistory = await AsyncStorage.getItem(HYDRATION_HISTORY_KEY);
     let history = storedHistory ? JSON.parse(storedHistory) : {};
 
-    console.log('History before update:', history); //testing
+    //console.log('History before update:', history); //testing
 
     // Update today’s hydration percentage.
     history[today] = percentage;
@@ -79,24 +79,24 @@ export async function updateHydrationHistory(currentHydration, hydrationGoal) {
 export async function getThreeDayHydrationAverage() {
   try {
     const storedHistory = await AsyncStorage.getItem(HYDRATION_HISTORY_KEY);
-    console.log('Stored history string:', storedHistory);
+    //console.log('Stored history string:', storedHistory);
 
     const history = storedHistory ? JSON.parse(storedHistory) : {};
-    console.log('Parsed history object:', history);
+    //console.log('Parsed history object:', history);
 
     // Collect values from the past 3 days
     const percentages = Object.keys(history)
       .filter((dateStr) => isWithinNDays(dateStr, 3))
       .map((dateStr) => history[dateStr]);
 
-    console.log('Valid percentages from the past 3 days:', percentages); //testing
+    //console.log('Valid percentages from the past 3 days:', percentages);
 
     if (percentages.length === 0) return 0;
 
     // Calculate average percentage
     const sum = percentages.reduce((acc, cur) => acc + cur, 0);
     const average = sum / percentages.length;
-    console.log('Calculated three-day hydration average:', average); //testing
+    //console.log('Calculated three-day hydration average:', average); //testing
     return average;
   } catch (error) {
     console.error('Error retrieving hydration history:', error);
