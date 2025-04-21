@@ -131,6 +131,7 @@ const Feed = ({ navigation }) => {
                   contentText: post.content,
                   username: post.username,
                   profilePic: post.profilePic,
+                  userId: post.user_id,
                 })
               }
             >
@@ -183,14 +184,15 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     alignItems: 'center',
-    paddingBottom: 100, // gives space above MenuBar
+    paddingTop: hp('15%'), // Add top padding to account for the back button
+    paddingBottom: hp('15%'), // Add bottom padding for MenuBar
   },
   backButton: {
-    top: hp('10%'),
+    position: 'absolute',
+    top: hp('7%'),
     left: wp('5%'),
     zIndex: 10,
   },
-
   backGradient: {
     overflow: 'hidden',
     borderRadius: 50,

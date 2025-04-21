@@ -1,7 +1,8 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   ImageBackground,
   ScrollView,
@@ -15,30 +16,116 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import { supabase } from '../../supabase';
 import MenuBar from '../components/MenuBar';
 
 const PostDetail = ({ route, navigation }) => {
-  const { profilePic, username, contentText, contentImage } = route.params;
-
-  const [comments, setComments] = useState([
-    { user: 'DuckFan123', text: 'OMG same!' },
-    { user: 'QuackAttack', text: 'Not the duck again 😂' },
-    { user: 'Floofy', text: 'Sending love 💕' },
-  ]);
+  const { postId, profilePic, username, contentText, contentImage } =
+    route.params;
+  const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const newEntry = { user: 'You', text: newComment.trim() };
-      setComments([...comments, newEntry]);
-      setNewComment('');
+  useEffect(() => {
+    fetchComments();
+    fetchCurrentUser();
+  }, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error) throw error;
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      setCurrentUser({ ...user, ...profile });
+    } catch (error) {
+      console.error('Error fetching current user:', error.message);
     }
   };
 
-  const handleDeleteComment = (index) => {
-    const updated = [...comments];
-    updated.splice(index, 1);
-    setComments(updated);
+  const fetchComments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select(
+          `
+          *,
+          profiles:user_id (
+            username,
+            avatar_url
+          )
+        `,
+        )
+        .eq('post_id', postId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error.message);
+      Alert.alert('Error', 'Failed to load comments');
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .insert([
+          {
+            post_id: postId,
+            user_id: currentUser.id,
+            content: newComment.trim(),
+          },
+        ])
+        .select(
+          `
+          *,
+          profiles:user_id (
+            username,
+            avatar_url
+          )
+        `,
+        )
+        .single();
+
+      if (error) throw error;
+
+      setComments([...comments, data]);
+      setNewComment('');
+    } catch (error) {
+      console.error('Error adding comment:', error.message);
+      Alert.alert('Error', 'Failed to add comment');
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      setComments(comments.filter((comment) => comment.id !== commentId));
+    } catch (error) {
+      console.error('Error deleting comment:', error.message);
+      Alert.alert('Error', 'Failed to delete comment');
+    }
   };
 
   return (
@@ -53,10 +140,7 @@ const PostDetail = ({ route, navigation }) => {
           onPress={() => navigation.goBack()}
         >
           <LinearGradient
-            colors={[
-              'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
-              'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
-            ]}
+            colors={['rgba(164, 205, 241, 0.77)', 'rgba(243, 202, 175, 0.77)']}
             start={{ x: 1, y: 1 }}
             end={{ x: 0, y: 0 }}
             style={styles.backGradient}
@@ -70,10 +154,7 @@ const PostDetail = ({ route, navigation }) => {
           style={{ flex: 1 }}
         >
           <LinearGradient
-            colors={[
-              'rgba(164, 205, 241, 0.77)', // Slightly transparent blue
-              'rgba(243, 202, 175, 0.77)', // Slightly transparent peach
-            ]}
+            colors={['rgba(164, 205, 241, 0.77)', 'rgba(243, 202, 175, 0.77)']}
             start={{ x: 1, y: 1 }}
             end={{ x: 0, y: 0 }}
             style={styles.background}
@@ -96,17 +177,24 @@ const PostDetail = ({ route, navigation }) => {
             {/* Comments Section */}
             <View style={styles.commentsSection}>
               <Text style={styles.commentTitle}>Comments</Text>
-              {comments.map((comment, index) => (
-                <View key={index} style={styles.commentBox}>
-                  <Text style={styles.commentText}>
-                    <Text style={styles.commentUser}>{comment.user}:</Text>{' '}
-                    {comment.text}
-                  </Text>
-                  {comment.user === 'You' && (
+              {comments.map((comment) => (
+                <View key={comment.id} style={styles.commentBox}>
+                  <View style={styles.commentContent}>
+                    <Text style={styles.commentUser}>
+                      {comment.profiles.username}
+                    </Text>
+                    <Text style={styles.commentText}>{comment.content}</Text>
+                  </View>
+                  {currentUser && currentUser.id === comment.user_id && (
                     <TouchableOpacity
-                      onPress={() => handleDeleteComment(index)}
+                      onPress={() => handleDeleteComment(comment.id)}
+                      style={styles.deleteButton}
                     >
-                      <Text style={styles.deleteText}>✕</Text>
+                      <FontAwesome
+                        name="trash"
+                        size={hp('2%')}
+                        color="#153CE6"
+                      />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -199,25 +287,30 @@ const styles = StyleSheet.create({
     color: '#153CE6',
     marginBottom: hp('1%'),
   },
+  commentContent: {
+    flex: 1,
+  },
   commentBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: hp('0.8%'),
-  },
-  commentText: {
-    color: '#153CE6',
-    fontSize: hp('1.8%'),
-    flex: 1,
+    alignItems: 'flex-start',
+    marginBottom: hp('1.5%'),
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    padding: wp('3%'),
+    borderRadius: 10,
   },
   commentUser: {
     fontWeight: 'bold',
     color: '#153CE6',
+    fontSize: hp('1.8%'),
+    marginBottom: hp('0.5%'),
   },
-  deleteText: {
-    color: '#fff',
-    marginLeft: wp('2%'),
-    fontSize: hp('2.5%'),
+  commentText: {
+    color: '#153CE6',
+    fontSize: hp('1.8%'),
+  },
+  deleteButton: {
+    padding: wp('2%'),
   },
   commentInputBox: {
     flexDirection: 'row',
