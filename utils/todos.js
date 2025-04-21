@@ -14,6 +14,33 @@ export async function fetchTodos() {
   return data;
 }
 
+export async function fetchTodoStatus() {
+  try {
+    const { data, error } = await supabase
+      .from('todos')
+      .select('id, date, due_time, is_completed')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching todo status:', error);
+      throw error;
+    }
+
+    // I will leave this in case :)
+    // console.log('Todo status data:', data);
+
+    if (!data || data.length === 0) {
+      console.warn('Todo status data is empty');
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Unexpected error in fetchTodoStatus:', error);
+    return [];
+  }
+}
+
 export async function fetchTodosByDate(date) {
   const { data, error } = await supabase
     .from('todos')
