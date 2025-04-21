@@ -20,6 +20,7 @@ import HydrationTracker from './pages/hydration/HydrationTracker';
 import MainHub from './pages/MainHub';
 import PlannerMain from './pages/planner/PlannerMain';
 import CreatePost from './pages/social/CreatePost';
+import EditPost from './pages/social/EditPost';
 import Feed from './pages/social/Feed';
 import FriendsPage from './pages/social/FriendsPage';
 import FriendsProfile from './pages/social/FriendsProfile';
@@ -83,6 +84,7 @@ function AppStack() {
       <Stack.Screen name="FriendsProfile" component={FriendsProfile} />
       <Stack.Screen name="MessageDetail" component={MessageDetail} />
       <Stack.Screen name="CreatePost" component={CreatePost} />
+      <Stack.Screen name="EditPost" component={EditPost} />
     </Stack.Navigator>
   );
 }

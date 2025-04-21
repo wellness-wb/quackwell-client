@@ -22,6 +22,7 @@ const Post = ({
   comments,
   isOwner,
   onDelete,
+  onEdit,
 }) => {
   const handleDelete = () => {
     Alert.alert('Delete Post', 'Are you sure you want to delete this post?', [
@@ -57,12 +58,17 @@ const Post = ({
             <Text style={styles.username}>{username}</Text>
           </View>
           {isOwner && (
-            <TouchableOpacity
-              onPress={handleDelete}
-              style={styles.deleteButton}
-            >
-              <FontAwesome name="trash" size={hp('2.2%')} color="#153CE6" />
-            </TouchableOpacity>
+            <View style={styles.headerButtons}>
+              <TouchableOpacity onPress={onEdit} style={styles.actionButton}>
+                <FontAwesome name="edit" size={hp('2.2%')} color="#153CE6" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDelete}
+                style={styles.actionButton}
+              >
+                <FontAwesome name="trash" size={hp('2.2%')} color="#153CE6" />
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
@@ -164,8 +170,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  deleteButton: {
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  actionButton: {
     padding: wp('2%'),
+    marginLeft: wp('2%'),
   },
 });
 

@@ -141,6 +141,12 @@ const Feed = ({ navigation }) => {
                 comments={post.comments}
                 isOwner={currentUser && currentUser.id === post.user_id}
                 onDelete={() => handleDeletePost(post.id)}
+                onEdit={() =>
+                  navigation.navigate('EditPost', {
+                    postId: post.id,
+                    initialContent: post.content,
+                  })
+                }
               />
             </TouchableOpacity>
           ))}
