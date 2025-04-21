@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   sadGif: {
     position: 'absolute',
     bottom: hp('9%'),
-    left: wp('50%'),
+    right: wp('50%'),
     width: wp('50%'),
     height: hp('27%'),
     zIndex: 0,
