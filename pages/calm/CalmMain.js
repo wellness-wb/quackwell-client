@@ -14,6 +14,7 @@ import {
 import MenuBar from '../components/MenuBar';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
+import SoundFunction from './components/SoundFunction';
 
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
@@ -40,15 +41,32 @@ const CalmMain = ({ navigation }) => {
     }
   };
 
-  const handleStartTimer = () => {
+  const handleStartTimer = async () => {
     if (timerRef.current) {
       timerRef.current.startTimer();
     }
+    if (sound) {
+      // Instead of calling SoundFunction.unloadAsync() which doesn’t exist,
+      // consider stopping/unloading the current sound:
+      await sound.unloadAsync();
+    }
+
+    // Use SoundFunction.getSoundFile to get the file based on selectedSound
+    const { sound: newSound } = await Audio.Sound.createAsync(
+      SoundFunction.getSoundFile(selectedSound),
+      { shouldPlay: true },
+    );
+
+    setSound(newSound); // Set the new sound to state
   };
 
-  const handleCancelTimer = () => {
+  const handleCancelTimer = async () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
+    }
+    if (sound) {
+      await sound.stopAsync(); // Stop the sound when the timer is canceled
+      await sound.unloadAsync(); // Unload the sound to free up resources
     }
     setShowSadGif(true);
 
@@ -70,15 +88,22 @@ const CalmMain = ({ navigation }) => {
     }, 4000);
   };
 
-  const handlePauseTimer = () => {
+  const handlePauseTimer = async () => {
     if (timerRef.current) {
       timerRef.current.pauseTimer();
     }
+    if (sound) {
+      await sound.pauseAsync(); // Here pause the sound when the timer is paused
+    }
   };
 
-  const handleResumeTimer = () => {
+  const handleResumeTimer = async () => {
     if (timerRef.current) {
       timerRef.current.resumeTimer();
+    }
+    //Here we play the sound again when the timer is resumed
+    if (sound) {
+      await sound.playAsync();
     }
   };
 
