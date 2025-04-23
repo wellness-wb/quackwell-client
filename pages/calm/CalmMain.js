@@ -259,6 +259,15 @@ const CalmMain = ({ navigation }) => {
         />
       )}
 
+      {timerStatus.isRunning && (
+        <Animated.Image
+          source={require('../../assets/calm_chilling.gif')}
+          autoPlay
+          loop
+          style={styles.timerAnimation}
+        />
+      )}
+
       <MenuBar navigation={navigation} activeScreen="CalmMain" />
     </ImageBackground>
   );
@@ -287,6 +296,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     width: '60%',
     marginTop: 60,
+    zIndex: 100,
   },
   button: {
     backgroundColor: '#739CEF',
@@ -372,6 +382,14 @@ const styles = StyleSheet.create({
     right: wp('50%'),
     width: wp('50%'),
     height: hp('27%'),
+    zIndex: 101,
+  },
+  timerAnimation: {
+    position: 'absolute',
+    bottom: hp('9.4%'),
+    right: wp('5%'),
+    width: wp('40%'),
+    height: hp('28%'),
     zIndex: 0,
   },
 });
