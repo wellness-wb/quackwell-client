@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -11,6 +11,10 @@ import {
   View,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useAuth } from '../../utils/authContext';
@@ -221,11 +225,29 @@ const PlansTab = ({ selectedDate }) => {
     }
   };
 
+  const [showDeleteGif, setShowDeleteGif] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
   const handleDeleteTask = async (id) => {
     try {
       setIsLoading(true);
+      setShowDeleteGif(true);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
       await deleteTodo(id);
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+      setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => {
+          setShowDeleteGif(false); // fully hide after animation finishes
+        });
+      }, 2000);
     } catch (error) {
       console.error('Error occurred while deleting a todo:', error);
       Alert.alert('Error', 'There was a problem deleting your todo.');
@@ -628,6 +650,19 @@ const PlansTab = ({ selectedDate }) => {
           </>
         )}
       </LinearGradient>
+      {showDeleteGif && (
+        <Animated.Image
+          source={require('../../assets/planner_angry.gif')} // 🔁 your animation path
+          style={{
+            position: 'absolute',
+            bottom: hp('11%'),
+            right: wp('50%'),
+            width: wp('50%'),
+            height: hp('27%'),
+            zIndex: 0,
+          }}
+        />
+      )}
 
       <View style={styles.sliderHandle} />
     </Animated.View>
