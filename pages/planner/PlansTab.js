@@ -64,7 +64,7 @@ const PlansTab = ({ selectedDate }) => {
 
   // Update selectedOption when selectedDate changes
   useEffect(() => {
-    setSelectedOption(selectedDate.toLocaleDateString());
+    setSelectedOption(selectedDate.toISOString().split('T')[0]);
   }, [selectedDate]);
 
   // Load todo data
@@ -77,11 +77,7 @@ const PlansTab = ({ selectedDate }) => {
       if (selectedOption === 'all') {
         data = await fetchTodos();
       } else {
-        const formattedDate = selectedDate.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        });
+        const formattedDate = selectedDate.toISOString().split('T')[0];
         data = await fetchTodosByDate(formattedDate);
       }
 
@@ -95,13 +91,7 @@ const PlansTab = ({ selectedDate }) => {
 
       setTasks(formattedTasks);
       const todaysTasks = formattedTasks.filter(
-        (task) =>
-          task.date ===
-          new Date().toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          }),
+        (task) => task.date === new Date().toISOString().split('T')[0],
       );
 
       // latest task will be the first in your array since you're unshifting new ones
@@ -350,15 +340,9 @@ const PlansTab = ({ selectedDate }) => {
               isVisible={isDatePickerVisible}
               mode="date"
               themeVariant="light"
-              minimumDate={new Date()}
+              //minimumDate={new Date()}
               onConfirm={(date) => {
-                setDate(
-                  date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  }),
-                );
+                setDate(date.toISOString().split('T')[0]);
                 setDatePickerVisibility(false);
               }}
               onCancel={() => setDatePickerVisibility(false)}
