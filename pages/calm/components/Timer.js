@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import React, {
   forwardRef,
   useEffect,
@@ -13,10 +15,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Svg, { Circle } from 'react-native-svg';
-import * as Notifications from 'expo-notifications';
 import { formatTime } from '../../../utils/formatTime';
 
 Notifications.setNotificationHandler({
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   labelsContainer: {
     flexDirection: 'row',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 10,
     justifyContent: 'space-around',
     paddingHorizontal: 20,
   },
