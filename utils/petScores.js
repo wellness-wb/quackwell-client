@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { getThreeDayHydrationAverage } from '../pages/hydration/components/HydrationContext';
+import { getUsageForDate } from '../pages/calm/components/CalmTimeTracking';
 
 export async function getCompletedPlanCount() {
   const today = new Date();
@@ -38,7 +39,17 @@ export async function getCompletedPlanCount() {
 }
 
 export async function getCalmTimeAverage() {
-  return 30;
+  sum = 0;
+  const result = {};
+  for (let i = 0; i < 3; i++) {
+    const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0];
+    const usage = await getUsageForDate(date);
+    result[date] = usage;
+    sum += usage;
+  }
+  return sum / 3 / 60;
 }
 
 export async function getHydrationPercentage() {

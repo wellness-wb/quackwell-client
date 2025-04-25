@@ -37,33 +37,23 @@ const VirtualPet = () => {
 
   useEffect(() => {
     async function fetchScores() {
-      completedPlanCount = await getCompletedPlanCount();
-      calmTimeAverage = await getCalmTimeAverage();
-      hydrationPercentage = await getHydrationPercentage();
-      setPlannerScore(completedPlanCount);
-      setCalmScore(calmTimeAverage);
-      setHydrationScore(hydrationPercentage);
-    }
+      try {
+        const completedPlanCount = await getCompletedPlanCount();
+        const calmTimeAverage = await getCalmTimeAverage();
+        const hydrationPercentage = await getHydrationPercentage();
 
-    fetchScores();
-
-    getStateScore(plannerScore, calmScore, hydrationScore);
-    const state = getPetState();
-
-    // If the state is changing (it’s different from the current state), update pet state
-    if (state !== petState) {
-      setPetState(state);
-
-      // Randomize the neutral GIF only when entering neutral state (state 2)
-      if (state === 2) {
-        const randomGif =
-          neutralGifs[Math.floor(Math.random() * neutralGifs.length)];
-        setCurrentNeutralGif(randomGif);
+        setPlannerScore(completedPlanCount);
+        setCalmScore(calmTimeAverage);
+        setHydrationScore(hydrationPercentage);
+      } catch (e) {
+        console.error('fetchScores()', e);
       }
     }
-  }, [plannerScore, calmScore, hydrationScore, petState]);
+    fetchScores();
+  }, []);
 
-  const getStateScore = (plannerScore, calmScore, hydrationScore) => {
+  useEffect(() => {
+    // 1) Re-normalize every metric including the dev-menu modifiers:
     const normPlanner = Math.max(
       0,
       Math.min(1, (plannerScore + plannerModifier) / 5),
@@ -74,30 +64,42 @@ const VirtualPet = () => {
       Math.min(1, (hydrationScore + hydrationModifier) / 100),
     );
 
-    setStateScore(0.4 * normPlanner + 0.3 * normCalm + 0.3 * normHydration);
-  };
+    const composite = 0.4 * normPlanner + 0.3 * normCalm + 0.3 * normHydration;
+    setStateScore(composite);
 
-  const getPetState = () => {
-    if (stateScore < 0.2) return 0; // State 1: Negative
-    if (stateScore < 0.4) return 1; // State 2
-    if (stateScore < 0.6) return 2; // State 3: Neutral
-    if (stateScore < 0.8) return 3; // State 4
-    return 4; // State 5: positive
-  };
+    // 2) Derive petState from that new composite score:
+    let newState;
+    if (composite < 0.2) newState = 0;
+    else if (composite < 0.4) newState = 1;
+    else if (composite < 0.6) newState = 2;
+    else if (composite < 0.8) newState = 3;
+    else newState = 4;
+
+    if (newState !== petState) {
+      setPetState(newState);
+      if (newState === 2) {
+        setCurrentNeutralGif(
+          neutralGifs[Math.floor(Math.random() * neutralGifs.length)],
+        );
+      }
+    }
+  }, [
+    plannerScore,
+    calmScore,
+    hydrationScore,
+    plannerModifier,
+    calmModifier,
+    hydrationModifier,
+  ]);
 
   const toggleDevMenu = () => {
     setShowDevMenu((prev) => !prev);
   };
 
   const adjustScore = (type, delta) => {
-    if (type === 'planner') {
-      setPlannerModifier((prev) => prev + delta);
-    } else if (type === 'calm') {
-      setCalmModifier((prev) => prev + delta);
-    } else if (type === 'hydration') {
-      setHydrationModifier((prev) => prev + delta);
-    }
-    getStateScore(plannerScore, calmScore, hydrationScore);
+    if (type === 'planner') setPlannerModifier((p) => p + delta);
+    if (type === 'calm') setCalmModifier((c) => c + delta);
+    if (type === 'hydration') setHydrationModifier((h) => h + delta);
   };
 
   return (

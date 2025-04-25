@@ -18,6 +18,7 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import Svg, { Circle } from 'react-native-svg';
 import { formatTime } from '../../../utils/formatTime';
+import { saveUsage } from '../components/CalmTimeTracking';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -172,34 +173,44 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     };
   }, []);
 
-  const pauseTimer = () => {
+  const pauseTimer = async () => {
     if (isRunning && !isPaused) {
       clearInterval(timerIntervalRef.current);
+      const elapsed = fullDuration - timeLeft;
+      if (elapsed > 0) await saveUsage(elapsed);
+      setFullDuration(timeLeft);
+      await AsyncStorage.setItem('timer_fullDuration', timeLeft.toString());
       setIsPaused(true);
     }
   };
 
-  const resumeTimer = () => {
+  const resumeTimer = async () => {
     if (isRunning && isPaused) {
       const _endTime = Date.now() + timeLeft * 1000;
       setEndTime(_endTime);
-      // Update persisted endTime (the fullDuration remains the same)
-      AsyncStorage.setItem('timer_endTime', _endTime.toString());
+      await AsyncStorage.setItem('timer_endTime', _endTime.toString());
       setIsPaused(false);
-      timerIntervalRef.current = setInterval(() => {
+
+      timerIntervalRef.current = setInterval(async () => {
         const newTimeLeft = Math.max(
           0,
           Math.round((_endTime - Date.now()) / 1000),
         );
         setTimeLeft(newTimeLeft);
+
         if (newTimeLeft === 0) {
           clearInterval(timerIntervalRef.current);
           setIsRunning(false);
-          AsyncStorage.multiRemove([
+
+          // ✅ record the entire resumed segment
+          // fullDuration was already reset to the remaining time in pauseTimer
+          await saveUsage(fullDuration);
+
+          await AsyncStorage.multiRemove([
             'timer_endTime',
-            'timer_startTime',
             'timer_fullDuration',
           ]);
+
           Notifications.scheduleNotificationAsync({
             content: {
               title: "Time's up!",
@@ -224,37 +235,38 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
 
   const startTimer = async () => {
     if (isRunning) return;
-    if (selectedSecond === 0 && selectedMinute === 0 && selectedHour === 0) {
-      Alert.alert('Error', 'Please enter a valid time');
-      return;
+    if (timeLeft === 0) {
+      return Alert.alert('Error', 'Please enter a valid time');
     }
-    const _endTime = Date.now() + timeLeft * 1000;
-    const _startTime = Date.now();
-    setEndTime(_endTime);
-    // Store the full timer duration
-    setFullDuration(timeLeft);
-    // Persist end time, start time, and full duration
+
+    // Capture the full session length up-front:
+    const sessionLength = timeLeft;
+
+    // Compute end timestamp:
+    const endTs = Date.now() + sessionLength * 1000;
+    setEndTime(endTs);
+    setFullDuration(sessionLength);
+
+    // Persist metadata:
     await AsyncStorage.multiSet([
-      ['timer_endTime', _endTime.toString()],
-      ['timer_startTime', _startTime.toString()],
-      ['timer_fullDuration', timeLeft.toString()],
+      ['timer_endTime', endTs.toString()],
+      ['timer_fullDuration', sessionLength.toString()],
     ]);
     setIsRunning(true);
 
-    timerIntervalRef.current = setInterval(() => {
-      const newTimeLeft = Math.max(
-        0,
-        Math.round((_endTime - Date.now()) / 1000),
-      );
+    timerIntervalRef.current = setInterval(async () => {
+      const newTimeLeft = Math.max(0, Math.round((endTs - Date.now()) / 1000));
       setTimeLeft(newTimeLeft);
+
       if (newTimeLeft === 0) {
         clearInterval(timerIntervalRef.current);
         setIsRunning(false);
-        AsyncStorage.multiRemove([
-          'timer_endTime',
-          'timer_startTime',
-          'timer_fullDuration',
-        ]);
+
+        // 🔑 record exactly the original session length:
+        await saveUsage(sessionLength);
+
+        await AsyncStorage.multiRemove(['timer_endTime', 'timer_fullDuration']);
+
         Notifications.scheduleNotificationAsync({
           content: {
             title: "Time's up!",
@@ -270,6 +282,11 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
   const cancelTimer = async () => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
+    }
+    // Save elapsed usage before resetting
+    const elapsed = fullDuration - timeLeft;
+    if (elapsed > 0) {
+      await saveUsage(elapsed);
     }
     // Reset state and remove persisted values
     setTimeLeft(selectedHour * 3600 + selectedMinute * 60 + selectedSecond);
@@ -287,7 +304,7 @@ const Timer = forwardRef(({ initialDuration = 900, onStatusChange }, ref) => {
     }
     setResetTrigger((prev) => prev + 1);
     setSelectedSecond(0);
-    setSelectedMinute(15);
+    setSelectedMinute(0);
     setSelectedHour(0);
   };
 

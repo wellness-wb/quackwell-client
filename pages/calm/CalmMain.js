@@ -246,7 +246,7 @@ const CalmMain = ({ navigation }) => {
                 style={styles.button}
                 onPress={handleResumeTimer}
               >
-                <Text style={styles.buttonText}>Continue</Text>
+                <Text style={styles.buttonText}>Resume</Text>
               </TouchableOpacity>
             </>
           )}
