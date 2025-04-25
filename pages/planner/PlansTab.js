@@ -38,12 +38,12 @@ const PlansTab = ({ selectedDate }) => {
   // Form state
   const [name, setName] = useState('');
   const [date, setDate] = useState('Set Date');
+  const [displayDate, setDisplayDate] = useState('Set Date');
 
   // Picker visibility state
   const [dueTime, setDueTime] = useState('Due Time');
   const [isDueTimePickerVisible, setDueTimePickerVisibility] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState(
     selectedDate.toLocaleDateString(),
@@ -81,14 +81,25 @@ const PlansTab = ({ selectedDate }) => {
         data = await fetchTodosByDate(formattedDate);
       }
 
-      const formattedTasks = data.map((task) => ({
-        id: task.id,
-        name: task.name,
-        date: task.date,
-        dueTime: task.due_time,
-        isCompleted: task.is_completed,
-      }));
+      const formattedTasks = data.map((task) => {
+        const [year, month, day] = task.date.split('-').map(Number);
+        const localDate = new Date(year, month - 1, day);
 
+        return {
+          id: task.id,
+          name: task.name,
+          date: task.date,
+          dueTime: task.due_time,
+          isCompleted: task.is_completed,
+
+          displayDate: localDate.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }),
+        };
+      });
+      console.log(formattedTasks);
       setTasks(formattedTasks);
       const todaysTasks = formattedTasks.filter(
         (task) => task.date === new Date().toISOString().split('T')[0],
@@ -198,9 +209,9 @@ const PlansTab = ({ selectedDate }) => {
 
       setName('');
       setDate('Set Date');
+      setDisplayDate('Set Date');
       setDueTime('Due Time');
       setShowForm(false);
-      setIsCompleted(false);
 
       setErrors({
         name: false,
@@ -332,7 +343,7 @@ const PlansTab = ({ selectedDate }) => {
                   { color: errors.date ? '#e34060' : '#e2baa1' },
                 ]}
               >
-                {date}
+                {displayDate}
               </Text>
             </TouchableOpacity>
 
@@ -340,9 +351,16 @@ const PlansTab = ({ selectedDate }) => {
               isVisible={isDatePickerVisible}
               mode="date"
               themeVariant="light"
-              //minimumDate={new Date()}
+              minimumDate={new Date()}
               onConfirm={(date) => {
                 setDate(date.toISOString().split('T')[0]);
+                setDisplayDate(
+                  date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  }),
+                );
                 setDatePickerVisibility(false);
               }}
               onCancel={() => setDatePickerVisibility(false)}
@@ -545,7 +563,7 @@ const PlansTab = ({ selectedDate }) => {
                       { color: showCompletedTasks ? '#e2baa1' : '#153CE6' },
                     ]}
                   >
-                    {item.date}
+                    {item.displayDate}
                   </Text>
                 </LinearGradient>
               )}

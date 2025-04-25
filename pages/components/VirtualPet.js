@@ -24,6 +24,11 @@ const VirtualPet = () => {
   const [plannerScore, setPlannerScore] = useState(0);
   const [calmScore, setCalmScore] = useState(0);
   const [hydrationScore, setHydrationScore] = useState(0);
+
+  const [plannerModifier, setPlannerModifier] = useState(0); //for dev menu only
+  const [calmModifier, setCalmModifier] = useState(0); //for dev menu only
+  const [hydrationModifier, setHydrationModifier] = useState(0); //for dev menu only
+
   const [petState, setPetState] = useState(2); // default to neutral
   const [showDevMenu, setShowDevMenu] = useState(false);
   const [stateScore, setStateScore] = useState(0.5);
@@ -31,9 +36,9 @@ const VirtualPet = () => {
 
   useEffect(() => {
     async function fetchScores() {
+      completedPlanCount = await getCompletedPlanCount();
       calmTimeAverage = await getCalmTimeAverage();
       hydrationPercentage = await getHydrationPercentage();
-      completedPlanCount = await getCompletedPlanCount();
       setPlannerScore(completedPlanCount);
       setCalmScore(calmTimeAverage);
       setHydrationScore(hydrationPercentage);
@@ -58,9 +63,15 @@ const VirtualPet = () => {
   }, [plannerScore, calmScore, hydrationScore, petState]);
 
   const getStateScore = (plannerScore, calmScore, hydrationScore) => {
-    const normPlanner = Math.max(0, Math.min(1, plannerScore / 5));
-    const normCalm = Math.max(0, Math.min(1, calmScore / 60));
-    const normHydration = Math.max(0, Math.min(1, hydrationScore / 100));
+    const normPlanner = Math.max(
+      0,
+      Math.min(1, (plannerScore + plannerModifier) / 5),
+    );
+    const normCalm = Math.max(0, Math.min(1, (calmScore + calmModifier) / 60));
+    const normHydration = Math.max(
+      0,
+      Math.min(1, (hydrationScore + hydrationModifier) / 100),
+    );
 
     setStateScore(0.4 * normPlanner + 0.3 * normCalm + 0.3 * normHydration);
   };
@@ -79,12 +90,13 @@ const VirtualPet = () => {
 
   const adjustScore = (type, delta) => {
     if (type === 'planner') {
-      setPlannerScore((prev) => prev + delta);
+      setPlannerModifier((prev) => prev + delta);
     } else if (type === 'calm') {
-      setCalmScore((prev) => prev + delta);
+      setCalmModifier((prev) => prev + delta);
     } else if (type === 'hydration') {
-      setHydrationScore((prev) => prev + delta);
+      setHydrationModifier((prev) => prev + delta);
     }
+    getStateScore(plannerScore, calmScore, hydrationScore);
   };
 
   return (
@@ -100,7 +112,10 @@ const VirtualPet = () => {
       {showDevMenu && (
         <View style={styles.devMenu}>
           <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Planner Score: {plannerScore}</Text>
+            <Text style={styles.menuText}>
+              Planner Score:{' '}
+              {parseFloat(plannerScore + plannerModifier).toFixed(1)}
+            </Text>
             <TouchableOpacity
               onPress={() => adjustScore('planner', -1)}
               style={styles.button}
@@ -115,7 +130,9 @@ const VirtualPet = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Calm Score: {calmScore}</Text>
+            <Text style={styles.menuText}>
+              Calm Score: {parseFloat(calmScore + calmModifier).toFixed(1)}
+            </Text>
             <TouchableOpacity
               onPress={() => adjustScore('calm', -3)}
               style={styles.button}
@@ -131,7 +148,8 @@ const VirtualPet = () => {
           </View>
           <View style={styles.menuItem}>
             <Text style={styles.menuText}>
-              Hydration Score: {hydrationScore}
+              Hydration Score:{' '}
+              {parseFloat(hydrationScore + hydrationModifier).toFixed(1)}
             </Text>
             <TouchableOpacity
               onPress={() => adjustScore('hydration', -5)}
@@ -146,7 +164,9 @@ const VirtualPet = () => {
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.menuItem}>State Score: {stateScore}</Text>
+          <Text style={styles.menuItem}>
+            State Score: {parseFloat(stateScore).toFixed(3)}
+          </Text>
         </View>
       )}
       {/* end dev menu */}
