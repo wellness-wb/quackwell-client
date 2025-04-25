@@ -99,7 +99,6 @@ const PlansTab = ({ selectedDate }) => {
           }),
         };
       });
-      console.log(formattedTasks);
       setTasks(formattedTasks);
       const todaysTasks = formattedTasks.filter(
         (task) => task.date === new Date().toISOString().split('T')[0],
