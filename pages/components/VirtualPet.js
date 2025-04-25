@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  getCompletedPlanCount,
   getCalmTimeAverage,
+  getCompletedPlanCount,
   getHydrationPercentage,
 } from '../../utils/petScores';
 
@@ -10,6 +10,7 @@ const neutralGifs = [
   require('../../assets/blinking.gif'),
   require('../../assets/shifting.gif'),
   require('../../assets/winking.gif'),
+  require('../../assets/water.gif'),
 ];
 
 const states = [

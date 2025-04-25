@@ -81,7 +81,6 @@ const HydrationMain = ({ navigation }) => {
           style={[styles.startGif, { opacity: fadeStartAnim }]} // Apply fade effect
         />
       )}
-
       <MenuBar navigation={navigation} activeScreen="HydrationMain" />
     </ImageBackground>
   );
