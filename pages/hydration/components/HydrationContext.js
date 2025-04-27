@@ -95,7 +95,7 @@ export async function getThreeDayHydrationAverage() {
 
     // Calculate average percentage
     const sum = percentages.reduce((acc, cur) => acc + cur, 0);
-    const average = sum / percentages.length;
+    const average = sum / 3;
     //console.log('Calculated three-day hydration average:', average); //testing
     return average;
   } catch (error) {
