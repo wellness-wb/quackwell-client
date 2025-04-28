@@ -3,11 +3,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import PropTypes from 'prop-types';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchTodosByDate } from '../../utils/todos';
 
 const STORAGE_KEYS = {
@@ -45,6 +52,7 @@ const UpperMenu = ({ navigation }) => {
   const [currentHydration, setCurrentHydration] = useState(0);
   const [hydrationGoal, setHydrationGoal] = useState(DEFAULT_HYDRATION_GOAL);
   const [todayTask, setTodayTask] = useState(null);
+  const insets = useSafeAreaInsets();
 
   const hydrationPercent = useCallback(() => {
     return hydrationGoal > 0
@@ -118,12 +126,27 @@ const UpperMenu = ({ navigation }) => {
   }, [loadHydrationData, loadTodayTask]);
 
   return (
-    <View style={styles.menu}>
+    <View
+      style={[
+        styles.menu,
+        {
+          height:
+            Platform.OS === 'ios'
+              ? 90 + insets.top / 2
+              : Platform.isPad
+                ? 100
+                : 90,
+        },
+      ]}
+    >
       <LinearGradient
         colors={['#A4CDF1', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.gradient}
+        style={[
+          styles.gradient,
+          { paddingTop: insets.top > 0 ? insets.top / 2 : 10 },
+        ]}
       >
         <HydrationPill
           percent={hydrationPercent()}
@@ -156,7 +179,6 @@ TaskPill.propTypes = {
 const styles = StyleSheet.create({
   menu: {
     width: '100%',
-    height: 130,
     position: 'absolute',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -173,7 +195,8 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'flex-end',
     flexDirection: 'row',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
     justifyContent: 'space-around',
   },
   hydrationAndTaskPill: {
