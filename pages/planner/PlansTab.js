@@ -25,6 +25,7 @@ import {
   fetchTodos,
   fetchTodosByDate,
 } from '../../utils/todos';
+import { SOCIAL_CONSTANTS } from '../social/constants/socialConstants';
 
 const PlansTab = ({ selectedDate }) => {
   const { session } = useAuth();
@@ -36,7 +37,7 @@ const PlansTab = ({ selectedDate }) => {
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
 
   // Form state
-  const [name, setName] = useState('');
+  const [name, setName] = useState('Task Name');
   const [date, setDate] = useState('Set Date');
   const [displayDate, setDisplayDate] = useState('Set Date');
 
@@ -288,7 +289,7 @@ const PlansTab = ({ selectedDate }) => {
       onLayout={onLayout}
     >
       <LinearGradient
-        colors={['#9bddff', '#F3CAAF']}
+        colors={SOCIAL_CONSTANTS.GRADIENTS.MAIN}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
