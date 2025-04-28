@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
 import { awardBadge, hasBadge, BadgeCatalog } from '../utils/BadgeManager.js';
-
+import Modal from 'react-native-modal';
 
 import {
   ImageBackground,
@@ -11,6 +11,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   View,
+  Image,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -23,8 +24,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import UpperMenu from '../components/UpperMenu';
-import { updateHydrationHistory } from './components/HydrationContext';
-import {hasBadge} from '../badges/BadgeManager.js';
+import { updateHydrationHistory } from '../components/HydrationContext';
 
 const HydrationTracker = ({ navigation }) => {
   const [hydrationGoal, setHydrationGoal] = useState(0);
@@ -32,17 +32,15 @@ const HydrationTracker = ({ navigation }) => {
   const [currentHydration, setCurrentHydration] = useState(0);
   const [inputHydration, setInputHydration] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
-  const [badgePopup, setBadgePopup] = useState(null); // null | catalogEntry
-
+  const [hasAquaholic, setHasAquaholic] = useState(false);
+  const [badgePopup, setBadgePopup] = useState(null); // celebration modal
 
   const GOAL_STORAGE_KEY = 'hydration_goal';
   const CURRENT_STORAGE_KEY = 'currentHydration';
 
-
   useEffect(() => {
     hasBadge('aquaholic').then(setHasAquaholic);
   }, []);
-
 
   useEffect(() => {
     const loadHydrationData = async () => {
@@ -139,26 +137,29 @@ const HydrationTracker = ({ navigation }) => {
       );
 
       if (newHydration >= hydrationGoal) {
-        if (newHydration >= 4)
-            setShowConfetti(true);
-            setTimeout(() => {
-              setShowConfetti(false);
-            }, 3000);'
-                      
-            // badge logic
-            const goalInLitres = unit === 'fl oz' ? hydrationGoal / 33.814 : hydrationGoal;
-            if (goalInLitres <= 4) {
-              const badge = await awardBadge('aquaholic');
-              if (badge) setBadgePopup(badge);        // only if newly earned
-            }
-      }
+        if (newHydration >= 4) {
+          setShowConfetti(true);
+          setTimeout(() => {
+            setShowConfetti(false);
+          }, 3000);
+        }
 
-      await updateHydrationHistory(newHydration, hydrationGoal);
-    } else {
-      alert('Please enter a valid amount!');
+        // badge logic
+        const goalInLitres =
+          unit === 'fl oz' ? hydrationGoal / 33.814 : hydrationGoal;
+        if (goalInLitres <= 4) {
+          const badge = await awardBadge('aquaholic');
+          if (badge) {
+            setBadgePopup(badge); // celebration modal
+            setHasAquaholic(true); // update the pill immediately
+          }
+        }
+        await updateHydrationHistory(newHydration, hydrationGoal);
+      } else {
+        alert('Please enter a valid amount!');
+      }
     }
   };
-
   const handleSetNewGoal = async () => {
     await AsyncStorage.removeItem('hydration_goal');
     await AsyncStorage.setItem(
@@ -193,10 +194,23 @@ const HydrationTracker = ({ navigation }) => {
         <UpperMenu
           hydrationGoal={hydrationGoal}
           currentHydration={currentHydration}
-          showAquaholic={await hasBadge('aquaholic')}
-
-
+          showAquaholic={hasAquaholic}
+          navigation={navigation}
         />
+
+        {/* celebration modal */}
+        <Modal
+          isVisible={!!badgePopup}
+          onBackdropPress={() => setBadgePopup(null)}
+        >
+          {badgePopup && (
+            <View style={styles.badgeModal}>
+              <Text style={styles.badgeTitle}>Badge unlocked!</Text>
+              <Image source={badgePopup.asset} style={styles.badgeImg} />
+              <Text style={styles.badgeName}>{badgePopup.title}</Text>
+            </View>
+          )}
+        </Modal>
 
         {/* Confetti */}
         {showConfetti && (
@@ -293,7 +307,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-
   // gradient container
   container: {
     position: 'absolute',
@@ -367,9 +380,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'red',
   },
-     
 
-
+  badgeModal: {
+    alignItems: 'center',
+    backgroundColor: '#F3CAAF',
+    padding: 25,
+    borderRadius: 20,
+  },
+  badgeTitle: { fontSize: 22, fontWeight: 'bold', color: '#153CE6' },
+  badgeImg: { width: 120, height: 120, marginVertical: 15 },
+  badgeName: { fontSize: 18, color: '#153CE6' },
 });
-
 export default HydrationTracker;
