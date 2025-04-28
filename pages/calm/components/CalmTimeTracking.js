@@ -9,7 +9,6 @@ export async function saveUsage(seconds) {
       ? parseInt(existing, 10) + Math.round(seconds)
       : Math.round(seconds);
     await AsyncStorage.setItem(key, total.toString());
-    console.log('New calm time for today: ', total);
   } catch (e) {
     console.error('Error saving usage:', e);
   }
