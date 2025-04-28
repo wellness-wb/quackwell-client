@@ -9,7 +9,7 @@ export const BadgeCatalog = {
     id: 'aquaholic',
     title: 'Aquaholic',
     description: 'Completed a hydration goal of 4 L or more within 24 hours',
-    asset: require('../assets/aquaholic.gif'),
+    asset: require('../../assets/aquaholic.gif'),
   },
   // -- other badges coming up for later if we have time --
 };
