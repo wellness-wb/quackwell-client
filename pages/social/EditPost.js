@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Alert,
   ImageBackground,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -111,14 +112,20 @@ const styles = StyleSheet.create({
     color: '#153CE6',
     textAlignVertical: 'top',
     marginBottom: hp('2%'),
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
   updateButton: {
     alignSelf: 'center',
@@ -149,11 +156,17 @@ const styles = StyleSheet.create({
     height: wp('12%'),
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
 });
 

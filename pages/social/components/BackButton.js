@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -40,11 +40,17 @@ const styles = StyleSheet.create({
     height: wp(POST_DETAIL_CONSTANTS.LAYOUT.BACK_BUTTON.SIZE + '%'),
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: POST_DETAIL_CONSTANTS.SHADOW.color,
-    shadowOpacity: POST_DETAIL_CONSTANTS.SHADOW.opacity,
-    shadowOffset: POST_DETAIL_CONSTANTS.SHADOW.offset,
-    shadowRadius: POST_DETAIL_CONSTANTS.SHADOW.radius,
-    elevation: POST_DETAIL_CONSTANTS.SHADOW.elevation,
+    ...Platform.select({
+      ios: {
+        shadowColor: POST_DETAIL_CONSTANTS.SHADOW.color,
+        shadowOpacity: POST_DETAIL_CONSTANTS.SHADOW.opacity,
+        shadowOffset: POST_DETAIL_CONSTANTS.SHADOW.offset,
+        shadowRadius: POST_DETAIL_CONSTANTS.SHADOW.radius,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
 });
 
