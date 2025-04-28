@@ -5,6 +5,7 @@ import {
   Animated,
   Keyboard,
   PanResponder,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -31,7 +32,9 @@ import { SOCIAL_CONSTANTS } from '../social/constants/socialConstants';
 
 const PlansTab = ({ selectedDate }) => {
   const { session } = useAuth();
-  const [menuHeight] = useState(new Animated.Value(375)); // Initial collapsed height
+  const [menuHeight] = useState(
+    new Animated.Value(Platform.OS === 'android' ? 200 : 375),
+  ); // Initial collapsed height
 
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -167,7 +170,7 @@ const PlansTab = ({ selectedDate }) => {
 
   const expandMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: 600,
+      toValue: Platform.OS === 'android' ? 500 : 600,
       duration: 400,
       useNativeDriver: false,
     }).start();
@@ -175,7 +178,7 @@ const PlansTab = ({ selectedDate }) => {
 
   const collapseMenu = () => {
     Animated.timing(menuHeight, {
-      toValue: 375,
+      toValue: Platform.OS === 'android' ? 200 : 375,
       duration: 400,
       useNativeDriver: false,
     }).start();
@@ -293,7 +296,13 @@ const PlansTab = ({ selectedDate }) => {
   return (
     <Animated.View
       {...panResponder.panHandlers}
-      style={[styles.tabContainer, { height: menuHeight }]}
+      style={[
+        styles.tabContainer,
+        {
+          height: menuHeight,
+          bottom: Platform.OS === 'android' ? -10 : -30,
+        },
+      ]}
       onLayout={onLayout}
     >
       <LinearGradient
@@ -321,7 +330,7 @@ const PlansTab = ({ selectedDate }) => {
               >
                 <FontAwesome5
                   name="plus"
-                  size="18"
+                  size={18}
                   color="#e2baa1"
                   style={{ transform: [{ rotate: '45deg' }] }}
                 />
@@ -461,7 +470,7 @@ const PlansTab = ({ selectedDate }) => {
                   });
                 }}
               >
-                <FontAwesome5 name="plus" size="15" color="#e2baa1" />
+                <FontAwesome5 name="plus" size={15} color="#e2baa1" />
               </TouchableOpacity>
             </View>
             {/* toggle completed task view button */}
@@ -480,7 +489,7 @@ const PlansTab = ({ selectedDate }) => {
               >
                 <FontAwesome5
                   name="check"
-                  size="15"
+                  size={15}
                   color={showCompletedTasks ? '#3657c1' : '#e2baa1'}
                 />
               </TouchableOpacity>
@@ -702,7 +711,6 @@ const styles = StyleSheet.create({
   tabContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: -30,
     opacity: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
