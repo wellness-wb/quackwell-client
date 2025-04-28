@@ -1,7 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { awardBadge, hasBadge, BadgeCatalog } from '../utils/BadgeManager.js';
-import Modal from 'react-native-modal';
+import {
+  awardBadge,
+  hasBadge,
+  BadgeCatalog,
+} from '../components/BadgeManager.js';
+import { Modal } from 'react-native';
 
 import {
   ImageBackground,
