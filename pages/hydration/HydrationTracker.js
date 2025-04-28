@@ -141,15 +141,6 @@ const HydrationTracker = ({ navigation }) => {
 
   const handleSetNewGoal = async () => {
     await AsyncStorage.removeItem('hydration_goal');
-    await AsyncStorage.setItem(
-      CURRENT_STORAGE_KEY,
-      JSON.stringify({
-        value: 0,
-        date: new Date().toISOString().split('T')[0],
-      }),
-    ); // Reset current hydration to 0 for today
-
-    setCurrentHydration(0); // Reset state to 0
     navigation.replace('HydrationMain');
   };
 
