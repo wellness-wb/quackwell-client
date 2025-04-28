@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, ImageBackground, StyleSheet } from 'react-native';
+import { Animated, ImageBackground, Keyboard, StyleSheet } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -15,6 +15,29 @@ const HydrationMain = ({ navigation }) => {
   const STORAGE_KEY = 'hydration_goal';
   const [showStartGif, setShowStartGif] = useState(false);
   const fadeStartAnim = useRef(new Animated.Value(1)).current;
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setIsKeyboardVisible(true);
+      },
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setIsKeyboardVisible(false);
+      },
+    );
+
+    // 컴포넌트가 언마운트될 때 리스너 제거
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const loadData = async () => {
@@ -84,7 +107,10 @@ const HydrationMain = ({ navigation }) => {
           style={[styles.startGif, { opacity: fadeStartAnim }]}
         />
       )}
-      <MenuBar navigation={navigation} activeScreen="HydrationMain" />
+
+      {!isKeyboardVisible && (
+        <MenuBar navigation={navigation} activeScreen="HydrationMain" />
+      )}
     </ImageBackground>
   );
 };
