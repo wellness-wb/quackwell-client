@@ -6,6 +6,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import MenuBar from '../components/MenuBar';
+import UpperMenu from '../components/UpperMenu';
 import HydrationInit from './HydrationInit';
 import HydrationTracker from './HydrationTracker';
 
@@ -66,6 +67,8 @@ const HydrationMain = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
+      <UpperMenu navigation={navigation} />
+
       {isWaterIntakeSet ? (
         <HydrationTracker
           onResetWaterIntake={() => setIsWaterIntakeSet(false)}
@@ -78,7 +81,7 @@ const HydrationMain = ({ navigation }) => {
       {showStartGif && (
         <Animated.Image
           source={require('../../assets/calm_happy.gif')}
-          style={[styles.startGif, { opacity: fadeStartAnim }]} // Apply fade effect
+          style={[styles.startGif, { opacity: fadeStartAnim }]}
         />
       )}
       <MenuBar navigation={navigation} activeScreen="HydrationMain" />
