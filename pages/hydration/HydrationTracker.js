@@ -1,7 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { awardBadge, hasBadge, BadgeCatalog } from '../utils/BadgeManager.js';
-import Modal from 'react-native-modal';
+import {
+  awardBadge,
+  hasBadge,
+  BadgeCatalog,
+} from '../components/BadgeManager.js';
+import { Modal } from 'react-native';
 
 import {
   ImageBackground,
@@ -24,7 +28,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import UpperMenu from '../components/UpperMenu';
-import { updateHydrationHistory } from '../components/HydrationContext';
+import { updateHydrationHistory } from './components/HydrationContext';
 
 const HydrationTracker = ({ navigation }) => {
   const [hydrationGoal, setHydrationGoal] = useState(0);
@@ -122,42 +126,49 @@ const HydrationTracker = ({ navigation }) => {
 
   const handleAddWater = async () => {
     const input = parseFloat(inputHydration);
-    if (!isNaN(input) && input > 0) {
-      const newHydration = Math.min(currentHydration + input, hydrationGoal);
-      setCurrentHydration(newHydration);
-      setInputHydration('');
-      Keyboard.dismiss();
+    if (isNaN(input) || input <= 0) {
+      alert('Please enter a valid amount!');
+      return;
+    }
 
-      const today = new Date().toISOString().split('T')[0];
+    const newHydration = Math.min(currentHydration + input, hydrationGoal);
+    setCurrentHydration(newHydration);
+    setInputHydration('');
+    Keyboard.dismiss();
 
-      // Save the updated hydration value with today's date
-      await AsyncStorage.setItem(
-        CURRENT_STORAGE_KEY,
-        JSON.stringify({ value: newHydration, date: today }),
-      );
+    const today = new Date().toISOString().split('T')[0];
 
-      if (newHydration >= hydrationGoal) {
-        if (newHydration >= 4) {
-          setShowConfetti(true);
-          setTimeout(() => {
-            setShowConfetti(false);
-          }, 3000);
+    // Save the updated hydration value with today's date
+    await AsyncStorage.setItem(
+      CURRENT_STORAGE_KEY,
+      JSON.stringify({ value: newHydration, date: today }),
+    );
+
+    if (newHydration >= hydrationGoal) {
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000);
+
+      // badge logic
+      const goalInLitres =
+        unit === 'fl oz' ? hydrationGoal / 33.814 : hydrationGoal;
+
+      if (goalInLitres >= 4) {
+        let badge = await awardBadge('aquaholic');
+
+        // if we're in development *and* the user already had it,
+        // still fetch the catalog entry so we can pop the modal
+        if (__DEV__ && !badge) {
+          badge = BadgeCatalog.aquaholic;
         }
 
-        // badge logic
-        const goalInLitres =
-          unit === 'fl oz' ? hydrationGoal / 33.814 : hydrationGoal;
-        if (goalInLitres <= 4) {
-          const badge = await awardBadge('aquaholic');
-          if (badge) {
-            setBadgePopup(badge); // celebration modal
-            setHasAquaholic(true); // update the pill immediately
-          }
+        if (badge) {
+          setBadgePopup(badge); // celebration modal
+          setHasAquaholic(true); // update the pill immediately
         }
-        await updateHydrationHistory(newHydration, hydrationGoal);
-      } else {
-        alert('Please enter a valid amount!');
       }
+      await updateHydrationHistory(newHydration, hydrationGoal);
     }
   };
   const handleSetNewGoal = async () => {
@@ -200,8 +211,10 @@ const HydrationTracker = ({ navigation }) => {
 
         {/* celebration modal */}
         <Modal
-          isVisible={!!badgePopup}
-          onBackdropPress={() => setBadgePopup(null)}
+          visible={!!badgePopup}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setBadgePopup(null)}
         >
           {badgePopup && (
             <View style={styles.badgeModal}>
