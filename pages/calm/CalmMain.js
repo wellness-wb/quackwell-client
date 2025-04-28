@@ -1,5 +1,6 @@
 import { Audio } from 'expo-av';
-import React, { useCallback, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import {
   Animated,
   ImageBackground,
@@ -18,87 +19,269 @@ import SoundFunction from './components/SoundFunction';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
 
+// Constants
+const SOUND_OPTIONS = ['Raining', 'Suzume Soundtrack', 'Ocean Waves'];
+const QUICK_OPTIONS = [
+  { label: '10:00', duration: 600 },
+  { label: '15:00', duration: 900 },
+  { label: '30:00', duration: 1800 },
+];
+
+// Components
+const SoundControls = memo(
+  ({
+    sound,
+    isSoundPlaying,
+    showSoundOptions,
+    onToggleSound,
+    onToggleOptions,
+    onSelectSound,
+  }) => (
+    <View style={styles.headphonesContainer}>
+      <View style={styles.headphonesRow}>
+        {sound && (
+          <TouchableOpacity onPress={onToggleSound}>
+            <FontAwesome
+              name={isSoundPlaying ? 'pause' : 'play'}
+              style={styles.playButton}
+            />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={styles.iconButton} onPress={onToggleOptions}>
+          <FontAwesome name="headphones" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {showSoundOptions && (
+        <View style={styles.dropdown}>
+          {SOUND_OPTIONS.map((soundOption) => (
+            <TouchableOpacity
+              key={soundOption}
+              onPress={() => onSelectSound(soundOption)}
+              style={styles.dropdownItem}
+            >
+              <Text style={styles.dropdownText}>{soundOption}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </View>
+  ),
+);
+
+const TimerControls = memo(
+  ({ timerStatus, onStart, onCancel, onPause, onResume }) => (
+    <View style={styles.controlButtonsContainer}>
+      {!timerStatus.isRunning && (
+        <TouchableOpacity style={styles.button} onPress={onStart}>
+          <Text style={styles.buttonText}>Start Timer</Text>
+        </TouchableOpacity>
+      )}
+
+      {timerStatus.isRunning && !timerStatus.isPaused && (
+        <>
+          <TouchableOpacity style={styles.button} onPress={onCancel}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onPause}>
+            <Text style={styles.buttonText}>Pause</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      {timerStatus.isRunning && timerStatus.isPaused && (
+        <>
+          <TouchableOpacity style={styles.button} onPress={onCancel}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onResume}>
+            <Text style={styles.buttonText}>Resume</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  ),
+);
+
+const AnimationGif = memo(({ source, style, opacity, autoPlay, loop }) => (
+  <Animated.Image
+    source={source}
+    style={[style, { opacity }]}
+    autoPlay={autoPlay}
+    loop={loop}
+  />
+));
+
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
-  const [timerStatus, setTimerStatus] = useState({
-    isRunning: false,
-    isPaused: false,
+  const [state, setState] = useState({
+    timer: {
+      isRunning: false,
+      isPaused: false,
+    },
+    sound: {
+      instance: null,
+      selected: null,
+      isPlaying: false,
+      showOptions: false,
+    },
+    animation: {
+      showSad: false,
+      fadeValue: new Animated.Value(1),
+    },
   });
 
-  const [showSadGif, setShowSadGif] = useState(false);
-  const fadeSadAnim = useRef(new Animated.Value(1)).current;
-
-  const [sound, setSound] = useState(null);
-  const [selectedSound, setSelectedSound] = useState(null);
-  const [showSoundOptions, setShowSoundOptions] = useState(false);
-  const [isSoundPlaying, setIsSoundPlaying] = useState(false);
-
   const handleStatusChange = useCallback((status) => {
-    setTimerStatus(status);
+    setState((prev) => ({
+      ...prev,
+      timer: status,
+    }));
   }, []);
 
-  const handleQuickOptionPress = (duration) => {
-    if (timerRef.current) {
-      timerRef.current.updateTime(duration);
-      if (!timerStatus.isRunning) {
-        setTimeout(() => {
-          timerRef.current.startTimer();
-        }, 50); // short delay to allow state update
+  const handleQuickOptionPress = useCallback(
+    (duration) => {
+      if (timerRef.current) {
+        timerRef.current.updateTime(duration);
+        if (!state.timer.isRunning) {
+          setTimeout(() => {
+            timerRef.current.startTimer();
+          }, 50);
+        }
       }
-    }
-  };
+    },
+    [state.timer.isRunning],
+  );
 
-  const handleStartTimer = () => {
+  const handleStartTimer = useCallback(() => {
     if (timerRef.current) {
       timerRef.current.startTimer();
     }
-  };
+  }, []);
 
-  const handleCancelTimer = async () => {
+  const handleCancelTimer = useCallback(async () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
     }
-    setShowSadGif(true);
-    if (sound) {
+
+    setState((prev) => ({
+      ...prev,
+      animation: {
+        ...prev.animation,
+        showSad: true,
+      },
+    }));
+
+    if (state.sound.instance) {
       try {
-        await sound.stopAsync();
-        await sound.unloadAsync();
-        setSound(null);
-        setIsSoundPlaying(false); // ✅ important to reflect stopped state
+        await state.sound.instance.stopAsync();
+        await state.sound.instance.unloadAsync();
+        setState((prev) => ({
+          ...prev,
+          sound: {
+            ...prev.sound,
+            instance: null,
+            isPlaying: false,
+          },
+        }));
       } catch (e) {
-        console.error('❌ Error stopping sound:', e);
+        console.error('Error stopping sound:', e);
       }
     }
 
-    Animated.timing(fadeSadAnim, {
-      toValue: 1, // Fade in
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
-
-    Animated.timing(fadeSadAnim, {
-      toValue: 0,
-      duration: 4000,
-      useNativeDriver: true,
-    }).start();
+    const fadeAnim = state.animation.fadeValue;
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 4000,
+        useNativeDriver: true,
+      }),
+    ]).start();
 
     setTimeout(() => {
-      setShowSadGif(false);
-      fadeSadAnim.setValue(1);
+      setState((prev) => ({
+        ...prev,
+        animation: {
+          ...prev.animation,
+          showSad: false,
+          fadeValue: new Animated.Value(1),
+        },
+      }));
     }, 4000);
-  };
+  }, [state.sound.instance, state.animation.fadeValue]);
 
-  const handlePauseTimer = () => {
+  const handlePauseTimer = useCallback(() => {
     if (timerRef.current) {
       timerRef.current.pauseTimer();
     }
-  };
+  }, []);
 
-  const handleResumeTimer = () => {
+  const handleResumeTimer = useCallback(() => {
     if (timerRef.current) {
       timerRef.current.resumeTimer();
     }
-  };
+  }, []);
+
+  const handleToggleSound = useCallback(async () => {
+    try {
+      if (state.sound.isPlaying) {
+        await state.sound.instance.pauseAsync();
+      } else {
+        await state.sound.instance.playAsync();
+      }
+      setState((prev) => ({
+        ...prev,
+        sound: {
+          ...prev.sound,
+          isPlaying: !prev.sound.isPlaying,
+        },
+      }));
+    } catch (err) {
+      console.error('Failed to toggle sound:', err);
+    }
+  }, [state.sound.instance, state.sound.isPlaying]);
+
+  const handleSelectSound = useCallback(
+    async (soundOption) => {
+      try {
+        setState((prev) => ({
+          ...prev,
+          sound: {
+            ...prev.sound,
+            showOptions: false,
+          },
+        }));
+
+        if (state.sound.instance) {
+          await state.sound.instance.stopAsync();
+          await state.sound.instance.unloadAsync();
+        }
+
+        const file = SoundFunction.getSoundFile(soundOption);
+        const { sound: newSound } = await Audio.Sound.createAsync(file, {
+          shouldPlay: true,
+          isLooping: true,
+        });
+
+        setState((prev) => ({
+          ...prev,
+          sound: {
+            ...prev.sound,
+            instance: newSound,
+            selected: soundOption,
+            isPlaying: true,
+          },
+        }));
+      } catch (error) {
+        console.error('Error playing sound:', error);
+      }
+    },
+    [state.sound.instance],
+  );
 
   return (
     <ImageBackground
@@ -106,83 +289,22 @@ const CalmMain = ({ navigation }) => {
       style={styles.bgContainer}
       resizeMode="cover"
     >
-      <View style={styles.headphonesContainer}>
-        <View style={styles.headphonesRow}>
-          {/* Play/Pause Sound */}
-          {sound && (
-            <TouchableOpacity
-              onPress={async () => {
-                try {
-                  if (isSoundPlaying) {
-                    await sound.pauseAsync();
-                    setIsSoundPlaying(false);
-                  } else {
-                    await sound.playAsync();
-                    setIsSoundPlaying(true);
-                  }
-                } catch (err) {
-                  console.error('Failed to toggle sound:', err);
-                }
-              }}
-            >
-              <FontAwesome
-                name={isSoundPlaying ? 'pause' : 'play'}
-                style={styles.playButton}
-              />
-            </TouchableOpacity>
-          )}
-          {/* Headphones Button */}
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => setShowSoundOptions(!showSoundOptions)}
-          >
-            <FontAwesome name="headphones" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        {showSoundOptions && (
-          <View style={styles.dropdown}>
-            {['Raining', 'Suzume Soundtrack', 'Ocean Waves'].map(
-              (soundOption) => (
-                <TouchableOpacity
-                  key={soundOption}
-                  onPress={async () => {
-                    try {
-                      setShowSoundOptions(false);
-
-                      if (sound) {
-                        await sound.stopAsync();
-                        await sound.unloadAsync();
-                        setSound(null);
-                      }
-
-                      const file = SoundFunction.getSoundFile(soundOption);
-                      console.log('Selected sound file:', file);
-
-                      const { sound: newSound } = await Audio.Sound.createAsync(
-                        file,
-                        {
-                          shouldPlay: true,
-                          isLooping: true,
-                        },
-                      );
-
-                      setSound(newSound);
-                      await newSound.playAsync();
-                      setIsSoundPlaying(true);
-                    } catch (error) {
-                      console.error('Error playing sound:', error);
-                    }
-                  }}
-                  style={styles.dropdownItem}
-                >
-                  <Text style={styles.dropdownText}>{soundOption}</Text>
-                </TouchableOpacity>
-              ),
-            )}
-          </View>
-        )}
-      </View>
+      <SoundControls
+        sound={state.sound.instance}
+        isSoundPlaying={state.sound.isPlaying}
+        showSoundOptions={state.sound.showOptions}
+        onToggleSound={handleToggleSound}
+        onToggleOptions={() =>
+          setState((prev) => ({
+            ...prev,
+            sound: {
+              ...prev.sound,
+              showOptions: !prev.sound.showOptions,
+            },
+          }))
+        }
+        onSelectSound={handleSelectSound}
+      />
 
       <View style={styles.content}>
         <Timer
@@ -191,86 +313,83 @@ const CalmMain = ({ navigation }) => {
           onStatusChange={handleStatusChange}
         />
 
-        {!timerStatus.isRunning && (
+        {!state.timer.isRunning && (
           <View style={styles.quickOptionsContainer}>
-            <TimerQuickOption
-              label="10:00"
-              duration={600}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="15:00"
-              duration={900}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="30:00"
-              duration={1800}
-              onPress={handleQuickOptionPress}
-            />
+            {QUICK_OPTIONS.map(({ label, duration }) => (
+              <TimerQuickOption
+                key={label}
+                label={label}
+                duration={duration}
+                onPress={handleQuickOptionPress}
+              />
+            ))}
           </View>
         )}
 
-        <View style={styles.controlButtonsContainer}>
-          {!timerStatus.isRunning && (
-            <TouchableOpacity style={styles.button} onPress={handleStartTimer}>
-              <Text style={styles.buttonText}>Start Timer</Text>
-            </TouchableOpacity>
-          )}
-
-          {timerStatus.isRunning && !timerStatus.isPaused && (
-            <>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleCancelTimer}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handlePauseTimer}
-              >
-                <Text style={styles.buttonText}>Pause</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {timerStatus.isRunning && timerStatus.isPaused && (
-            <>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleCancelTimer}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleResumeTimer}
-              >
-                <Text style={styles.buttonText}>Resume</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        <TimerControls
+          timerStatus={state.timer}
+          onStart={handleStartTimer}
+          onCancel={handleCancelTimer}
+          onPause={handlePauseTimer}
+          onResume={handleResumeTimer}
+        />
       </View>
-      {showSadGif && (
-        <Animated.Image
+
+      {state.animation.showSad && (
+        <AnimationGif
           source={require('../../assets/calm_sad.gif')}
-          style={[styles.sadGif, { opacity: fadeSadAnim }]} // Apply fade effect
+          style={styles.sadGif}
+          opacity={state.animation.fadeValue}
         />
       )}
 
-      {timerStatus.isRunning && (
-        <Animated.Image
+      {state.timer.isRunning && (
+        <AnimationGif
           source={require('../../assets/calm_chilling.gif')}
+          style={styles.timerAnimation}
+          opacity={1}
           autoPlay
           loop
-          style={styles.timerAnimation}
         />
       )}
 
       <MenuBar navigation={navigation} activeScreen="CalmMain" />
     </ImageBackground>
   );
+};
+
+CalmMain.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }).isRequired,
+};
+
+SoundControls.propTypes = {
+  sound: PropTypes.object,
+  isSoundPlaying: PropTypes.bool.isRequired,
+  showSoundOptions: PropTypes.bool.isRequired,
+  onToggleSound: PropTypes.func.isRequired,
+  onToggleOptions: PropTypes.func.isRequired,
+  onSelectSound: PropTypes.func.isRequired,
+};
+
+TimerControls.propTypes = {
+  timerStatus: PropTypes.shape({
+    isRunning: PropTypes.bool.isRequired,
+    isPaused: PropTypes.bool.isRequired,
+  }).isRequired,
+  onStart: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onPause: PropTypes.func.isRequired,
+  onResume: PropTypes.func.isRequired,
+};
+
+AnimationGif.propTypes = {
+  source: PropTypes.any.isRequired,
+  style: PropTypes.object.isRequired,
+  opacity: PropTypes.any,
+  autoPlay: PropTypes.bool,
+  loop: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({
@@ -338,7 +457,6 @@ const styles = StyleSheet.create({
     fontSize: hp('2%'),
     marginTop: hp('1%'),
   },
-
   iconButton: {
     backgroundColor: '#739CEF',
     padding: 14,
@@ -365,17 +483,14 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
   },
-
   dropdownItem: {
     paddingVertical: 8,
     paddingHorizontal: 12,
   },
-
   dropdownText: {
     fontSize: 14,
     color: '#333',
   },
-
   sadGif: {
     position: 'absolute',
     bottom: hp('9%'),
@@ -394,4 +509,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CalmMain;
+export default memo(CalmMain);
