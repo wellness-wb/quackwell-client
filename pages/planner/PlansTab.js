@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Animated,
+  Keyboard,
   PanResponder,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -35,9 +37,10 @@ const PlansTab = ({ selectedDate }) => {
   const [showForm, setShowForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
+  const [isTaskNameFocused, setIsTaskNameFocused] = useState(false);
 
   // Form state
-  const [name, setName] = useState('Task Name');
+  const [name, setName] = useState('');
   const [date, setDate] = useState('Set Date');
   const [displayDate, setDisplayDate] = useState('Set Date');
 
@@ -282,6 +285,11 @@ const PlansTab = ({ selectedDate }) => {
     }
   };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+    setIsTaskNameFocused(false);
+  };
+
   return (
     <Animated.View
       {...panResponder.panHandlers}
@@ -296,127 +304,146 @@ const PlansTab = ({ selectedDate }) => {
       >
         {showForm ? (
           // Form for new task input
-          <View style={styles.formContainer}>
-            {/* cancel task input */}
-            <TouchableOpacity
-              style={[styles.planTabButton, { right: 10 }]}
-              onPress={() => {
-                setShowForm(false);
-                setErrors({
-                  name: false,
-                  date: false,
-                  dueTime: false,
-                });
-              }}
-            >
-              <FontAwesome5
-                name="plus"
-                size="18"
-                color="#e2baa1"
-                style={{ transform: [{ rotate: '45deg' }] }}
-              />
-            </TouchableOpacity>
-
-            {/* task name input */}
-            <TextInput
-              placeholder="(Task Name)"
-              style={styles.titleInput}
-              value={name}
-              onChangeText={setName}
-              placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
-            />
-
-            {/* date input */}
-            <TouchableOpacity
-              style={[styles.selectDate, errors.date && styles.errorInput]}
-              onPress={() => setDatePickerVisibility(true)}
-            >
-              <FontAwesome5
-                name="calendar-alt"
-                solid
-                size={20}
-                color={'#e2baa1'}
-              />
-              <Text
-                style={[
-                  styles.dateTimeText,
-                  { color: errors.date ? '#e34060' : '#e2baa1' },
-                ]}
-              >
-                {displayDate}
-              </Text>
-            </TouchableOpacity>
-
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              themeVariant="light"
-              minimumDate={new Date()}
-              onConfirm={(date) => {
-                setDate(date.toISOString().split('T')[0]);
-                setDisplayDate(
-                  date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  }),
-                );
-                setDatePickerVisibility(false);
-              }}
-              onCancel={() => setDatePickerVisibility(false)}
-            />
-
-            {/* time picker */}
-            <View style={styles.timeContainer}>
+          <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <View style={styles.formContainer}>
+              {/* cancel task input */}
               <TouchableOpacity
-                style={[styles.selectDate, errors.dueTime && styles.errorInput]}
-                onPress={() => setDueTimePickerVisibility(true)}
+                style={[styles.planTabButton, { right: 10 }]}
+                onPress={() => {
+                  dismissKeyboard();
+                  setShowForm(false);
+                  setErrors({
+                    name: false,
+                    date: false,
+                    dueTime: false,
+                  });
+                }}
               >
-                <FontAwesome5 name="clock" solid size={20} color={'#e2baa1'} />
+                <FontAwesome5
+                  name="plus"
+                  size="18"
+                  color="#e2baa1"
+                  style={{ transform: [{ rotate: '45deg' }] }}
+                />
+              </TouchableOpacity>
+
+              {/* task name input */}
+              <TextInput
+                placeholder="Task Name"
+                style={[
+                  styles.titleInput,
+                  isTaskNameFocused && styles.titleInputFocused,
+                ]}
+                value={name}
+                onChangeText={setName}
+                placeholderTextColor={errors.name ? '#e34060' : '#4462e3'}
+                onFocus={() => setIsTaskNameFocused(true)}
+                onBlur={() => setIsTaskNameFocused(false)}
+              />
+
+              {/* date input */}
+              <TouchableOpacity
+                style={[styles.selectDate, errors.date && styles.errorInput]}
+                onPress={() => {
+                  dismissKeyboard();
+                  setDatePickerVisibility(true);
+                }}
+              >
+                <FontAwesome5
+                  name="calendar-alt"
+                  solid
+                  size={20}
+                  color={'#e2baa1'}
+                />
                 <Text
                   style={[
                     styles.dateTimeText,
-                    {
-                      color: errors.dueTime ? '#e34060' : '#e2baa1',
-                    },
+                    { color: errors.date ? '#e34060' : '#e2baa1' },
                   ]}
                 >
-                  {dueTime !== 'Due Time' ? dueTime : 'Due Time'}
+                  {displayDate}
                 </Text>
               </TouchableOpacity>
 
               <DateTimePickerModal
-                isVisible={isDueTimePickerVisible}
-                mode="time"
+                isVisible={isDatePickerVisible}
+                mode="date"
                 themeVariant="light"
-                onConfirm={(selectedTime) => {
-                  setDueTime(
-                    selectedTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
+                minimumDate={new Date()}
+                onConfirm={(date) => {
+                  setDate(date.toISOString().split('T')[0]);
+                  setDisplayDate(
+                    date.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
                     }),
                   );
-                  setDueTimePickerVisibility(false);
+                  setDatePickerVisibility(false);
                 }}
-                onCancel={() => setDueTimePickerVisibility(false)}
+                onCancel={() => setDatePickerVisibility(false)}
               />
+
+              {/* time picker */}
+              <View style={styles.timeContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.selectDate,
+                    errors.dueTime && styles.errorInput,
+                  ]}
+                  onPress={() => setDueTimePickerVisibility(true)}
+                >
+                  <FontAwesome5
+                    name="clock"
+                    solid
+                    size={20}
+                    color={'#e2baa1'}
+                  />
+                  <Text
+                    style={[
+                      styles.dateTimeText,
+                      {
+                        color: errors.dueTime ? '#e34060' : '#e2baa1',
+                      },
+                    ]}
+                  >
+                    {dueTime !== 'Due Time' ? dueTime : 'Due Time'}
+                  </Text>
+                </TouchableOpacity>
+
+                <DateTimePickerModal
+                  isVisible={isDueTimePickerVisible}
+                  mode="time"
+                  themeVariant="light"
+                  onConfirm={(selectedTime) => {
+                    setDueTime(
+                      selectedTime.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }),
+                    );
+                    setDueTimePickerVisibility(false);
+                  }}
+                  onCancel={() => setDueTimePickerVisibility(false)}
+                />
+              </View>
+
+              {/* submit button */}
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}
+                disabled={isLoading}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isLoading ? 'Saving...' : 'Submit'}
+                </Text>
+              </TouchableOpacity>
+
+              {Object.values(errors).some((error) => error) && (
+                <Text style={styles.errorMessage}>Invalid Input</Text>
+              )}
             </View>
-
-            {/* submit button */}
-            <TouchableOpacity
-              style={styles.submitButton}
-              onPress={handleSubmit}
-              disabled={isLoading}
-            >
-              <Text style={styles.submitButtonText}>
-                {isLoading ? 'Saving...' : 'Submit'}
-              </Text>
-            </TouchableOpacity>
-
-            {Object.values(errors).some((error) => error) && (
-              <Text style={styles.errorMessage}>Invalid Input</Text>
-            )}
-          </View>
+          </TouchableWithoutFeedback>
         ) : (
           <>
             {/* task view  */}
@@ -705,7 +732,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButton: {
-    backgroundColor: '#153CE6',
+    backgroundColor: '#3657c1',
     padding: 15,
     borderRadius: 20,
     alignItems: 'center',
@@ -754,6 +781,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter',
     fontWeight: 'bold',
     bottom: 25,
+    borderRadius: 10,
+  },
+  titleInputFocused: {
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderWidth: 1,
+    borderColor: '#3657c1',
+    shadowColor: '#3657c1',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   errorMessage: {
     color: '#e34060',
