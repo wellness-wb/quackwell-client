@@ -47,7 +47,7 @@ const CreatePost = ({ navigation }) => {
       if (error) throw error;
 
       Alert.alert('Success', 'Post created successfully.');
-      navigation.goBack();
+      navigation.navigate('Feed');
     } catch (error) {
       console.error('Error creating post:', error);
       Alert.alert('Error', 'Error occurred while creating a post.');

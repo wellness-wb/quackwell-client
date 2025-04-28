@@ -155,7 +155,7 @@ const Feed = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.createPostButton}
-          onPress={() => navigation.navigate('CreatePost', { addNewPost })}
+          onPress={() => navigation.navigate('CreatePost')}
         >
           <LinearGradient
             colors={['rgba(164, 205, 241, 0.77)', 'rgba(243, 202, 175, 0.77)']}
