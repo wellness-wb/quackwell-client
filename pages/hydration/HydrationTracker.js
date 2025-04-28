@@ -1,6 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { awardBadge, hasBadge, BadgeCatalog } from '../utils/BadgeManager.js';
+import {
+  awardBadge,
+  hasBadge,
+  BadgeCatalog,
+} from '../../utils/BadgeManager.js';
 import Modal from 'react-native-modal';
 
 import {
@@ -24,7 +28,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import GradientButton from '../components/GradientButton';
 import UpperMenu from '../components/UpperMenu';
-import { updateHydrationHistory } from '../components/HydrationContext';
+import { updateHydrationHistory } from './components/HydrationContext';
 
 const HydrationTracker = ({ navigation }) => {
   const [hydrationGoal, setHydrationGoal] = useState(0);
