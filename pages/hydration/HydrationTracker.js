@@ -156,7 +156,7 @@ const HydrationTracker = ({ navigation }) => {
       const goalInLitres =
         unit === 'fl oz' ? hydrationGoal / 33.814 : hydrationGoal;
 
-      if (goalInLitres >= 4) {
+      if (hydrationGoal >= 4) {
         let badge = await awardBadge('aquaholic');
 
         // if we're in development *and* the user already had it,
