@@ -3,9 +3,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
   ImageBackground,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -38,7 +38,7 @@ const TrophyPage = ({ navigation }) => {
         </LinearGradient>
       </TouchableOpacity>
 
-      <View style={styles.trophyList}>
+      <ScrollView contentContainerStyle={styles.trophyList}>
         {/* Trophy with Custom GIF */}
         <TrophyItem
           title="Aquaholic"
@@ -64,7 +64,7 @@ const TrophyPage = ({ navigation }) => {
           image={require('../../assets/roommates.gif')}
           progress={0.1}
         />
-      </View>
+      </ScrollView>
 
       <MenuBar navigation={navigation} activeScreen="TrophyPage" />
     </ImageBackground>
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    top: hp('25%'),
   },
   backButton: {
     top: hp('8%'),
