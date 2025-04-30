@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   ImageBackground,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -155,7 +156,7 @@ const Feed = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.createPostButton}
-          onPress={() => navigation.navigate('CreatePost', { addNewPost })}
+          onPress={() => navigation.navigate('CreatePost')}
         >
           <LinearGradient
             colors={['rgba(164, 205, 241, 0.77)', 'rgba(243, 202, 175, 0.77)']}
@@ -200,11 +201,17 @@ const styles = StyleSheet.create({
     height: wp('12%'),
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
   createPostButton: {
     position: 'absolute',
@@ -219,11 +226,17 @@ const styles = StyleSheet.create({
     height: wp('15%'),
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 5,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+      },
+      android: {
+        elevation: 0,
+      },
+    }),
   },
 });
 

@@ -4,6 +4,7 @@ import { supabase } from '../supabase';
 const AuthContext = createContext({
   session: null,
   isLoading: true,
+  signIn: async () => {},
 });
 
 export function AuthProvider({ children }) {
@@ -33,7 +34,20 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const value = { session, isLoading };
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  };
+
+  const value = { session, isLoading, signIn };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

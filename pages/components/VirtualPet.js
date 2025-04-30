@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  getCompletedPlanCount,
   getCalmTimeAverage,
+  getCompletedPlanCount,
   getHydrationPercentage,
 } from '../../utils/petScores';
 
@@ -10,6 +10,7 @@ const neutralGifs = [
   require('../../assets/blinking.gif'),
   require('../../assets/shifting.gif'),
   require('../../assets/winking.gif'),
+  require('../../assets/water.gif'),
 ];
 
 const states = [
@@ -24,6 +25,11 @@ const VirtualPet = () => {
   const [plannerScore, setPlannerScore] = useState(0);
   const [calmScore, setCalmScore] = useState(0);
   const [hydrationScore, setHydrationScore] = useState(0);
+
+  const [plannerModifier, setPlannerModifier] = useState(0); //for dev menu only
+  const [calmModifier, setCalmModifier] = useState(0); //for dev menu only
+  const [hydrationModifier, setHydrationModifier] = useState(0); //for dev menu only
+
   const [petState, setPetState] = useState(2); // default to neutral
   const [showDevMenu, setShowDevMenu] = useState(false);
   const [stateScore, setStateScore] = useState(0.5);
@@ -31,60 +37,69 @@ const VirtualPet = () => {
 
   useEffect(() => {
     async function fetchScores() {
-      calmTimeAverage = await getCalmTimeAverage();
-      hydrationPercentage = await getHydrationPercentage();
-      completedPlanCount = await getCompletedPlanCount();
-      setPlannerScore(completedPlanCount);
-      setCalmScore(calmTimeAverage);
-      setHydrationScore(hydrationPercentage);
-    }
+      try {
+        const completedPlanCount = await getCompletedPlanCount();
+        const calmTimeAverage = await getCalmTimeAverage();
+        const hydrationPercentage = await getHydrationPercentage();
 
-    fetchScores();
-
-    getStateScore(plannerScore, calmScore, hydrationScore);
-    const state = getPetState();
-
-    // If the state is changing (it’s different from the current state), update pet state
-    if (state !== petState) {
-      setPetState(state);
-
-      // Randomize the neutral GIF only when entering neutral state (state 2)
-      if (state === 2) {
-        const randomGif =
-          neutralGifs[Math.floor(Math.random() * neutralGifs.length)];
-        setCurrentNeutralGif(randomGif);
+        setPlannerScore(completedPlanCount);
+        setCalmScore(calmTimeAverage);
+        setHydrationScore(hydrationPercentage);
+      } catch (e) {
+        console.error('fetchScores()', e);
       }
     }
-  }, [plannerScore, calmScore, hydrationScore, petState]);
+    fetchScores();
+  }, []);
 
-  const getStateScore = (plannerScore, calmScore, hydrationScore) => {
-    const normPlanner = Math.max(0, Math.min(1, plannerScore / 5));
-    const normCalm = Math.max(0, Math.min(1, calmScore / 60));
-    const normHydration = Math.max(0, Math.min(1, hydrationScore / 100));
+  useEffect(() => {
+    // 1) Re-normalize every metric including the dev-menu modifiers:
+    const normPlanner = Math.max(
+      0,
+      Math.min(1, (plannerScore + plannerModifier) / 5),
+    );
+    const normCalm = Math.max(0, Math.min(1, (calmScore + calmModifier) / 60));
+    const normHydration = Math.max(
+      0,
+      Math.min(1, (hydrationScore + hydrationModifier) / 100),
+    );
 
-    setStateScore(0.4 * normPlanner + 0.3 * normCalm + 0.3 * normHydration);
-  };
+    const composite = 0.4 * normPlanner + 0.3 * normCalm + 0.3 * normHydration;
+    setStateScore(composite);
 
-  const getPetState = () => {
-    if (stateScore < 0.2) return 0; // State 1: Negative
-    if (stateScore < 0.4) return 1; // State 2
-    if (stateScore < 0.6) return 2; // State 3: Neutral
-    if (stateScore < 0.8) return 3; // State 4
-    return 4; // State 5: positive
-  };
+    // 2) Derive petState from that new composite score:
+    let newState;
+    if (composite < 0.2) newState = 0;
+    else if (composite < 0.4) newState = 1;
+    else if (composite < 0.6) newState = 2;
+    else if (composite < 0.8) newState = 3;
+    else newState = 4;
+
+    if (newState !== petState) {
+      setPetState(newState);
+      if (newState === 2) {
+        setCurrentNeutralGif(
+          neutralGifs[Math.floor(Math.random() * neutralGifs.length)],
+        );
+      }
+    }
+  }, [
+    plannerScore,
+    calmScore,
+    hydrationScore,
+    plannerModifier,
+    calmModifier,
+    hydrationModifier,
+  ]);
 
   const toggleDevMenu = () => {
     setShowDevMenu((prev) => !prev);
   };
 
   const adjustScore = (type, delta) => {
-    if (type === 'planner') {
-      setPlannerScore((prev) => prev + delta);
-    } else if (type === 'calm') {
-      setCalmScore((prev) => prev + delta);
-    } else if (type === 'hydration') {
-      setHydrationScore((prev) => prev + delta);
-    }
+    if (type === 'planner') setPlannerModifier((p) => p + delta);
+    if (type === 'calm') setCalmModifier((c) => c + delta);
+    if (type === 'hydration') setHydrationModifier((h) => h + delta);
   };
 
   return (
@@ -100,7 +115,10 @@ const VirtualPet = () => {
       {showDevMenu && (
         <View style={styles.devMenu}>
           <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Planner Score: {plannerScore}</Text>
+            <Text style={styles.menuText}>
+              Planner Score:{' '}
+              {parseFloat(plannerScore + plannerModifier).toFixed(1)}
+            </Text>
             <TouchableOpacity
               onPress={() => adjustScore('planner', -1)}
               style={styles.button}
@@ -115,7 +133,9 @@ const VirtualPet = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.menuItem}>
-            <Text style={styles.menuText}>Calm Score: {calmScore}</Text>
+            <Text style={styles.menuText}>
+              Calm Score: {parseFloat(calmScore + calmModifier).toFixed(1)}
+            </Text>
             <TouchableOpacity
               onPress={() => adjustScore('calm', -3)}
               style={styles.button}
@@ -131,7 +151,8 @@ const VirtualPet = () => {
           </View>
           <View style={styles.menuItem}>
             <Text style={styles.menuText}>
-              Hydration Score: {hydrationScore}
+              Hydration Score:{' '}
+              {parseFloat(hydrationScore + hydrationModifier).toFixed(1)}
             </Text>
             <TouchableOpacity
               onPress={() => adjustScore('hydration', -5)}
@@ -146,7 +167,9 @@ const VirtualPet = () => {
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.menuItem}>State Score: {stateScore}</Text>
+          <Text style={styles.menuItem}>
+            State Score: {parseFloat(stateScore).toFixed(3)}
+          </Text>
         </View>
       )}
       {/* end dev menu */}

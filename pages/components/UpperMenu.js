@@ -1,60 +1,111 @@
 import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import PropTypes from 'prop-types';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { fetchTodosByDate } from '../../utils/todos';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEYS = {
+  GOAL: 'hydration_goal',
+  CURRENT: 'currentHydration',
+};
+
+const DEFAULT_HYDRATION_GOAL = 2000;
+
+const HydrationPill = memo(({ percent, onPress }) => (
+  <TouchableOpacity onPress={onPress}>
+    <View style={styles.hydrationAndTaskPill}>
+      <LinearGradient
+        colors={['#F3CAAF', '#A4CDF1']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.percentageBubble}
+      >
+        <Text style={styles.percentageText}>{percent}%</Text>
+      </LinearGradient>
+      <FontAwesome5 name="tint" size={24} color="#F3CAAF" />
+    </View>
+  </TouchableOpacity>
+));
+
+const TaskPill = memo(({ task, onPress }) => (
+  <TouchableOpacity onPress={onPress}>
+    <View style={styles.hydrationAndTaskPill}>
+      <Text style={styles.taskText}>📌 {task}</Text>
+    </View>
+  </TouchableOpacity>
+));
 
 const UpperMenu = ({ navigation }) => {
   const [currentHydration, setCurrentHydration] = useState(0);
-  const [hydrationGoal, setHydrationGoal] = useState(2000);
+  const [hydrationGoal, setHydrationGoal] = useState(DEFAULT_HYDRATION_GOAL);
   const [todayTask, setTodayTask] = useState(null);
+  const insets = useSafeAreaInsets();
 
-  const GOAL_STORAGE_KEY = 'hydration_goal';
-  const CURRENT_STORAGE_KEY = 'currentHydration';
-
-  const percent =
-    hydrationGoal > 0
+  const hydrationPercent = useCallback(() => {
+    return hydrationGoal > 0
       ? Math.round((currentHydration / hydrationGoal) * 100)
       : 0;
+  }, [currentHydration, hydrationGoal]);
 
-  useEffect(() => {
-    const loadHydrationData = async () => {
-      try {
-        const savedData = await AsyncStorage.getItem(GOAL_STORAGE_KEY);
-        if (savedData) {
-          const parsed = JSON.parse(savedData);
-          setHydrationGoal(parsed.goal);
-        }
+  const handleHydrationPress = useCallback(() => {
+    if (navigation?.navigate) {
+      navigation.navigate('HydrationMain');
+    }
+  }, [navigation]);
 
-        const storedCurrent = await AsyncStorage.getItem(CURRENT_STORAGE_KEY);
-        const today = new Date().toISOString().split('T')[0];
-        if (storedCurrent) {
-          const parsedCurrent = JSON.parse(storedCurrent);
-          // Compare the saved date with today's date
-          if (parsedCurrent.date === today) {
-            setCurrentHydration(parsedCurrent.value);
-          } else {
-            // reset current hydration on a new day
-            setCurrentHydration(0);
-            await AsyncStorage.setItem(
-              CURRENT_STORAGE_KEY,
-              JSON.stringify({ value: 0, date: today }),
-            );
-          }
+  const handlePlannerPress = useCallback(() => {
+    if (navigation?.navigate) {
+      navigation.navigate('PlannerMain');
+    }
+  }, [navigation]);
+
+  const loadHydrationData = useCallback(async () => {
+    try {
+      const [savedData, storedCurrent] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.GOAL),
+        AsyncStorage.getItem(STORAGE_KEYS.CURRENT),
+      ]);
+
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        setHydrationGoal(parsed.goal);
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      if (storedCurrent) {
+        const parsedCurrent = JSON.parse(storedCurrent);
+        if (parsedCurrent.date === today) {
+          setCurrentHydration(parsedCurrent.value);
         } else {
           setCurrentHydration(0);
+          await AsyncStorage.setItem(
+            STORAGE_KEYS.CURRENT,
+            JSON.stringify({ value: 0, date: today }),
+          );
         }
-      } catch (error) {
-        console.error('Error loading hydration data', error);
+      } else {
+        setCurrentHydration(0);
       }
-    };
+    } catch (error) {
+      console.error('Error loading hydration data:', error);
+    }
+  }, []);
 
-    const loadTodayTask = async () => {
+  const loadTodayTask = useCallback(async () => {
+    try {
       const today = new Date().toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -62,53 +113,72 @@ const UpperMenu = ({ navigation }) => {
       });
       const todos = await fetchTodosByDate(today);
       if (todos.length > 0) {
-        const latest = todos[0]; // Assuming the latest is first
-        setTodayTask(latest.name);
+        setTodayTask(todos[0].name);
       }
-    };
-
-    loadHydrationData();
-    loadTodayTask();
+    } catch (error) {
+      console.error('Error loading today task:', error);
+    }
   }, []);
 
+  useEffect(() => {
+    loadHydrationData();
+    loadTodayTask();
+  }, [loadHydrationData, loadTodayTask]);
+
   return (
-    <View style={styles.menu}>
+    <View
+      style={[
+        styles.menu,
+        {
+          height:
+            Platform.OS === 'ios'
+              ? 90 + insets.top / 2
+              : Platform.isPad
+                ? 100
+                : 90,
+        },
+      ]}
+    >
       <LinearGradient
         colors={['#A4CDF1', '#F3CAAF']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.gradient}
+        style={[
+          styles.gradient,
+          { paddingTop: insets.top > 0 ? insets.top / 2 : 10 },
+        ]}
       >
-        <TouchableOpacity onPress={() => navigation.replace('HydrationMain')}>
-          <View style={styles.hydrationAndTaskPill}>
-            <LinearGradient
-              colors={['#F3CAAF', '#A4CDF1']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.percentageBubble}
-            >
-              <Text style={styles.percentageText}>{percent}%</Text>
-            </LinearGradient>
-            <FontAwesome5 name="tint" size={24} color="#F3CAAF" />
-          </View>
-        </TouchableOpacity>
-
+        <HydrationPill
+          percent={hydrationPercent()}
+          onPress={handleHydrationPress}
+        />
         {todayTask && (
-          <TouchableOpacity onPress={() => navigation.replace('PlannerMain')}>
-            <View style={styles.hydrationAndTaskPill}>
-              <Text style={styles.taskText}>📌 {todayTask}</Text>
-            </View>
-          </TouchableOpacity>
+          <TaskPill task={todayTask} onPress={handlePlannerPress} />
         )}
       </LinearGradient>
     </View>
   );
 };
 
+UpperMenu.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }).isRequired,
+};
+
+HydrationPill.propTypes = {
+  percent: PropTypes.number.isRequired,
+  onPress: PropTypes.func.isRequired,
+};
+
+TaskPill.propTypes = {
+  task: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+};
+
 const styles = StyleSheet.create({
   menu: {
     width: '100%',
-    height: 130,
     position: 'absolute',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
@@ -123,10 +193,10 @@ const styles = StyleSheet.create({
   },
   gradient: {
     height: '100%',
-    //flex: 1,
     alignItems: 'flex-end',
     flexDirection: 'row',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 15,
     justifyContent: 'space-around',
   },
   hydrationAndTaskPill: {
@@ -162,4 +232,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UpperMenu;
+export default memo(UpperMenu);

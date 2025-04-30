@@ -23,7 +23,7 @@ const Calendar = ({ selectedDate, setSelectedDate }) => {
   // Calculate week dates
   const getWeekDates = (startDate) => {
     const startOfWeek = new Date(startDate);
-    startOfWeek.setDate(startDate.getDate() - (startDate.getDay() || 7) + 1);
+    startOfWeek.setDate(startDate.getDate() - (startDate.getDay() || 7));
 
     return Array.from({ length: 7 }, (_, i) => {
       const newDate = new Date(startOfWeek);

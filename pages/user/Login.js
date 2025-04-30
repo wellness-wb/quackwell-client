@@ -15,7 +15,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { signIn } from '../../utils/auth';
+import { useAuth } from '../../utils/authContext';
 import { useBouncePress } from '../../utils/useBouncePress';
 import BubbleBackground from './components/bubble/BubbleBackground';
 import ContinueButton from './components/button/ContinueButton';
@@ -23,6 +23,7 @@ import EditableInput from './components/EditableInput';
 import UserHeader from './components/UserHeader';
 
 const Login = ({ navigation }) => {
+  const { signIn } = useAuth();
   const { bounceAnim, soundRef, handlePress } = useBouncePress();
 
   const [email, setEmail] = useState('');
@@ -32,10 +33,6 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       await signIn(email, password);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'MainHub' }],
-      });
     } catch (error) {
       console.error(error);
       alert(`Login failed: ${error}`);

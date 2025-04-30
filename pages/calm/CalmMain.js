@@ -1,4 +1,6 @@
-import React, { useCallback, useRef, useState } from 'react';
+import { Audio } from 'expo-av';
+import PropTypes from 'prop-types';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import {
   Animated,
   ImageBackground,
@@ -11,62 +13,61 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MenuBar from '../components/MenuBar';
+import SoundFunction from './components/SoundFunction';
 import Timer from './components/Timer';
 import TimerQuickOption from './components/TimerQuickOption';
-import SoundFunction from './components/SoundFunction';
 
 const CalmMain = ({ navigation }) => {
   const timerRef = useRef(null);
-  const [timerStatus, setTimerStatus] = useState({
-    isRunning: false,
-    isPaused: false,
+  const [state, setState] = useState({
+    timer: {
+      isRunning: false,
+      isPaused: false,
+    },
+    sound: {
+      instance: null,
+      selected: null,
+      isPlaying: false,
+      showOptions: false,
+    },
+    animation: {
+      showSad: false,
+      fadeValue: new Animated.Value(1),
+    },
   });
 
-  const [showSadGif, setShowSadGif] = useState(false);
-  const fadeSadAnim = useRef(new Animated.Value(1)).current;
-
   const handleStatusChange = useCallback((status) => {
-    setTimerStatus(status);
+    setState((prev) => ({
+      ...prev,
+      timer: status,
+    }));
   }, []);
 
-  const handleQuickOptionPress = (duration) => {
-    if (timerRef.current) {
-      timerRef.current.updateTime(duration);
-      if (!timerStatus.isRunning) {
-        setTimeout(() => {
-          timerRef.current.startTimer();
-        }, 50); // short delay to allow state update
+  const handleQuickOptionPress = useCallback(
+    (duration) => {
+      if (timerRef.current) {
+        timerRef.current.updateTime(duration);
+        if (!state.timer.isRunning) {
+          setTimeout(() => {
+            timerRef.current.startTimer();
+          }, 50);
+        }
       }
-    }
-  };
+    },
+    [state.timer.isRunning],
+  );
 
-  const handleStartTimer = async () => {
+  const handleStartTimer = () => {
     if (timerRef.current) {
       timerRef.current.startTimer();
     }
-    if (sound) {
-      // Instead of calling SoundFunction.unloadAsync() which doesn’t exist,
-      // consider stopping/unloading the current sound:
-      await sound.unloadAsync();
-    }
-
-    // Use SoundFunction.getSoundFile to get the file based on selectedSound
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      SoundFunction.getSoundFile(selectedSound),
-      { shouldPlay: true },
-    );
-
-    setSound(newSound); // Set the new sound to state
   };
 
-  const handleCancelTimer = async () => {
+  const handleCancelTimer = () => {
     if (timerRef.current) {
       timerRef.current.cancelTimer();
-    }
-    if (sound) {
-      await sound.stopAsync(); // Stop the sound when the timer is canceled
-      await sound.unloadAsync(); // Unload the sound to free up resources
     }
     setShowSadGif(true);
 
@@ -83,27 +84,26 @@ const CalmMain = ({ navigation }) => {
     }).start();
 
     setTimeout(() => {
-      setShowSadGif(false);
-      fadeSadAnim.setValue(1);
+      setState((prev) => ({
+        ...prev,
+        animation: {
+          ...prev.animation,
+          showSad: false,
+          fadeValue: new Animated.Value(1),
+        },
+      }));
     }, 4000);
-  };
+  }, [state.sound.instance, state.animation.fadeValue]);
 
-  const handlePauseTimer = async () => {
+  const handlePauseTimer = () => {
     if (timerRef.current) {
       timerRef.current.pauseTimer();
     }
-    if (sound) {
-      await sound.pauseAsync(); // Here pause the sound when the timer is paused
-    }
   };
 
-  const handleResumeTimer = async () => {
+  const handleResumeTimer = () => {
     if (timerRef.current) {
       timerRef.current.resumeTimer();
-    }
-    //Here we play the sound again when the timer is resumed
-    if (sound) {
-      await sound.playAsync();
     }
   };
 
@@ -113,6 +113,23 @@ const CalmMain = ({ navigation }) => {
       style={styles.bgContainer}
       resizeMode="cover"
     >
+      <SoundControls
+        sound={state.sound.instance}
+        isSoundPlaying={state.sound.isPlaying}
+        showSoundOptions={state.sound.showOptions}
+        onToggleSound={handleToggleSound}
+        onToggleOptions={() =>
+          setState((prev) => ({
+            ...prev,
+            sound: {
+              ...prev.sound,
+              showOptions: !prev.sound.showOptions,
+            },
+          }))
+        }
+        onSelectSound={handleSelectSound}
+      />
+
       <View style={styles.content}>
         <Timer
           ref={timerRef}
@@ -120,70 +137,43 @@ const CalmMain = ({ navigation }) => {
           onStatusChange={handleStatusChange}
         />
 
-        {!timerStatus.isRunning && (
+        {!state.timer.isRunning && (
           <View style={styles.quickOptionsContainer}>
-            <TimerQuickOption
-              label="10:00"
-              duration={600}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="15:00"
-              duration={900}
-              onPress={handleQuickOptionPress}
-            />
-            <TimerQuickOption
-              label="30:00"
-              duration={1800}
-              onPress={handleQuickOptionPress}
-            />
+            {QUICK_OPTIONS.map(({ label, duration }) => (
+              <TimerQuickOption
+                key={label}
+                label={label}
+                duration={duration}
+                onPress={handleQuickOptionPress}
+              />
+            ))}
           </View>
         )}
 
-        <View style={styles.controlButtonsContainer}>
-          {!timerStatus.isRunning && (
-            <TouchableOpacity style={styles.button} onPress={handleStartTimer}>
-              <Text style={styles.buttonText}>Start Timer</Text>
-            </TouchableOpacity>
-          )}
-          {timerStatus.isRunning && !timerStatus.isPaused && (
-            <>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleCancelTimer}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handlePauseTimer}
-              >
-                <Text style={styles.buttonText}>Pause</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {timerStatus.isRunning && timerStatus.isPaused && (
-            <>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleCancelTimer}
-              >
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleResumeTimer}
-              >
-                <Text style={styles.buttonText}>Continue</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        <TimerControls
+          timerStatus={state.timer}
+          onStart={handleStartTimer}
+          onCancel={handleCancelTimer}
+          onPause={handlePauseTimer}
+          onResume={handleResumeTimer}
+        />
       </View>
-      {showSadGif && (
-        <Animated.Image
+
+      {state.animation.showSad && (
+        <AnimationGif
           source={require('../../assets/calm_sad.gif')}
-          style={[styles.sadGif, { opacity: fadeSadAnim }]} // Apply fade effect
+          style={styles.sadGif}
+          opacity={state.animation.fadeValue}
+        />
+      )}
+
+      {state.timer.isRunning && (
+        <AnimationGif
+          source={require('../../assets/calm_chilling.gif')}
+          style={styles.timerAnimation}
+          opacity={1}
+          autoPlay
+          loop
         />
       )}
 
@@ -192,12 +182,47 @@ const CalmMain = ({ navigation }) => {
   );
 };
 
+CalmMain.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }).isRequired,
+};
+
+SoundControls.propTypes = {
+  sound: PropTypes.object,
+  isSoundPlaying: PropTypes.bool.isRequired,
+  showSoundOptions: PropTypes.bool.isRequired,
+  onToggleSound: PropTypes.func.isRequired,
+  onToggleOptions: PropTypes.func.isRequired,
+  onSelectSound: PropTypes.func.isRequired,
+};
+
+TimerControls.propTypes = {
+  timerStatus: PropTypes.shape({
+    isRunning: PropTypes.bool.isRequired,
+    isPaused: PropTypes.bool.isRequired,
+  }).isRequired,
+  onStart: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onPause: PropTypes.func.isRequired,
+  onResume: PropTypes.func.isRequired,
+};
+
+AnimationGif.propTypes = {
+  source: PropTypes.any.isRequired,
+  style: PropTypes.object.isRequired,
+  opacity: PropTypes.any,
+  autoPlay: PropTypes.bool,
+  loop: PropTypes.bool,
+};
+
 const styles = StyleSheet.create({
   bgContainer: {
     flex: 1,
   },
   content: {
-    height: '90%',
+    marginTop: 30,
+    height: '60%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -205,13 +230,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
-    paddingTop: 50,
+    paddingTop: 30,
   },
   controlButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
+    alignContent: 'center',
     width: '60%',
-    marginTop: 80,
+    marginTop: 60,
+    zIndex: 100,
   },
   button: {
     backgroundColor: '#739CEF',
@@ -231,14 +259,78 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  headphonesRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headphonesContainer: {
+    marginTop: hp('8%'),
+    top: hp('2%'),
+    left: wp('33%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playButton: {
+    width: wp('4%'),
+    height: hp('3%'),
+    backgroundColor: 'transparent',
+    color: '#739CEF',
+    marginRight: wp('2%'),
+    fontSize: hp('2%'),
+    marginTop: hp('1%'),
+  },
+  iconButton: {
+    backgroundColor: '#739CEF',
+    padding: 14,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  dropdown: {
+    position: 'absolute',
+    top: hp('-2%'),
+    height: hp('12.5%'),
+    right: wp('60%'),
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  dropdownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  dropdownText: {
+    fontSize: 14,
+    color: '#333',
+  },
   sadGif: {
     position: 'absolute',
     bottom: hp('9%'),
     right: wp('50%'),
     width: wp('50%'),
     height: hp('27%'),
+    zIndex: 101,
+  },
+  timerAnimation: {
+    position: 'absolute',
+    bottom: hp('9.4%'),
+    right: wp('5%'),
+    width: wp('40%'),
+    height: hp('28%'),
     zIndex: 0,
   },
 });
 
-export default CalmMain;
+export default memo(CalmMain);
