@@ -61,14 +61,14 @@ const UpperMenu = ({ navigation }) => {
   }, [currentHydration, hydrationGoal]);
 
   const handleHydrationPress = useCallback(() => {
-    if (navigation?.navigate) {
-      navigation.navigate('HydrationMain');
+    if (navigation?.replace) {
+      navigation.replace('HydrationMain');
     }
   }, [navigation]);
 
   const handlePlannerPress = useCallback(() => {
-    if (navigation?.navigate) {
-      navigation.navigate('PlannerMain');
+    if (navigation?.replace) {
+      navigation.replace('PlannerMain');
     }
   }, [navigation]);
 
