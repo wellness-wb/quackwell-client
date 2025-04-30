@@ -106,14 +106,13 @@ const UpperMenu = ({ navigation }) => {
 
   const loadTodayTask = useCallback(async () => {
     try {
-      const today = new Date().toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
+      const today = new Date().toISOString().split('T')[0];
       const todos = await fetchTodosByDate(today);
-      if (todos.length > 0) {
+      if (todos.length > 0 && !todos[0].is_completed) {
+        console.log(todos[0]);
         setTodayTask(todos[0].name);
+      } else {
+        setTodayTask('Create Task');
       }
     } catch (error) {
       console.error('Error loading today task:', error);
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
   taskText: {
     color: '#F3CAAF',
     fontWeight: 'bold',
-    fontSize: hp('1.8%'),
+    fontSize: hp('1.65%'),
     textAlign: 'center',
   },
 });
