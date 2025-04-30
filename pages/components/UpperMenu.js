@@ -109,7 +109,6 @@ const UpperMenu = ({ navigation }) => {
       const today = new Date().toISOString().split('T')[0];
       const todos = await fetchTodosByDate(today);
       if (todos.length > 0 && !todos[0].is_completed) {
-        console.log(todos[0]);
         setTodayTask(todos[0].name);
       } else {
         setTodayTask('Create Task');
