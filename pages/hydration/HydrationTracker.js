@@ -164,6 +164,7 @@ const HydrationTracker = ({ navigation }) => {
         <UpperMenu
           hydrationGoal={hydrationGoal}
           currentHydration={currentHydration}
+          navigation={navigation}
         />
 
         {/* Confetti */}
