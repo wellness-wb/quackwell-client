@@ -50,7 +50,10 @@ const PlansTabHeader = ({
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.taskViewButtons, { left: 10 }]}>
+      <View
+        style={[styles.taskViewButtons, { left: 10 }]}
+        pointerEvents="box-none"
+      >
         <TouchableOpacity
           style={[
             styles.button,
@@ -111,6 +114,7 @@ const PlansTabHeader = ({
 const styles = StyleSheet.create({
   planTabButton: {
     position: 'absolute',
+    zIndex: 10,
     justifyContent: 'center',
     backgroundColor: '#3657c1',
     paddingVertical: 4,

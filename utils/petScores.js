@@ -10,22 +10,8 @@ export async function getCompletedPlanCount() {
   const { data, error } = await supabase
     .from('todos')
     .select('*')
-    .lte(
-      'date',
-      today.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-    )
-    .gte(
-      'date',
-      threeDaysAgo.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-    );
+    .lte('date', today.toISOString().split('T')[0])
+    .gte('date', threeDaysAgo.toISOString().split('T')[0]);
 
   if (error) {
     console.error('Error fetching completed tasks:', error);
@@ -34,8 +20,7 @@ export async function getCompletedPlanCount() {
   uncompletedData = data.filter((task) => !task.is_completed);
 
   // console.log('Fetched data:', uncompletedData);
-  // return data.length - uncompletedData.length;
-  return 2;
+  return data.length - uncompletedData.length;
 }
 
 export async function getCalmTimeAverage() {

@@ -130,7 +130,7 @@ const UpperMenu = ({ navigation }) => {
         {
           height:
             Platform.OS === 'ios'
-              ? 90 + insets.top / 2
+              ? 110 + insets.top / 2
               : Platform.isPad
                 ? 100
                 : 90,
