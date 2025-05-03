@@ -113,7 +113,12 @@ const HydrationTracker = ({ navigation }) => {
   const handleAddWater = async () => {
     const input = parseFloat(inputHydration);
     if (!isNaN(input) && input > 0) {
-      const newHydration = Math.min(currentHydration + input, hydrationGoal);
+      // Convert input to liters if unit is fl oz
+      const inputInLiters = unit === 'fl oz' ? input / 33.814 : input;
+      const newHydration = Math.min(
+        currentHydration + inputInLiters,
+        hydrationGoal,
+      );
       setCurrentHydration(newHydration);
       setInputHydration('');
       Keyboard.dismiss();

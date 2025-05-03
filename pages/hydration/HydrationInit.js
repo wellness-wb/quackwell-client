@@ -24,9 +24,9 @@ const HydrationInit = ({ onSetGoal }) => {
 
   // Validate input and then use the parent's callback to save the goal.
   const handleSetGoalPress = () => {
-    const goal = parseFloat(hydrationGoal);
+    let goal = parseFloat(hydrationGoal);
     const isInvalid =
-      (unit === 'fl oz' && (goal / 33.814 < 1.5 || goal / 33.814 > 6)) ||
+      (unit === 'fl oz' && (goal < 50 || goal > 200)) ||
       (unit === 'L' && (goal < 1.5 || goal > 6));
 
     if (isInvalid) {
@@ -35,7 +35,10 @@ const HydrationInit = ({ onSetGoal }) => {
     }
 
     setWarningVisible(false);
-    // Call the parent's callback to save the goal to AsyncStorage.
+    // Convert goal to liters if unit is fl oz
+    if (unit === 'fl oz') {
+      goal = goal / 33.814;
+    }
     onSetGoal(goal, unit);
   };
 

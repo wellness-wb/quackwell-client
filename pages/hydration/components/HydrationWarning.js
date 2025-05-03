@@ -17,7 +17,7 @@ const HydrationWarning = ({ isVisible, onClose }) => {
       style={styles.warningContainer}
     >
       <Text style={styles.warningText}>
-        The recommended water intake per day is 1.5L - 6L
+        Daily recommended water intake is 1.5L - 6L or 50oz - 200oz
       </Text>
 
       {/* Simple button to close the warning */}
