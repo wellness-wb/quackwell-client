@@ -4,6 +4,7 @@ import {
   createStackNavigator,
 } from '@react-navigation/stack';
 import React from 'react';
+import { LogBox } from 'react-native';
 import { AuthProvider, useAuth } from './utils/authContext';
 
 // Authencation Screens
@@ -31,6 +32,8 @@ import Settings from './pages/social/Settings';
 import SocialMain from './pages/social/SocialMain';
 import TrophyPage from './pages/social/TrophyPage';
 import WelcomePage from './pages/WelcomePage';
+
+LogBox.ignoreAllLogs(true);
 
 const Stack = createStackNavigator();
 

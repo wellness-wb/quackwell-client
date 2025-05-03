@@ -1,34 +1,54 @@
 import { supabase } from '../supabase';
 
 export async function signUp(email, password, username) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        username: username,
-      },
-    },
-  });
+  try {
+    // 먼저 사용자가 존재하는지 확인
+    const { data: existingUser } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('username', username)
+      .maybeSingle();
 
-  if (error) {
+    if (existingUser) {
+      // 이미 존재하는 사용자명인 경우
+      throw new Error('이미 존재하는 사용자명입니다.');
+    }
+
+    // 인증 회원가입 실행
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username: username } },
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (data?.user) {
+      // 기존 프로필이 있는지 확인
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      // 프로필이 없는 경우에만 추가
+      if (!existingProfile) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([{ id: data.user.id, username: username }]);
+
+        if (profileError) {
+          throw profileError;
+        }
+      }
+    }
+
+    return data;
+  } catch (error) {
     throw error;
   }
-
-  if (data?.user) {
-    const { error: profileError } = await supabase.from('profiles').insert([
-      {
-        id: data.user.id,
-        username: username,
-      },
-    ]);
-
-    if (profileError) {
-      throw profileError;
-    }
-  }
-
-  return data;
 }
 
 export async function signIn(email, password) {
@@ -124,13 +144,11 @@ export async function addFriendByUsername(username) {
     }
   }
 
-  const { data, error: insertError } = await supabase.from('friends').insert([
-    {
-      user_id: currentUserId,
-      friend_id: friendId,
-      status: 'pending',
-    },
-  ]);
+  const { data, error: insertError } = await supabase
+    .from('friends')
+    .insert([
+      { user_id: currentUserId, friend_id: friendId, status: 'pending' },
+    ]);
 
   if (insertError) {
     throw new Error('Failed to add friend: ' + insertError.message);
@@ -170,16 +188,10 @@ export async function getFriendRequests() {
 
       if (profileError) {
         console.log(profileError.message);
-        return {
-          ...request,
-          profiles: { username: 'Unknown User' },
-        };
+        return { ...request, profiles: { username: 'Unknown User' } };
       }
 
-      return {
-        ...request,
-        profiles: { username: profile.username },
-      };
+      return { ...request, profiles: { username: profile.username } };
     }),
   );
 
@@ -222,7 +234,6 @@ export async function getSentFriendRequests() {
     throw new Error('User not found');
   }
 
-  // Get sent friend requests
   const { data: sentRequests, error } = await supabase
     .from('friends')
     .select('id, friend_id, status')
@@ -245,16 +256,10 @@ export async function getSentFriendRequests() {
 
       if (profileError) {
         console.log(profileError.message);
-        return {
-          ...request,
-          profiles: { username: 'Unknown User' },
-        };
+        return { ...request, profiles: { username: 'Unknown User' } };
       }
 
-      return {
-        ...request,
-        profiles: { username: profile.username },
-      };
+      return { ...request, profiles: { username: profile.username } };
     }),
   );
 
@@ -274,7 +279,6 @@ export async function getFriends() {
 
     const currentUserId = user.id;
 
-    // 내가 친구 요청을 보낸 경우의 친구 목록
     const { data: sentAccepted, error: sentError } = await supabase
       .from('friends')
       .select('id, friend_id')
@@ -286,7 +290,6 @@ export async function getFriends() {
       throw sentError;
     }
 
-    // 내가 친구 요청을 받은 경우의 친구 목록
     const { data: receivedAccepted, error: receivedError } = await supabase
       .from('friends')
       .select('id, user_id')
@@ -298,7 +301,6 @@ export async function getFriends() {
       throw receivedError;
     }
 
-    // 친구 ID 목록 생성
     const sentIds = sentAccepted.map((item) => ({
       id: item.id,
       profileId: item.friend_id,
@@ -311,15 +313,12 @@ export async function getFriends() {
 
     const allFriendIds = [...sentIds, ...receivedIds];
 
-    // 모든 친구 ID 목록이 비어있으면 빈 배열 반환
     if (allFriendIds.length === 0) {
       return [];
     }
 
-    // 프로필 ID 목록
     const profileIds = allFriendIds.map((item) => item.profileId);
 
-    // 한 번의 쿼리로 모든 프로필 정보 가져오기
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
       .select('id, username')
@@ -330,13 +329,11 @@ export async function getFriends() {
       throw profilesError;
     }
 
-    // 프로필 정보를 ID로 빠르게 조회할 수 있는 맵 생성
     const profileMap = {};
     profiles.forEach((profile) => {
       profileMap[profile.id] = profile;
     });
 
-    // 친구 목록 최종 가공
     const friendsList = allFriendIds.map((item) => {
       const profile = profileMap[item.profileId];
       return {

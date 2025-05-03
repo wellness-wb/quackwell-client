@@ -33,11 +33,9 @@ const CreateAccount = ({ navigation }) => {
   const handleSignUp = async () => {
     try {
       await signUp(email, password, username);
-      alert('Sign-up success! Please check your email for confirmation link.');
       navigation.navigate('Login');
     } catch (error) {
       console.error(error);
-      alert(`Sign-up error: ${error}`);
     }
   };
 
@@ -148,10 +146,7 @@ const CreateAccount = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    width: '100%',
-    height: '100%',
-  },
+  background: { width: '100%', height: '100%' },
   container: {
     flex: 1,
     width: '100%',
@@ -160,18 +155,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: hp('5%'),
   },
-  gifIcon: {
-    height: hp('30%'),
-    aspectRatio: 1,
-  },
-  formContainer: {
-    width: '100%',
-    alignItems: 'center',
-    flexGrow: 1,
-  },
-  spacing: {
-    marginBottom: hp('2.5%'),
-  },
+  gifIcon: { height: hp('30%'), aspectRatio: 1 },
+  formContainer: { width: '100%', alignItems: 'center', flexGrow: 1 },
+  spacing: { marginBottom: hp('2.5%') },
   footer: {
     container: {
       width: '100%',
@@ -179,15 +165,8 @@ const styles = StyleSheet.create({
       bottom: '10%',
       alignItems: 'center',
     },
-    bottomText: {
-      textAlign: 'center',
-      fontSize: wp('4.2%'),
-    },
-    bottomLink: {
-      color: '#153CE6',
-      fontWeight: 'bold',
-      fontSize: wp('4.5%'),
-    },
+    bottomText: { textAlign: 'center', fontSize: wp('4.2%') },
+    bottomLink: { color: '#153CE6', fontWeight: 'bold', fontSize: wp('4.5%') },
   },
 });
 
