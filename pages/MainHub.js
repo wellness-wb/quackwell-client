@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
     height: hp('35%'),
     bottom: hp('12%'),
     alignSelf: 'center',
+    bottom: 45,
+    right: 10,
   },
 });
 
