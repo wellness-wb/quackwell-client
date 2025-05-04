@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import {
   Image,
   ImageBackground,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -89,6 +90,7 @@ const messagesData = [
 
 const MessagesPage = ({ navigation }) => {
   const [messages, setMessages] = useState(messagesData);
+  const [showDevModal, setShowDevModal] = useState(true);
 
   // Function to handle navigation and mark unread as 0
   const handleMessagePress = (msg) => {
@@ -111,6 +113,25 @@ const MessagesPage = ({ navigation }) => {
       style={styles.background}
       resizeMode="cover"
     >
+      <Modal visible={showDevModal} animationType="fade" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>🚧 Feature In Development</Text>
+            <Text style={styles.modalText}>
+              This feature is still under construction. Check back soon!
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShowDevModal(false);
+                navigation.goBack();
+              }}
+              style={styles.modalButton}
+            >
+              <Text style={styles.modalButtonText}>Got it!</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       {/* Back Button */}
       <TouchableOpacity
         style={styles.backButton}
@@ -282,6 +303,45 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: hp('1.6%'),
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    width: '100%',
+  },
+  modalTitle: {
+    fontSize: hp('3%'),
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#153CE6',
+    textAlign: 'center',
+    alignSelf: 'center',
+  },
+  modalText: {
+    fontSize: hp('2%'),
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#333',
+  },
+  modalButton: {
+    backgroundColor: '#153CE6',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: hp('2%'),
   },
 });
 
